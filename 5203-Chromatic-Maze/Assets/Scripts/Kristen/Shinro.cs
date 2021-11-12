@@ -5,7 +5,7 @@ using UnityEngine;
 public class Shinro : MonoBehaviour
 {
 
-    public GameObject checker;
+    public int CheckerCount;
     public static KruskalMaze.Maze maze;
     private Tile[] path;
 
@@ -15,20 +15,21 @@ public class Shinro : MonoBehaviour
         maze = GenerateGrid.maze;
         //Debug.Log(maze.deadends);
 
-        GetPath(maze.LP.entrance, maze.LP.length);
+        path = GetPath(maze.LP.entrance, maze.LP.length);
+        PlaceCheckers(path, CheckerCount);
     }
 
     public Tile[] GetPath(Tile startPoint, int length)
     {
-        Tile[] path = new Tile[length];
+        Tile[] pathh = new Tile[length];
 
         for(int i = 0; i < length; i++)
         {
-            path[i] = startPoint;
+            pathh[i] = startPoint;
             startPoint = startPoint.parent;
         }
 
-        return path;
+        return pathh;
     }
 
     public void PlaceCheckers(Tile[] path, int count)
@@ -37,7 +38,7 @@ public class Shinro : MonoBehaviour
 
         for(int i =0; i < count; i++)
         {
-            
+            path[Random.Range(1, path.Length - 1)].transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
         }
 
     }
