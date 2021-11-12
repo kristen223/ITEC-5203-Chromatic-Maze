@@ -37,6 +37,7 @@ public class KruskalMaze : MonoBehaviour
     {
         public LongestPath LP;
         public Graph tree;
+        public Tile[] deadends;
     }
 
     public struct LongestPath
@@ -85,7 +86,7 @@ public class KruskalMaze : MonoBehaviour
 
 
         //Print(graph.edges, graph.numEdges);
-        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length);
+        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + "deadend count: " + maze.deadends.Length);
         return maze; //mst with cycles
     }
 
@@ -159,6 +160,7 @@ public class KruskalMaze : MonoBehaviour
         Maze maze = new Maze();
         maze.tree = graph;
         maze.LP = LP;
+        maze.deadends = leafs.ToArray();
 
         return maze;
     }
@@ -304,7 +306,6 @@ public class KruskalMaze : MonoBehaviour
         {
             if (tiles[t].child == tiles[t] || tiles[t].child == null)
             {
-                Debug.Log(tiles[t] + "child = " + tiles[t].child);
                 children.Add(tiles[t]);
             }
         }
