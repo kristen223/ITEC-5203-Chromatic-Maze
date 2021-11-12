@@ -21,10 +21,19 @@ public class GenerateGrid : MonoBehaviour
     [HideInInspector] public GameObject[] tiles;
     private Object[] colours;
 
+    private GameObject BorderFolder;
+    private GameObject EdgeFolder;
+    private GameObject TileFolder;
+
     [HideInInspector] public static KruskalMaze.Maze maze;
 
     public void Awake()
     {
+        //To organize the Unity scene
+        BorderFolder = GameObject.Find("Border");
+        EdgeFolder = GameObject.Find("Edges");
+        TileFolder = GameObject.Find("Tiles");
+
         //Create grid of tiles (vertices)
         tiles = new GameObject[width * height];
 
@@ -55,6 +64,8 @@ public class GenerateGrid : MonoBehaviour
                 tile.GetComponent<SpriteRenderer>().material.color = mat.color;
 
                 tiles[counter] = tile;
+
+                tile.transform.SetParent(TileFolder.transform);
 
                 counter++;
             }
@@ -89,6 +100,8 @@ public class GenerateGrid : MonoBehaviour
                     //Instantiate(prefab, new Vector3((x * 5) + 2.5f, 0, (z * 5) + 2.5f), Quaternion.Euler(0, 90, 0));
                     GameObject w = Instantiate(wallPrefab, new Vector3((x * 20) -10f,(y * 20) -10f, 0), Quaternion.Euler(0, 0, 0));
                     Destroy(w.GetComponent<Wall>());
+                    w.name = "BorderWall";
+                    w.transform.SetParent(BorderFolder.transform);
                 }
 
             }
@@ -106,36 +119,38 @@ public class GenerateGrid : MonoBehaviour
                 {
                     GameObject w = Instantiate(wallPrefab, new Vector3((x * 20), (y * 20), 0), Quaternion.Euler(0, 0, 90));
                     Destroy(w.GetComponent<Wall>());
+                    w.name = "BorderWall";
+                    w.transform.SetParent(BorderFolder.transform);
                 }
 
             }
         }
 
     }
-
+    int count = 0;
     // GENERATING TREE EDGES (grid lines)
     public void spawnInnerEdgesLeftRight()
     {
         EdgeIndex = 0;
-
+        
         for (int y = 1; y <= height; y++)
         {
             for (int x = 1; x < width; x++)
             {
                 GameObject wall = Instantiate(wallPrefab, new Vector3((x * 20) -10f, (y * 20) -10f, 0), Quaternion.Euler(0, 0, 0));
-
+                wall.name = "Edge-" + (count+1);
                 wall.GetComponent<Wall>().connectedTiles = new Tile[2];
                 wall.GetComponent<Wall>().connectedTiles[0] = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().connectedTiles[1] = tiles[EdgeIndex + 1].GetComponent<Tile>();
-
                 wall.GetComponent<Wall>().origin = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + 1].GetComponent<Tile>();
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
+                wall.transform.SetParent(EdgeFolder.transform);
 
                 edges.Add(wall.GetComponent<Wall>());
 
                EdgeIndex++;
-
+               count++;
             }
             EdgeIndex++;
         }
@@ -150,19 +165,19 @@ public class GenerateGrid : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 GameObject wall = Instantiate(wallPrefab, new Vector3((x * 20),(y * 20), 0), Quaternion.Euler(0, 0, 90));
-
+                wall.name = "Edge-" + (count + 1);
                 wall.GetComponent<Wall>().connectedTiles = new Tile[2];
                 wall.GetComponent<Wall>().connectedTiles[0] = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().connectedTiles[1] = tiles[EdgeIndex + width].GetComponent<Tile>(); //no?
-
                 wall.GetComponent<Wall>().origin = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + width].GetComponent<Tile>(); //changed
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
+                wall.transform.SetParent(EdgeFolder.transform);
 
                 edges.Add(wall.GetComponent<Wall>());
 
                 EdgeIndex++;
-
+                count++;
             }
 
         }

@@ -33,19 +33,14 @@ public class Shinro : MonoBehaviour
 
     public void PlaceCheckers(Tile[] path)
     {
-        int count = Mathf.RoundToInt((path.Length - 2)*.3f);
+        int count = Mathf.RoundToInt((path.Length - 2)*.3f); //place checkers on 30% of path length minus entrance and exit
 
         //place a checker on a random tile on the solution path that IS NOT the entrance or exit
-        if (count < path.Length - 2) //if number of checkers fits on the path
+        for (int i = 0; i < count; i++)
         {
-            for (int i = 0; i < count; i++)
-            {
-                path[Random.Range(1, path.Length - 1)].transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
-            }
-        }
-        else
-        {
-
+            int rand = Random.Range(1, path.Length - 1);
+            path[rand].transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            path[rand].tag = "checker";
         }
     }
 
