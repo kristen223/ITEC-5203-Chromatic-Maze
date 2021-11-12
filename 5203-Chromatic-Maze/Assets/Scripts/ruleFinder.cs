@@ -44,7 +44,7 @@ public class ruleFinder : MonoBehaviour
 
     }
 
-    public void EncodeRules(List<string>) //????
+    public void EncodeRules(List<string> list) //you have to give your parameter a name so you can use it in your function
     {
 
     }
