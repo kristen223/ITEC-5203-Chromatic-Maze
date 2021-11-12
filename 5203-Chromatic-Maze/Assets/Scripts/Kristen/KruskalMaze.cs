@@ -86,7 +86,7 @@ public class KruskalMaze : MonoBehaviour
 
 
         //Print(graph.edges, graph.numEdges);
-        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + "deadend count: " + maze.deadends.Length);
+        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + ", deadend count: " + maze.deadends.Length);
         return maze; //mst with cycles
     }
 

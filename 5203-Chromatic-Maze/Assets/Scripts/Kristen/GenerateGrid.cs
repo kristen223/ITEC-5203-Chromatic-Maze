@@ -21,8 +21,9 @@ public class GenerateGrid : MonoBehaviour
     [HideInInspector] public GameObject[] tiles;
     private Object[] colours;
 
+    [HideInInspector] public static KruskalMaze.Maze maze;
 
-    public void Start()
+    public void Awake()
     {
         //Create grid of tiles (vertices)
         tiles = new GameObject[width * height];
@@ -73,7 +74,7 @@ public class GenerateGrid : MonoBehaviour
             vertices[i] = tiles[i].GetComponent<Tile>();
         }
 
-        KruskalMaze.Maze mazeTree = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
+        maze = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
     }
 
     //OUTER BORDER (not part of tree)
