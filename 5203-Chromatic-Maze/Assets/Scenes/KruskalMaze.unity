@@ -206,7 +206,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 90
+  orthographic size: 91.47752
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -276,6 +276,7 @@ GameObject:
   m_Component:
   - component: {fileID: 714565113}
   - component: {fileID: 714565112}
+  - component: {fileID: 714565114}
   m_Layer: 0
   m_Name: Shinro
   m_TagString: Untagged
@@ -295,6 +296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b632433c27d6e45198c186389a9b0e0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  tiles: []
 --- !u!4 &714565113
 Transform:
   m_ObjectHideFlags: 0
@@ -309,6 +311,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &714565114
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 714565111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3abdcef5326ef4cde9c5cb38f7af69a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1947283349
 GameObject:
   m_ObjectHideFlags: 0
@@ -397,10 +411,6 @@ PrefabInstance:
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: width
       value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
-      propertyPath: cycles
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: height

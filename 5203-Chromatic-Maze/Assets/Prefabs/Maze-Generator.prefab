@@ -45,10 +45,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   wallPrefab: {fileID: 3492486591782494112, guid: f22214cc10dca4df98982edc42368612, type: 3}
+  leftWallPrefab: {fileID: 3492486591782494112, guid: 0e2cc0a8e4146411a881eedd0d98b6ca, type: 3}
+  topWallPrefab: {fileID: 3492486591782494112, guid: 6194a9b38b99b4a2b99c78694f3c764f, type: 3}
   tilePrefab: {fileID: 8052609696486489846, guid: a60feded6e1af4fcbae63e2055510df3, type: 3}
-  width: 6
-  height: 6
-  cycles: 3
+  cycles: 0
   edges: []
   EdgeIndex: 0
   tiles: []
@@ -64,5 +64,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ca3500b8861a94480a02fc7cefa8360e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entrance: {fileID: 0}
-  exit: {fileID: 0}

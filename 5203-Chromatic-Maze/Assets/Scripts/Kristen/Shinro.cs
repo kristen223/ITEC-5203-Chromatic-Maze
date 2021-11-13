@@ -4,18 +4,20 @@ using UnityEngine;
 
 public class Shinro : MonoBehaviour
 {
-
+    [HideInInspector] public Tile[] tiles;
     public static KruskalMaze.Maze maze;
     private Tile[] path;
 
     // Start is called before the first frame update
     void Start()
     {
+        tiles = GenerateGrid.vertices;
         maze = GenerateGrid.maze;
         //Debug.Log(maze.deadends);
 
         path = GetPath(maze.LP.entrance, maze.LP.length);
         PlaceCheckers(path);
+        NumClues.SetClues(tiles);
     }
 
     public Tile[] GetPath(Tile startPoint, int length)
@@ -43,12 +45,4 @@ public class Shinro : MonoBehaviour
             path[rand].tag = "checker";
         }
     }
-
-    //private static void Print(Tile[] path)
-    //{
-    //    for (int i = 0; i < path.Length; ++i)
-    //    {
-    //        Debug.Log(path[i]);
-    //    }
-    //}
 }

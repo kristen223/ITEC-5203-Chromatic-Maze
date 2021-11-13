@@ -11,14 +11,19 @@ public class GenerateGrid : MonoBehaviour
 {
 
     public GameObject wallPrefab;
+    public GameObject leftWallPrefab;
+    public GameObject topWallPrefab;
     public GameObject tilePrefab;
     public int width;
+    public static int wdth;
     public int height;
+    public static int hght;
     public int cycles;
 
     [HideInInspector] public List<Wall> edges;
     [HideInInspector] public int EdgeIndex = 0;
     [HideInInspector] public GameObject[] tiles;
+    [HideInInspector] public static Tile[] vertices;
     private Object[] colours;
 
     private GameObject BorderFolder;
@@ -29,6 +34,8 @@ public class GenerateGrid : MonoBehaviour
 
     public void Awake()
     {
+        hght = height;
+        wdth = width;
         //To organize the Unity scene
         BorderFolder = GameObject.Find("Border");
         EdgeFolder = GameObject.Find("Edges");
@@ -79,7 +86,7 @@ public class GenerateGrid : MonoBehaviour
         spawnInnerEdgesUpDown();
 
 
-        Tile[] vertices = new Tile[tiles.Length];
+        vertices = new Tile[tiles.Length];
         for(int i = 0; i < tiles.Length; i++)
         {
             vertices[i] = tiles[i].GetComponent<Tile>();
@@ -89,6 +96,8 @@ public class GenerateGrid : MonoBehaviour
     }
 
     //OUTER BORDER (not part of tree)
+    int sideCount = 1;
+    bool left = true;
     public void spawnLeftRightBoundaries()
     {
         for (int y = 1; y <= height; y++)
@@ -97,10 +106,21 @@ public class GenerateGrid : MonoBehaviour
             {
                 if (x == 0 || x == width)
                 {
-                    //Instantiate(prefab, new Vector3((x * 5) + 2.5f, 0, (z * 5) + 2.5f), Quaternion.Euler(0, 90, 0));
-                    GameObject w = Instantiate(wallPrefab, new Vector3((x * 20) -10f,(y * 20) -10f, 0), Quaternion.Euler(0, 0, 0));
+                    GameObject w;
+                    if (left == true)
+                    {
+                        w = Instantiate(leftWallPrefab, new Vector3((x * 20) - 10f, (y * 20) - 10f, 0), Quaternion.Euler(0, 0, 0));
+                        w.name = "LeftWall-" + sideCount.ToString();
+                        left = false;
+                        sideCount++;
+                    }
+                    else
+                    {
+                        w = Instantiate(wallPrefab, new Vector3((x * 20) - 10f, (y * 20) - 10f, 0), Quaternion.Euler(0, 0, 0));
+                        w.name = "RightWall";
+                        left = true;
+                    }
                     Destroy(w.GetComponent<Wall>());
-                    w.name = "BorderWall";
                     w.transform.SetParent(BorderFolder.transform);
                 }
 
@@ -108,7 +128,7 @@ public class GenerateGrid : MonoBehaviour
         }
 
     }
-
+    int topCount = 1;
     public void spawnUpDownBoundaries()
     {
         for (int y = 0; y <= height; y++)
@@ -117,17 +137,27 @@ public class GenerateGrid : MonoBehaviour
             {
                 if (y == 0 || y == height)
                 {
-                    GameObject w = Instantiate(wallPrefab, new Vector3((x * 20), (y * 20), 0), Quaternion.Euler(0, 0, 90));
+                    GameObject w;
+                    if (topCount > width)
+                    {
+                        w = Instantiate(topWallPrefab, new Vector3((x * 20), (y * 20), 0), Quaternion.Euler(0, 0, 90));
+                        w.name = "TopWall-" + (topCount - width);
+                    }
+                    else
+                    {
+                        w = Instantiate(wallPrefab, new Vector3((x * 20), (y * 20), 0), Quaternion.Euler(0, 0, 90));
+                        w.name = "BottomWall";
+                    }
                     Destroy(w.GetComponent<Wall>());
-                    w.name = "BorderWall";
                     w.transform.SetParent(BorderFolder.transform);
+                    topCount++;
                 }
 
             }
         }
 
     }
-    int count = 0;
+    int count = 1;
     // GENERATING TREE EDGES (grid lines)
     public void spawnInnerEdgesLeftRight()
     {
@@ -138,7 +168,7 @@ public class GenerateGrid : MonoBehaviour
             for (int x = 1; x < width; x++)
             {
                 GameObject wall = Instantiate(wallPrefab, new Vector3((x * 20) -10f, (y * 20) -10f, 0), Quaternion.Euler(0, 0, 0));
-                wall.name = "Edge-" + (count+1);
+                wall.name = "Edge-" + count;
                 wall.GetComponent<Wall>().connectedTiles = new Tile[2];
                 wall.GetComponent<Wall>().connectedTiles[0] = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().connectedTiles[1] = tiles[EdgeIndex + 1].GetComponent<Tile>();
@@ -165,7 +195,7 @@ public class GenerateGrid : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 GameObject wall = Instantiate(wallPrefab, new Vector3((x * 20),(y * 20), 0), Quaternion.Euler(0, 0, 90));
-                wall.name = "Edge-" + (count + 1);
+                wall.name = "Edge-" + count;
                 wall.GetComponent<Wall>().connectedTiles = new Tile[2];
                 wall.GetComponent<Wall>().connectedTiles[0] = tiles[EdgeIndex].GetComponent<Tile>();
                 wall.GetComponent<Wall>().connectedTiles[1] = tiles[EdgeIndex + width].GetComponent<Tile>(); //no?

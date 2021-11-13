@@ -77,14 +77,6 @@ public class KruskalMaze : MonoBehaviour
         //2. Create maze (new tree, longest path, entrance, exit)
         Maze maze = RemoveEdges(graph, subset, cycles);
 
-        //3. Set entrance(s) and exit(s)
-
-        //4. Add Checkers
-        //add checkers along path(s) from entrance to exit
-
-        //5. (different script) iterate through tiel columns, count checkers, add the number clues on outside
-
-
         //Print(graph.edges, graph.numEdges);
         Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + ", deadend count: " + maze.deadends.Length);
         return maze; //mst with cycles
