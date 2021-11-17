@@ -18,61 +18,91 @@ public struct ColorRules
 
 public class Rules : MonoBehaviour
 {
+    public MovementRules Tmove;
+    public MovementRules blank;
+    public MovementRules teleportB;
+    public MovementRules teleportP;
+    public MovementRules teleportG;
+    public MovementRules teleportR;
+    public MovementRules teleportO;
+    public MovementRules teleportY;
+    public MovementRules jumpOne;
+    public MovementRules jumpTwo;
+    public MovementRules warmTemp;
+    public MovementRules coldTemp;
+    public ColorRules excludeR;
+    public ColorRules excludeO;
+    public ColorRules excludeY;
+    public ColorRules excludeB;
+    public ColorRules excludeG;
+    public ColorRules excludeP;
+    public ColorRules block;
 
     void start()
     {
-        MovementRules Tmove;
+        defineRules();
+       
+
+    }
+    public void defineRules()
+    {
+        
         Tmove.direction = 1011;
         Tmove.distance = 1;
         Tmove.color = -1;
 
-        MovementRules blank;
-        blank.direction =1111;
+       
+        blank.direction = 1111;
         blank.distance = 1;
         blank.color = -1;
 
-        MovementRules teleportB;
+        
         teleportB.direction = -1;
-        teleportB.distance =-1;
+        teleportB.distance = -1;
         teleportB.color = 5;
 
-        MovementRules teleportP;
+  
         teleportP.direction = -1;
         teleportP.distance = -1;
         teleportP.color = 6;
 
-        MovementRules teleportG;
+       
         teleportG.direction = -1;
         teleportG.distance = -1;
         teleportG.color = 4;
 
-        MovementRules teleportR;
+        
         teleportR.direction = -1;
         teleportR.distance = -1;
         teleportR.color = 3;
 
-        MovementRules teleportO;
+        
         teleportO.direction = -1;
         teleportO.distance = -1;
         teleportO.color = 2;
 
-        MovementRules teleportY;
+        
         teleportY.direction = -1;
         teleportY.distance = -1;
         teleportY.color = 1;
 
-        MovementRules jumpOne;
-        jumpOne.direction =1111;
+        
+        jumpOne.direction = 1111;
         jumpOne.distance = 2;
-        jumpOne.color =-1;
+        jumpOne.color = -1;
 
-        MovementRules warmTemp;
+       
+        jumpTwo.direction = 1111;
+        jumpTwo.distance = 3;
+        jumpTwo.color = -1;
+
+        
         warmTemp.direction = 1111;
         warmTemp.distance = 1;
         warmTemp.color = 1 | 2 | 3; //does this work or should it be seperate?
 
 
-        MovementRules coldTemp;
+       
         coldTemp.direction = 1111;
         coldTemp.distance = 1;
         coldTemp.color = 4 | 5 | 6;
@@ -83,36 +113,34 @@ public class Rules : MonoBehaviour
         //if(currentpos.color==1)
         //{
         includeY.color = 1;
-            //currentpos.color + 1;
+        //currentpos.color + 1;
         includeY.inclusion = true;
 
-        ColorRules excludeR;
+        
         excludeR.color = 1 | 2 | 4 | 5 | 6;
         excludeR.inclusion = false;
 
-        ColorRules excludeO;
+   
         excludeO.color = 1 | 3 | 4 | 5 | 6;
         excludeO.inclusion = false;
 
-        ColorRules excludeY;
+     
         excludeY.color = 3 | 2 | 4 | 5 | 6;
         excludeY.inclusion = false;
 
-        ColorRules excludeB;
+        
         excludeB.color = 1 | 2 | 4 | 3 | 6;
         excludeB.inclusion = false;
 
-        ColorRules excludeG;
+        
         excludeG.color = 1 | 2 | 3 | 5 | 6;
         excludeG.inclusion = false;
 
-        ColorRules excludeP;
+      
         excludeP.color = 1 | 2 | 4 | 5 | 3;
         excludeP.inclusion = false;
 
         ColorRules block; //block is the same as exclude C if we dont keep track of prevs position
-
-
 
     }
 
