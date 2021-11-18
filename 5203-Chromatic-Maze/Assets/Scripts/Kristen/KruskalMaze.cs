@@ -360,13 +360,23 @@ public class KruskalMaze : MonoBehaviour
         int addedCycles = 0;
 
         //Ensuring cycles won't be added at entrance and exit points
-        foreach (Tile t in leafs)
+        if (leafs.Contains(entrance))
         {
-            if (t == entrance || t == exit)
-            {
-                leafs.Remove(t);
-            }
+            leafs.Remove(entrance);
         }
+        if (leafs.Contains(exit))
+        {
+            leafs.Remove(exit);
+        }
+
+        
+        //foreach (Tile t in leafs)
+        //{
+        //    if (t == entrance || t == exit)
+        //    {
+        //        leafs.Remove(t);
+        //    }
+        //}
 
         for (int i = 0; i < EdgesWithWalls.Count; i++)
         {
