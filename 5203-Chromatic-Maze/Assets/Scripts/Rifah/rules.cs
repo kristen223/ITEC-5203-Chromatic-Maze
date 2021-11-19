@@ -347,8 +347,8 @@ public class Rules : MonoBehaviour
         int[] uniqueTypesc2 = new int[11]; //rule types , not using index 0, want to use index 1-10
         for (int i = 0; i < c2.Count; i++) //check the variation in types
         {
-            t = c2[i];
-            uniqueTypesc2[t]++; //incrementing the rule types using rule types as index
+            s = c2[i];
+            uniqueTypesc2[s]++; //incrementing the rule types using rule types as index
         }
 
         for (int i = 0; i < uniqueTypesc2.Length; i++)
