@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Linq;
 
 /* Kruskal's Algorithm
  * 1. Convert each edge into a set for keeping track of its source and destination vertex and its weight (starting rank is 0 and starting parent value is -1 because they're all in their own set so no parent atm)
@@ -45,6 +46,7 @@ public class KruskalMaze : MonoBehaviour
         public Tile entrance;
         public Tile exit;
         public int length;
+        public Tile[] path;
     }
 
     public struct Graph
@@ -133,6 +135,7 @@ public class KruskalMaze : MonoBehaviour
         LP = RanksAndPath(leafs, subset, childrenIndex, LP, path);
         LP.entrance.transform.Find("triangle-WHITE").gameObject.GetComponent<SpriteRenderer>().enabled = true;
         LP.exit.transform.Find("triangle-BLACK").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        LP.path = GetLongestPath(LP.entrance, LP.length);
 
         //2.6 shuffle the mst edge list
         for (int i = 0; i < mst.Count; i++)
@@ -144,7 +147,7 @@ public class KruskalMaze : MonoBehaviour
         }
 
         //2.7 Add cycles
-        mst = AddCycles(cycles, mst, allEdges, leafs, LP.entrance, LP.exit);
+        mst = AddCycles(cycles, mst, allEdges, leafs, LP);
 
         //2.8 Create maze structure
         graph.edges = mst.ToArray();
@@ -351,7 +354,24 @@ public class KruskalMaze : MonoBehaviour
         }
     }
 
-    private List<Wall> AddCycles(int cycles, List<Wall> tree, List<Wall> EdgesWithWalls, List<Tile> leafs, Tile entrance, Tile exit)
+    public Tile[] GetLongestPath(Tile startPoint, int length)
+    {
+        Tile[] pathh = new Tile[length];
+
+        for (int i = 0; i < length; i++)
+        {
+            pathh[i] = startPoint;
+            startPoint = startPoint.parent;
+        }
+
+        return pathh;
+    }
+
+
+    //get the path length from leaf to any part of solution path
+    //prioritize adding cycles to the longer paths
+
+    private List<Wall> AddCycles(int cycles, List<Wall> tree, List<Wall> EdgesWithWalls, List<Tile> leafs, LongestPath longestP)
     {
         if(cycles == 0){
             return tree;
@@ -360,54 +380,74 @@ public class KruskalMaze : MonoBehaviour
         int addedCycles = 0;
 
         //Ensuring cycles won't be added at entrance and exit points
-        if (leafs.Contains(entrance))
-        {
-            leafs.Remove(entrance);
+        if (leafs.Contains(longestP.entrance)) {
+            leafs.Remove(longestP.entrance);
         }
-        if (leafs.Contains(exit))
-        {
-            leafs.Remove(exit);
+        if (leafs.Contains(longestP.exit)){
+            leafs.Remove(longestP.exit);
         }
 
-        
-        //foreach (Tile t in leafs)
-        //{
-        //    if (t == entrance || t == exit)
-        //    {
-        //        leafs.Remove(t);
-        //    }
-        //}
+        //Dictioanry of dead-ends and the path lenght from the dead-end to the solution path
+        Dictionary<Tile, int> dict = new Dictionary<Tile, int>();
 
-        for (int i = 0; i < EdgesWithWalls.Count; i++)
+        //Add all the leafs and paths to the dictioanry
+        for(int i = 0; i < leafs.Count; i++)
         {
-            Wall edge = EdgesWithWalls[i];
+            dict.Add(leafs[i], GetPathLength(leafs[i], longestP.path));
+        }
 
-            for(int j = 0; j < leafs.Count; j++)
+        List<KeyValuePair<Tile, int>> orderedList = dict.ToList();
+        orderedList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
+        orderedList.Reverse();
+
+        foreach(KeyValuePair<Tile, int> k in orderedList)
+        {
+            Debug.Log(k);
+        }
+
+        Dictionary<Tile, int> orderedDict = orderedList.ToDictionary(x => x.Key, x => x.Value);
+        List<Tile> orderedLeafs = new List<Tile>(orderedDict.Keys.ToList()); //list of dead-ends in order
+
+        //bool doubleEnd = false;
+
+        for (int i = 0; i < orderedLeafs.Count; i++) //flip these two for loops around
+        {
+            Tile leaf = orderedLeafs[i];
+
+            foreach (Wall edge in EdgesWithWalls)
             {
-                if (edge.origin == leafs[j] || edge.destination == leafs[j])
+                if (edge.origin == leaf || edge.destination == leaf)
                 {
                     edge.disableEdge(); //remove a random wall
                     EdgesWithWalls.Remove(edge);
                     tree.Add(edge); //add the random edge to the tree (no longer a mst)
-                    leafs.Remove(leafs[j]); //no longer a dead-end, so remove from list
                     addedCycles++;
-
-                    //This checks if the wall was between two dead-ends, therefore removing two dead-ends from the list
-                    if (edge.origin == leafs[j]){
-                        if(leafs.Contains(edge.destination)){
-                            leafs.Remove(edge.destination);
+                    
+                    //This checks if the wall was between two dead-ends, if so we skip it
+                    if (edge.origin == leaf)
+                    {
+                        if (orderedLeafs.Contains(edge.destination))
+                        {
+                            //doubleEnd = true;
+                            orderedLeafs.Remove(edge.destination);
                         }
                     }
-                    if (edge.destination == leafs[j]){
-                        if (leafs.Contains(edge.origin)){
-                            leafs.Remove(edge.origin);
+                    if (edge.destination == leaf)
+                    {
+                        if (orderedLeafs.Contains(edge.origin))
+                        {
+                            //doubleEnd = true;
+                            orderedLeafs.Remove(edge.origin);
                         }
                     }
-                }
 
-                if (addedCycles == cycles){
-                    return tree; //exit function
+                    break; //found edge, exit loop
                 }
+            }
+
+            if (addedCycles == cycles)
+            {
+                return tree; //exit function
             }
         }
 
@@ -415,13 +455,30 @@ public class KruskalMaze : MonoBehaviour
         for (int c = addedCycles; c < cycles; c++)
         {
             Wall randEdge = EdgesWithWalls[UnityEngine.Random.Range(0, EdgesWithWalls.Count)];
-            Debug.Log("remove random");
+            Debug.Log("remove random wall");
             randEdge.disableEdge(); //remove a random wall
             tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
             EdgesWithWalls.Remove(randEdge);
         }
         return tree;
     }
+
+    //Getting the length from a tile to the solution path
+    public int GetPathLength(Tile startPoint, Tile[] longestP)
+    {
+        List<Tile> lp = new List<Tile>(longestP);
+
+        int length = 0;
+
+        while(lp.Contains(startPoint) == false)
+        {
+            startPoint = startPoint.parent;
+            length++;
+        }
+
+        return length;
+    }
+
 
     private static void Print(Wall[] result, int e)
     {
@@ -433,3 +490,55 @@ public class KruskalMaze : MonoBehaviour
     }
 
 }
+
+
+//This is the old cycle code
+//for (int i = 0; i < EdgesWithWalls.Count; i++) //flip these two for loops around
+//{
+//    Wall edge = EdgesWithWalls[i];
+
+//    for (int j = 0; j < leafs.Count; j++)
+//    {
+
+//        if (edge.origin == leafs[j] || edge.destination == leafs[j])
+//        {
+//            edge.disableEdge(); //remove a random wall
+//            EdgesWithWalls.Remove(edge);
+//            tree.Add(edge); //add the random edge to the tree (no longer a mst)
+//            leafs.Remove(leafs[j]); //no longer a dead-end, so remove from list
+//            addedCycles++;
+
+//            //This checks if the wall was between two dead-ends, therefore removing two dead-ends from the list
+//            if (edge.origin == leafs[j])
+//            {
+//                if (leafs.Contains(edge.destination))
+//                {
+//                    leafs.Remove(edge.destination);
+//                }
+//            }
+//            if (edge.destination == leafs[j])
+//            {
+//                if (leafs.Contains(edge.origin))
+//                {
+//                    leafs.Remove(edge.origin);
+//                }
+//            }
+//        }
+
+//        if (addedCycles == cycles)
+//        {
+//            return tree; //exit function
+//        }
+//    }
+//}
+
+////If there wasn't enough dead-ends, remove random wall
+//for (int c = addedCycles; c < cycles; c++)
+//{
+//    Wall randEdge = EdgesWithWalls[UnityEngine.Random.Range(0, EdgesWithWalls.Count)];
+//    Debug.Log("remove random");
+//    randEdge.disableEdge(); //remove a random wall
+//    tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
+//    EdgesWithWalls.Remove(randEdge);
+//}
+//return tree;
