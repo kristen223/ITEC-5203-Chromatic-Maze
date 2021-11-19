@@ -30,7 +30,7 @@ public struct ColorRules
     }
 }
 
-public struct RuleTypes //chromosomes
+public struct RuleTypes //chromosomes (total 10 types of rules)
 {
     string name;
     int type;
@@ -39,7 +39,7 @@ public struct RuleTypes //chromosomes
 public class Rules : MonoBehaviour
 {
 
-    //global variables => rules
+    //global variables => rules 
     public MovementRules Tmove;
     public MovementRules blank;
     public MovementRules teleportB;
@@ -58,8 +58,6 @@ public class Rules : MonoBehaviour
     public ColorRules includeGR;
     public ColorRules includeRB;
     public ColorRules includeYP;//more combination possible
-                                //did not count the color 'pink' in.
-
     public ColorRules excludeR;
     public ColorRules excludeO;
     public ColorRules excludeY;
@@ -263,11 +261,11 @@ public class Rules : MonoBehaviour
         List<int> usedIdx1 = new List<int>();
         List<int> usedIdx2 = new List<int>();
 
-
+        //creating c1 and c2
         for (int i = 0; i < c1.Count; i++)   //how long do we want each chromosome to be? a subset of allList
         {
             int idx1 = randNum.Next(0,allList.Count); 
-            usedIdx1.Add(idx1); //avoiding repeated rules
+            usedIdx1.Add(idx1); //avoiding duplicate rules in a chromosome
 
             if (!usedIdx1.Contains(idx1))
             {
@@ -275,10 +273,10 @@ public class Rules : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < c2.Count; i++)   //how long do we want each chromosome to be? a subset of allList
+        for (int i = 0; i < c2.Count; i++)   
         {
             int idx2 = randNum.Next(0, allList.Count);
-            usedIdx2.Add(idx2); //avoiding repeated rules
+            usedIdx2.Add(idx2); 
 
             if (!usedIdx2.Contains(idx2))
             {
@@ -294,14 +292,15 @@ public class Rules : MonoBehaviour
 
     public void mutate(List<int> c1, List<int> c2)
     {
-        int[] chromosomes = new int[c1.Count + c2.Count]; //array containing all types
+        //merging c1 and c2
+        int[] chromosomes = new int[c1.Count + c2.Count]; 
         for (int i = 0; i < c1.Count; i++)
         {
-            chromosomes[i] = c1[i]; //should be c1.type but type isnt working for c1 :/
+            chromosomes[i] = c1[i]; 
         }
         for (int i = c1.Count + 1; i < c1.Count + c2.Count; i++)
         {
-            chromosomes[i] = c2[i]; //
+            chromosomes[i] = c2[i]; 
         }
         int f = fitnessOne(chromosomes);
     }
