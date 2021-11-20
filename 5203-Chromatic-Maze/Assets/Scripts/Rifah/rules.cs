@@ -30,7 +30,7 @@ public struct ColorRules
     }
 }
 
-public struct RuleTypes //chromosomes
+public struct RuleTypes //chromosomes (total 10 types of rules)
 {
     string name;
     int type;
@@ -39,7 +39,7 @@ public struct RuleTypes //chromosomes
 public class Rules : MonoBehaviour
 {
 
-    //global variables => rules
+    //global variables => rules 
     public MovementRules Tmove;
     public MovementRules blank;
     public MovementRules teleportB;
@@ -58,8 +58,6 @@ public class Rules : MonoBehaviour
     public ColorRules includeGR;
     public ColorRules includeRB;
     public ColorRules includeYP;//more combination possible
-                                //did not count the color 'pink' in.
-
     public ColorRules excludeR;
     public ColorRules excludeO;
     public ColorRules excludeY;
@@ -80,7 +78,7 @@ public class Rules : MonoBehaviour
     {
        
         defineRules();
-        crossover(movementRuleSets,colorRuleSets); //mutate and fitness are nested in crossover
+        selectChromosomes(movementRuleSets,colorRuleSets); //mutate and fitness are nested in crossover
 
     }
 
@@ -234,7 +232,7 @@ public class Rules : MonoBehaviour
     }
 
 
-    public void crossover(MovementRules m, ColorRules c)
+    public void selectChromosomes(MovementRules m, ColorRules c)
     {
         System.Random randNum = new System.Random();
 
@@ -251,23 +249,23 @@ public class Rules : MonoBehaviour
         List<int> allList = new List<int>();
 
         foreach (var item in movementRuleSets)
-        {
+         {
+           allList.Add(item.type);
+         }
+         foreach (var item in colorRuleSets)
+         {
             allList.Add(item.type);
-        }
-        foreach (var item in colorRuleSets)
-        {
-            allList.Add(item.type);
-        }
-
+         }
+        
         
         List<int> usedIdx1 = new List<int>();
         List<int> usedIdx2 = new List<int>();
 
-
+        //creating c1 and c2
         for (int i = 0; i < c1.Count; i++)   //how long do we want each chromosome to be? a subset of allList
         {
             int idx1 = randNum.Next(0,allList.Count); 
-            usedIdx1.Add(idx1); //avoiding repeated rules
+            usedIdx1.Add(idx1); //avoiding duplicate rules in a chromosome
 
             if (!usedIdx1.Contains(idx1))
             {
@@ -275,10 +273,10 @@ public class Rules : MonoBehaviour
             }
         }
 
-        for (int i = 0; i < c2.Count; i++)   //how long do we want each chromosome to be? a subset of allList
+        for (int i = 0; i < c2.Count; i++)   
         {
             int idx2 = randNum.Next(0, allList.Count);
-            usedIdx2.Add(idx2); //avoiding repeated rules
+            usedIdx2.Add(idx2); 
 
             if (!usedIdx2.Contains(idx2))
             {
@@ -286,65 +284,108 @@ public class Rules : MonoBehaviour
             }
         }
       
-        mutate(c1, c2);
+        crossover(c1, c2);
         
 
 
     }
 
-    public void mutate(List<int> c1, List<int> c2)
+    public void crossover(List<int> c1, List<int> c2)
     {
-        int[] chromosomes = new int[c1.Count + c2.Count]; //array containing all types
-        for (int i = 0; i < c1.Count; i++)
+        //crossover in the first half of c1 and c2
+       // int[] chromosomes = new int[c1.Count + c2.Count]; 
+        for (int i = 0; i < c1.Count/2; i++)
         {
-            chromosomes[i] = c1[i]; //should be c1.type but type isnt working for c1 :/
+            int x = c1[i];
+            c1[i] = c2[i];
+            c2[i] = x;
         }
-        for (int i = c1.Count + 1; i < c1.Count + c2.Count; i++)
-        {
-            chromosomes[i] = c2[i]; //
-        }
-        int f = fitnessOne(chromosomes);
+
+        fitnessOne(c1, c2);
+      
+
     }
 
 
 
-    public int fitnessOne(int[] c)
+    public void fitnessOne(List<int> c1, List<int> c2)
     {
         //chromosome that has more different types of rules is a better fit rule.
 
         //fitness metrics : 1)variation in types , 2)too much or too less of only color rules/movement rules
 
         //fitness = [chromosome[1] for chromosome in population ]
-        int fit = 1;
+        int fitc1 = 1;
+        int fitc2 = 1;
         
         int t=0;
-        int[] uniqueTypes = new int[11]; //rule types , not using index 0, want to use index 1-10
-        for (int i = 0; i < c.Length; i++) //check the variation in types
+        int[] uniqueTypesc1 = new int[11]; //rule types , not using index 0, want to use index 1-10
+        for (int i = 0; i < c1.Count; i++) //check the variation in types
         {
-            t = c[i];
-            uniqueTypes[t]++; //incrementing the rule types using rule types as index
+            t = c1[i];
+            uniqueTypesc1[t]++; //incrementing the rule types using rule types as index
         }
 
-        for (int i = 0; i < uniqueTypes.Length; i++)
+        for (int i = 0; i < uniqueTypesc1.Length; i++)
         {
-            if (uniqueTypes[i] != 0)
+            if (uniqueTypesc1[i] != 0)
             {
-                fit = fit * uniqueTypes[i];
+                fitc1 = fitc1 * uniqueTypesc1[i];
             }
         }
+
+
+
+
         print("fitness 1 : all rule types are used only once");
         print("fitness value 1-2 is good. Higher value means same type of rule is being repeated more than twice, which is not good.");
-        print("fitness value is " + fit);
+        //print("fitness value is " + fit1);
 
-        if (fit <= 2)
+
+
+        int s = 0;
+        int[] uniqueTypesc2 = new int[11]; //rule types , not using index 0, want to use index 1-10
+        for (int i = 0; i < c2.Count; i++) //check the variation in types
         {
-            //pass c1,c2 to maze
+            s = c2[i];
+            uniqueTypesc2[s]++; //incrementing the rule types using rule types as index
+        }
+
+        for (int i = 0; i < uniqueTypesc2.Length; i++)
+        {
+
+            if (uniqueTypesc2[i] != 0)
+            {
+                fitc2 = fitc2 * uniqueTypesc2[i];
+            }
+        }
+
+        if (fitc1 < fitc2)
+        {
+            if (fitc1 <= 2)
+            {
+                print("c1 selected with fitness value "+ fitc1);
+                //pass c1 to maze
+            }
+            else
+            {
+                selectChromosomes(movementRuleSets, colorRuleSets);
+            }
         }
         else
         {
-            crossover(movementRuleSets, colorRuleSets);
+            if (fitc2 <= 2)
+            {
+                print("c2 selected with fitness value " + fitc2);
+                //pass c2 to maze
+            }
+            else
+            {
+                selectChromosomes(movementRuleSets, colorRuleSets);
+            }
         }
-        return fit;
+
+        
     }
 }
 
