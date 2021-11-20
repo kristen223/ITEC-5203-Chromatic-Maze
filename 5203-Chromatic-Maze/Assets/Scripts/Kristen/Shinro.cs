@@ -34,7 +34,7 @@ public class Shinro : MonoBehaviour
                 current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 current.tag = "checker";
                 count--;
-                chance = 20;
+                chance = 10;
             }
             else
             {

@@ -61,9 +61,16 @@ public class GenerateGrid : MonoBehaviour
                 tile.GetComponent<Tile>().rank = 0;
                 tile.GetComponentInChildren<Text>().text = "0";
                 tile.GetComponent<Tile>().parent = tile.GetComponent<Tile>();
-                //tile.GetComponent<Tile>().child = tile.GetComponent<Tile>();
-
                 tile.GetComponentInChildren<Text>().text = tile.GetComponent<Tile>().rank.ToString();
+
+                if (y == 1 || y == height || x == 1 || x == width)
+                {
+                    tile.GetComponent<Tile>().border = true;
+                }
+                else
+                {
+                    tile.GetComponent<Tile>().border = false;
+                }
 
                 //TEMPORARY - DELETE LATER
                 Material mat = (Material)colours[Random.Range(0, colours.Length)];

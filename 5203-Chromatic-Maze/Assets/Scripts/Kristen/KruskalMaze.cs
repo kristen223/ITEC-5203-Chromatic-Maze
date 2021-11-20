@@ -373,11 +373,12 @@ public class KruskalMaze : MonoBehaviour
 
     private List<Wall> AddCycles(int cycles, List<Wall> tree, List<Wall> EdgesWithWalls, List<Tile> leafs, LongestPath longestP)
     {
-        if(cycles == 0){
+        if (cycles == 0){
             return tree;
         }
 
         int addedCycles = 0;
+        List<Wall> newTree = new List<Wall>(tree);
 
         //Ensuring cycles won't be added at entrance and exit points
         if (leafs.Contains(longestP.entrance)) {
@@ -400,54 +401,194 @@ public class KruskalMaze : MonoBehaviour
         orderedList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
         orderedList.Reverse();
 
-        foreach(KeyValuePair<Tile, int> k in orderedList)
-        {
-            Debug.Log(k);
-        }
-
         Dictionary<Tile, int> orderedDict = orderedList.ToDictionary(x => x.Key, x => x.Value);
         List<Tile> orderedLeafs = new List<Tile>(orderedDict.Keys.ToList()); //list of dead-ends in order
-
-        //bool doubleEnd = false;
 
         for (int i = 0; i < orderedLeafs.Count; i++) //flip these two for loops around
         {
             Tile leaf = orderedLeafs[i];
+            Tile parent = orderedLeafs[i].parent;
+            Tile other;
 
-            foreach (Wall edge in EdgesWithWalls)
+            String leafNumS = leaf.name.Substring(leaf.name.IndexOf("-") + 1, leaf.name.Length - leaf.name.IndexOf("-") - 1);
+            String parentNumS = parent.name.Substring(parent.name.IndexOf("-") + 1, parent.name.Length - parent.name.IndexOf("-") - 1);
+            int leafNum = int.Parse(leafNumS);
+            int parentNum = int.Parse(parentNumS);
+
+            //if leaf = a central tile, remove the wall opposite of parent
+            //if leaf and parent are on border, remove opposite wall from parent
+            //if leaf is a border tile, remove wall with longest path length on other side
+            //if the list of adjacent walls count = 1, ignore this dead-end
+
+            //Leaf is one of four corners, it can only have one wall that we don't want to remove, so we won't do anything in this loop
+            if (leafNum != 1 && leafNum != GenerateGrid.wdth && leafNum != (GenerateGrid.wdth * GenerateGrid.hght - GenerateGrid.wdth + 1) && leafNum != (GenerateGrid.wdth * GenerateGrid.hght))
             {
-                if (edge.origin == leaf || edge.destination == leaf)
+                if (leaf.border == false || (leaf.border == true && parent.border == true))
                 {
-                    edge.disableEdge(); //remove a random wall
-                    EdgesWithWalls.Remove(edge);
-                    tree.Add(edge); //add the random edge to the tree (no longer a mst)
-                    addedCycles++;
-                    
-                    //This checks if the wall was between two dead-ends, if so we skip it
-                    if (edge.origin == leaf)
+                    Debug.Log("first check");
+                    foreach (Wall edge in tree) //edges without walls
                     {
-                        if (orderedLeafs.Contains(edge.destination))
+                        if (edge.origin == leaf || edge.destination == leaf)
                         {
-                            //doubleEnd = true;
-                            orderedLeafs.Remove(edge.destination);
-                        }
-                    }
-                    if (edge.destination == leaf)
-                    {
-                        if (orderedLeafs.Contains(edge.origin))
-                        {
-                            //doubleEnd = true;
-                            orderedLeafs.Remove(edge.origin);
-                        }
-                    }
+                            if (edge.origin == leaf)
+                            {
+                                if (edge.destination == parent)
+                                {
+                                    //find the opposite edge to the parent in same row
+                                    if (leafNum + 1 == parentNum) //parent beside leaf
+                                    {
+                                        Debug.Log("parent beside leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        other = GameObject.Find("Tile-" + (leafNum - 1).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else if (leafNum - 1 == parentNum)
+                                    {
+                                        Debug.Log("parent beside leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        other = GameObject.Find("Tile-" + (leafNum + 1).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else if (parentNum > leafNum) //parent above leaf
+                                    {
+                                        Debug.Log("parent above leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        //get tile below leaf (tile number - width)
+                                        other = GameObject.Find("Tile-" + (leafNum - GenerateGrid.wdth).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else //leaf above parent
+                                    {
+                                        Debug.Log("parent below leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        //get tile above leaf (tile number + width)
+                                        other = GameObject.Find("Tile-" + (leafNum + GenerateGrid.wdth).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
 
-                    break; //found edge, exit loop
+                                    foreach (Wall e in EdgesWithWalls)
+                                    {
+                                        if ((e.origin == leaf && e.destination == other) || (e.origin == other && e.destination == leaf))
+                                        {
+                                            Debug.Log("remove edge");
+                                            e.disableEdge(); //remove wall
+                                            EdgesWithWalls.Remove(e);
+                                            newTree.Add(e); //add edge to the tree (no longer a mst)
+                                            addedCycles++;
+                                            break;
+                                        }
+                                    }
+
+                                    if (orderedLeafs.Contains(other))
+                                    { //if parent is a dead-end remove from list and don't check it
+                                        orderedLeafs.Remove(other);
+                                        i++;
+                                    }
+                                }
+                            }
+                            else //leaf is destination
+                            {
+                                if (edge.origin == parent)
+                                {
+                                    //find the opposite edge to the parent in same row
+                                    if (leafNum + 1 == parentNum) //parent beside leaf
+                                    {
+                                        Debug.Log("parent beside leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        other = GameObject.Find("Tile-" + (leafNum - 1).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else if (leafNum - 1 == parentNum)
+                                    {
+                                        Debug.Log("parent beside leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        other = GameObject.Find("Tile-" + (leafNum + 1).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else if (parentNum > leafNum) //parent above leaf
+                                    {
+                                        Debug.Log("parent above leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        //get tile below leaf (tile number - width)
+                                        other = GameObject.Find("Tile-" + (leafNum - GenerateGrid.wdth).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                    }
+                                    else //leaf above parent
+                                    {
+                                        Debug.Log("parent below leaf");
+                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
+                                        //get tile above leaf (tile number + width)
+                                        other = GameObject.Find("Tile-" + (leafNum + GenerateGrid.wdth).ToString()).GetComponent<Tile>();
+                                        Debug.Log("other = " + other);
+                                        //this tile doesnt exist
+                                    }
+
+                                    foreach (Wall e in EdgesWithWalls)
+                                    {
+                                        if ((e.origin == leaf && e.destination == other) || (e.origin == other && e.destination == leaf))
+                                        {
+                                            Debug.Log("remove edge");
+                                            e.disableEdge(); //remove wall
+                                            EdgesWithWalls.Remove(e);
+                                            newTree.Add(e); //add edge to the tree (no longer a mst)
+                                            addedCycles++;
+                                            break;
+                                        }
+                                    }
+
+                                    if (orderedLeafs.Contains(other))
+                                    { //if parent is a dead-end remove from list and don't check it
+                                        orderedLeafs.Remove(other);
+                                        i++;
+                                    }
+                                }
+                            }
+                           Debug.Log("break");
+                           break; //maybe here??
+                        }
+                    }
                 }
-            }
+                else //deadend on border, therefore, remove wall with longest path on the other side of it
+                {
+                    Debug.Log("second check");
+                    Dictionary<Wall, int> adjacentWalls = new Dictionary<Wall, int>();
 
-            if (addedCycles == cycles)
-            {
-                return tree; //exit function
+                    foreach (Wall edge in EdgesWithWalls)
+                    {
+                        if (edge.origin == leaf || edge.destination == leaf)
+                        {
+                            if (edge.origin == leaf)
+                            {
+                                adjacentWalls.Add(edge, GetPathLength(edge.destination, longestP.path));
+                            }
+                            if (edge.destination == leaf)
+                            {
+                                adjacentWalls.Add(edge, GetPathLength(edge.origin, longestP.path));
+                            }
+                        }
+                    }
+
+                    if (adjacentWalls.Count > 1) //if there's only one adjacent wall, don't remove it
+                    {
+                        List<KeyValuePair<Wall, int>> adjList = adjacentWalls.ToList();
+                        adjList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value)); //sort by path length
+                        adjList.Reverse();
+
+                        Dictionary<Wall, int> orderedAdj = adjList.ToDictionary(x => x.Key, x => x.Value);
+                        List<Wall> orderedAdjacent = new List<Wall>(orderedAdj.Keys.ToList()); //list of adjecent walls in order of path length
+
+                        orderedAdjacent[0].disableEdge(); //remove wall
+                        EdgesWithWalls.Remove(orderedAdjacent[0]);
+                        newTree.Add(orderedAdjacent[0]); //add edge to the tree (no longer a mst)
+                        addedCycles++;
+                        Debug.Log("remove wall = " + orderedAdjacent[0]);
+                    }
+                }
+
+                if (addedCycles == cycles)
+                {
+                    return newTree; //exit function
+                }
             }
         }
 
@@ -460,7 +601,7 @@ public class KruskalMaze : MonoBehaviour
             tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
             EdgesWithWalls.Remove(randEdge);
         }
-        return tree;
+        return newTree;
     }
 
     //Getting the length from a tile to the solution path

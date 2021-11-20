@@ -12,6 +12,7 @@ public class Tile : MonoBehaviour
     public Tile parent;
     public Tile child; //may change to list later
     public int rank;
+    public bool border;
 
     //This find the root noed of the subset of t
     //Equivalent to Kruskal's Find Function

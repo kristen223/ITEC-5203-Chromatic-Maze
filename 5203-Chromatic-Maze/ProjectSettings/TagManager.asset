@@ -6,6 +6,7 @@ TagManager:
   tags:
   - checker
   - tile
+  - border
   layers:
   - Default
   - TransparentFX
