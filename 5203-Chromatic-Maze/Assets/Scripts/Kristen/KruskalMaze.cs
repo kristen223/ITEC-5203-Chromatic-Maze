@@ -415,10 +415,11 @@ public class KruskalMaze : MonoBehaviour
             int leafNum = int.Parse(leafNumS);
             int parentNum = int.Parse(parentNumS);
 
-            //if leaf = a central tile, remove the wall opposite of parent
-            //if leaf and parent are on border, remove opposite wall from parent
-            //if leaf is a border tile, remove wall with longest path length on other side
-            //if the list of adjacent walls count = 1, ignore this dead-end
+            /* If leaf is one of four corners, ignore and move ont next
+             * if leaf is a central tile OR both leaf and its parent or on the border, remove the wall opposite of the leaf-parent edge
+             * if leaf is a border tile (but parent isn't), remove adjacent wall* with longest path to the solution path on its other side
+             *     *if the list of adjacent walls count = 1, ignore this deadend and move onto next
+             */
 
             //Leaf is one of four corners, it can only have one wall that we don't want to remove, so we won't do anything in this loop
             if (leafNum != 1 && leafNum != GenerateGrid.wdth && leafNum != (GenerateGrid.wdth * GenerateGrid.hght - GenerateGrid.wdth + 1) && leafNum != (GenerateGrid.wdth * GenerateGrid.hght))
