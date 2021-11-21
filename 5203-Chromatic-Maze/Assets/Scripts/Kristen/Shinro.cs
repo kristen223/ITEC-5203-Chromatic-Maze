@@ -8,28 +8,26 @@ public class Shinro : MonoBehaviour
     public static KruskalMaze.Maze maze;
     private Tile[] solutionPath;
     private  int chance; //likelihood checker is placed (percentage)
+    public static int checkerCount;
 
-    void Start()
+    void Awake()
     {
         tiles = GenerateGrid.vertices;
         maze = GenerateGrid.maze;
         chance = 10;
 
-        PlaceCheckers(maze.LP.entrance, maze.LP.length);
+        checkerCount = Mathf.RoundToInt((maze.LP.length - 1) * .3f);
+        PlaceCheckers(maze.LP.entrance, maze.LP.length, checkerCount);
         NumClues.SetClues(tiles);
     }
 
-    public void PlaceCheckers(Tile startPoint, int length)
+    public void PlaceCheckers(Tile startPoint, int length, int count)
     {
-        int count = Mathf.RoundToInt((length - 1) * .3f); //place checkers on 30% of path length not inlcuding entrance
-
-
-        for (int i = 0; i < length; i++)
+        for (int i = 0; i < length-1; i++)
         {
             Tile current = startPoint.parent;
 
-
-            if(i == length - count) //if the number of checkers left to place is equal to the number of tiles left in path traversal
+            if(i == length - count - 1) //if the number of checkers left to place is equal to the number of tiles left in path traversal
             {//must add checkers to rest of path
                 current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                 current.tag = "checker";

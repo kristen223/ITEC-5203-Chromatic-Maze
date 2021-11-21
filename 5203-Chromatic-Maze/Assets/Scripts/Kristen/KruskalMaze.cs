@@ -38,7 +38,7 @@ public class KruskalMaze : MonoBehaviour
     {
         public LongestPath LP;
         public Graph tree;
-        public Tile[] deadends;
+        public List<Tile> deadends; //includes the cycle ones (can be removed easily)
     }
 
     public struct LongestPath
@@ -80,7 +80,7 @@ public class KruskalMaze : MonoBehaviour
         Maze maze = RemoveEdges(graph, subset, cycles);
 
         //Print(graph.edges, graph.numEdges);
-        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + ", deadend count: " + maze.deadends.Length);
+        Debug.Log("entrance: " +  maze.LP.entrance + ", exit: " + maze.LP.exit + ", length: " + maze.LP.length + ", deadend count: " + maze.deadends.Count);
         return maze; //mst with cycles
     }
 
@@ -127,7 +127,7 @@ public class KruskalMaze : MonoBehaviour
 
 
         //2.6 Update Ranks and set the exit to the root node
-        List<Tile> leafs = GetChildren(subset);
+        List<Tile> leafs = GetDeadEnds(subset);
         int childrenIndex = 0;
         int path = 0;
 
@@ -151,16 +151,11 @@ public class KruskalMaze : MonoBehaviour
             mst[randomIndex] = temp;
         }
 
-        //2.7 Add cycles
-        mst = AddCycles(cycles, mst, allEdges, leafs, LP);
-
-        //2.8 Create maze structure
-        graph.edges = mst.ToArray();
-        graph.numEdges = mst.Count;
+        //2.7 Add cycles and create graph for maze
         Maze maze = new Maze();
-        maze.tree = graph;
+        maze = AddCycles(cycles, mst, allEdges, leafs, LP);
+        maze.tree.numVertices = graph.numVertices;
         maze.LP = LP;
-        maze.deadends = leafs.ToArray();
 
         return maze;
     }
@@ -299,7 +294,7 @@ public class KruskalMaze : MonoBehaviour
     }
 
     //Returns a list of the leaf nodes
-    private static List<Tile> GetChildren(Tile[] tiles)
+    private static List<Tile> GetDeadEnds(Tile[] tiles)
     {
         
         List<Tile> deadends = new List<Tile>();
@@ -378,14 +373,22 @@ public class KruskalMaze : MonoBehaviour
     //get the path length from leaf to any part of solution path
     //prioritize adding cycles to the longer paths
 
-    private List<Wall> AddCycles(int cycles, List<Wall> tree, List<Wall> EdgesWithWalls, List<Tile> leafs, LongestPath longestP)
+    private Maze AddCycles(int cycles, List<Wall> tree, List<Wall> EdgesWithWalls, List<Tile> leafs, LongestPath longestP)
     {
+        Maze maze = new Maze();
+        Graph graph = new Graph();
+
         if (cycles == 0){
-            return tree;
+            maze.deadends = leafs;
+            graph.edges = tree.ToArray();
+            graph.numEdges = tree.Count;
+            maze.tree = graph;
+            return maze;
         }
 
         int addedCycles = 0;
         List<Wall> newTree = new List<Wall>(tree);
+        List<Tile> newDends = new List<Tile>(leafs);
 
         //Ensuring cycles won't be added at entrance and exit points
         if (leafs.Contains(longestP.entrance)) {
@@ -422,7 +425,7 @@ public class KruskalMaze : MonoBehaviour
             int leafNum = int.Parse(leafNumS);
             int parentNum = int.Parse(parentNumS);
 
-            /* If leaf is one of four corners, ignore and move ont next
+            /* if leaf is one of four corners, ignore and move ont next
              * if leaf is a central tile OR both leaf and its parent or on the border, remove the wall opposite of the leaf-parent edge
              * if leaf is a border tile (but parent isn't), remove adjacent wall* with longest path to the solution path on its other side
              *     *if the list of adjacent walls count = 1, ignore this deadend and move onto next
@@ -433,7 +436,6 @@ public class KruskalMaze : MonoBehaviour
             {
                 if (leaf.border == false || (leaf.border == true && parent.border == true))
                 {
-                    Debug.Log("first check");
                     foreach (Wall edge in tree) //edges without walls
                     {
                         if (edge.origin == leaf || edge.destination == leaf)
@@ -478,11 +480,16 @@ public class KruskalMaze : MonoBehaviour
                                     {
                                         if ((e.origin == leaf && e.destination == other) || (e.origin == other && e.destination == leaf))
                                         {
+                                            //Make tiles on either side of removed wall each other's children (so cycle is traversable)
+                                            e.origin.children.Add(e.destination);
+                                            e.destination.children.Add(e.origin);
+
                                             Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
                                             addedCycles++;
+                                            newDends.Remove(leaf);
                                             break;
                                         }
                                     }
@@ -490,6 +497,7 @@ public class KruskalMaze : MonoBehaviour
                                     if (orderedLeafs.Contains(other))
                                     { //if parent is a dead-end remove from list and don't check it
                                         orderedLeafs.Remove(other);
+                                        newDends.Remove(other);
                                         i++;
                                     }
                                 }
@@ -535,11 +543,15 @@ public class KruskalMaze : MonoBehaviour
                                     {
                                         if ((e.origin == leaf && e.destination == other) || (e.origin == other && e.destination == leaf))
                                         {
+                                            e.origin.children.Add(e.destination);
+                                            e.destination.children.Add(e.origin);
+
                                             Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
                                             addedCycles++;
+                                            newDends.Remove(leaf);
                                             break;
                                         }
                                     }
@@ -547,6 +559,7 @@ public class KruskalMaze : MonoBehaviour
                                     if (orderedLeafs.Contains(other))
                                     { //if parent is a dead-end remove from list and don't check it
                                         orderedLeafs.Remove(other);
+                                        newDends.Remove(other);
                                         i++;
                                     }
                                 }
@@ -563,16 +576,13 @@ public class KruskalMaze : MonoBehaviour
 
                     foreach (Wall edge in EdgesWithWalls)
                     {
-                        if (edge.origin == leaf || edge.destination == leaf)
+                        if (edge.origin == leaf)
                         {
-                            if (edge.origin == leaf)
-                            {
-                                adjacentWalls.Add(edge, GetPathLength(edge.destination, longestP.path));
-                            }
-                            if (edge.destination == leaf)
-                            {
-                                adjacentWalls.Add(edge, GetPathLength(edge.origin, longestP.path));
-                            }
+                            adjacentWalls.Add(edge, GetPathLength(edge.destination, longestP.path));
+                        }
+                        if (edge.destination == leaf)
+                        {
+                            adjacentWalls.Add(edge, GetPathLength(edge.origin, longestP.path));
                         }
                     }
 
@@ -585,17 +595,34 @@ public class KruskalMaze : MonoBehaviour
                         Dictionary<Wall, int> orderedAdj = adjList.ToDictionary(x => x.Key, x => x.Value);
                         List<Wall> orderedAdjacent = new List<Wall>(orderedAdj.Keys.ToList()); //list of adjecent walls in order of path length
 
+                        orderedAdjacent[0].origin.children.Add(orderedAdjacent[0].destination);
+                        orderedAdjacent[0].destination.children.Add(orderedAdjacent[0].origin);
+
                         orderedAdjacent[0].disableEdge(); //remove wall
                         EdgesWithWalls.Remove(orderedAdjacent[0]);
                         newTree.Add(orderedAdjacent[0]); //add edge to the tree (no longer a mst)
                         addedCycles++;
+
+                        if(newDends.Contains(orderedAdjacent[0].origin))
+                        {
+                            newDends.Remove(orderedAdjacent[0].origin);
+                        }
+                        if (newDends.Contains(orderedAdjacent[0].destination))
+                        {
+                            newDends.Remove(orderedAdjacent[0].destination);
+                        }
+
                         Debug.Log("remove wall = " + orderedAdjacent[0]);
                     }
                 }
 
                 if (addedCycles == cycles)
                 {
-                    return newTree; //exit function
+                    maze.deadends = newDends;
+                    graph.edges = tree.ToArray();
+                    graph.numEdges = tree.Count;
+                    maze.tree = graph;
+                    return maze; //exit function
                 }
             }
         }
@@ -605,11 +632,24 @@ public class KruskalMaze : MonoBehaviour
         {
             Wall randEdge = EdgesWithWalls[UnityEngine.Random.Range(0, EdgesWithWalls.Count)];
             Debug.Log("remove random wall");
+            randEdge.origin.children.Add(randEdge.destination);
+            randEdge.destination.children.Add(randEdge.origin);
             randEdge.disableEdge(); //remove a random wall
             tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
             EdgesWithWalls.Remove(randEdge);
+
+            if (newDends.Contains(randEdge.origin)){
+                newDends.Remove(randEdge.origin);
+            }
+            if (newDends.Contains(randEdge.destination)){
+                newDends.Remove(randEdge.destination);
+            }
         }
-        return newTree;
+        maze.deadends = newDends;
+        graph.edges = tree.ToArray();
+        graph.numEdges = tree.Count;
+        maze.tree = graph;
+        return maze;
     }
 
     //Getting the length from a tile to the solution path
