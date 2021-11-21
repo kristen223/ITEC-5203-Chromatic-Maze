@@ -10,7 +10,7 @@ public class Tile : MonoBehaviour
     public Material colour;
 
     public Tile parent;
-    public Tile child; //may change to list later
+    public List<Tile> children; //may change to list later
     public int rank;
     public bool border;
 

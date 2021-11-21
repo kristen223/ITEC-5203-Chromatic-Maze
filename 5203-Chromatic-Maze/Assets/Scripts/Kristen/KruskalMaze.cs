@@ -131,6 +131,11 @@ public class KruskalMaze : MonoBehaviour
         int childrenIndex = 0;
         int path = 0;
 
+        foreach(Tile t in leafs)
+        {
+            Debug.Log(t);
+        }
+
         LongestPath LP = new LongestPath();
         LP = RanksAndPath(leafs, subset, childrenIndex, LP, path);
         LP.entrance.transform.Find("triangle-WHITE").gameObject.GetComponent<SpriteRenderer>().enabled = true;
@@ -169,7 +174,7 @@ public class KruskalMaze : MonoBehaviour
             if (o.rank < d.rank) { //if O parent rank < D parent rank
                 if (o.parent == o){
                     o.parent = d;
-                    d.child = o;
+                    d.children.Add(o);
                     UpdateRanks(d);
                 }
                 else{
@@ -181,7 +186,7 @@ public class KruskalMaze : MonoBehaviour
             {
                 if (d.parent == d){
                     d.parent = o;
-                    o.child = d;
+                    o.children.Add(d);
                     UpdateRanks(o);
                 }
                 else{
@@ -193,7 +198,7 @@ public class KruskalMaze : MonoBehaviour
             {
                 if (o.parent == o){
                     o.parent = d;
-                    d.child = o;
+                    d.children.Add(o);
                     UpdateRanks(d);
                 }
                 else{
@@ -207,7 +212,7 @@ public class KruskalMaze : MonoBehaviour
             if (o.parent == o)
             { //o and d have rank zero, each in own subset
                 o.parent = d;
-                d.child = o;
+                d.children.Add(o);
                 d.rank++;
             }
             else
@@ -251,25 +256,26 @@ public class KruskalMaze : MonoBehaviour
             
             int startingRank = fromOtoRoot[0].rank; //rank of old root
             fromOtoRoot[0].parent = fromOtoRoot[1];
-            fromOtoRoot[1].child = fromOtoRoot[0];
+            fromOtoRoot[0].children.Remove(fromOtoRoot[1]);
+            fromOtoRoot[1].children.Add(fromOtoRoot[0]);
 
-            bool hasChild = false;
+            //bool hasChild = false;
 
             //check if old root has any other children (if not, change its child to itself)
-            for(int i =0; i < tiles.Length; i++)
-            {
-                if(tiles[i] != fromOtoRoot[1] && tiles[i].parent == fromOtoRoot[0])
-                {
-                    hasChild = true;
-                    fromOtoRoot[0].child = tiles[i];
-                    break;
-                }
-            }
+            //for(int i =0; i < tiles.Length; i++)
+            //{
+                //if(tiles[i] != fromOtoRoot[1] && tiles[i].parent == fromOtoRoot[0])
+                //{
+                //    hasChild = true;
+                //    fromOtoRoot[0].children.Add(tiles[i]);
+                //    break;
+                //}
+            //}
 
-            if(hasChild == false)
-            {
-                fromOtoRoot[0].child = fromOtoRoot[0];
-            }
+            //if(hasChild == false)
+            //{
+            //    fromOtoRoot[0].children.Add(fromOtoRoot[0]);
+            //}
 
             for (int i = 1; i < fromOtoRoot.Count; i++)
             {
@@ -279,12 +285,13 @@ public class KruskalMaze : MonoBehaviour
                 if (i < fromOtoRoot.Count - 1) //update parents except for the oriignal origin
                 {
                     fromOtoRoot[i].parent = fromOtoRoot[i + 1];
-                    fromOtoRoot[i + 1].child = fromOtoRoot[i];
+                    fromOtoRoot[i].children.Remove(fromOtoRoot[i + 1]);
+                    fromOtoRoot[i + 1].children.Add(fromOtoRoot[i]);
                 }
             }
             Tile oldOrigin = fromOtoRoot[fromOtoRoot.Count - 1];
             oldOrigin.parent = d; //set origin's parent to destination
-            d.child = oldOrigin;
+            d.children.Add(oldOrigin);
 
             UpdateRanksSpecial(d, oldOrigin.rank + 1);
         }
@@ -295,16 +302,16 @@ public class KruskalMaze : MonoBehaviour
     private static List<Tile> GetChildren(Tile[] tiles)
     {
         
-        List<Tile> children = new List<Tile>();
+        List<Tile> deadends = new List<Tile>();
 
         for (int t = 0; t < tiles.Length; t++)
         {
-            if (tiles[t].child == tiles[t] || tiles[t].child == null)
+            if (tiles[t].children.Count == 0) //double check //tiles[t].children.Contains(tiles[t]) || 
             {
-                children.Add(tiles[t]);
+                deadends.Add(tiles[t]);
             }
         }
-        return children;
+        return deadends;
     }
 
     private static void ResetRanks(Tile[] tiles)
