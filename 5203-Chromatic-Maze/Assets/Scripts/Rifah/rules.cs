@@ -78,7 +78,8 @@ public class Rules : MonoBehaviour
     {
        
         defineRules();
-        selectChromosomes(movementRuleSets,colorRuleSets); //mutate and fitness are nested in crossover
+        int popSize = 10;//InputfromUNITY
+        selectChromosomes(movementRuleSets,colorRuleSets,popSize); //mutate and fitness are nested in crossover
 
     }
 
@@ -232,7 +233,7 @@ public class Rules : MonoBehaviour
     }
 
 
-    public void selectChromosomes(List<MovementRules> m, List<ColorRules> c)
+    public void selectChromosomes(List<MovementRules> m, List<ColorRules> c, int pop) //add each chromosome size param
     {
         System.Random randNum = new System.Random();
 
@@ -244,71 +245,139 @@ public class Rules : MonoBehaviour
         //int[] c1 = new int[7];
         //int[] c2 = new int[7]; //7 rules each time
 
-        List<int> c1 = new List<int>(7); //just adding the types to chromosomes
-        List<int> c2 = new List<int>(7);
+        //global list to keep track of all chromosomes
+
+        //global list containing all possible rules:
         List<int> allList = new List<int>();
 
         foreach (var item in movementRuleSets)
-         {
-           allList.Add(item.type);
-         }
-         foreach (var item in colorRuleSets)
-         {
+        {
             allList.Add(item.type);
-         }
-        
-        
-        List<int> usedIdx1 = new List<int>();
-        List<int> usedIdx2 = new List<int>();
-
-        //creating c1 and c2
-        for (int i = 0; i < c1.Count; i++)   //how long do we want each chromosome to be? a subset of allList
+        }
+        foreach (var item in colorRuleSets)
         {
-            int idx1 = randNum.Next(0,allList.Count); 
-            usedIdx1.Add(idx1); //avoiding duplicate rules in a chromosome
-
-            if (!usedIdx1.Contains(idx1))
-            {
-                c1.Add(allList[idx1]);
-            }
+            allList.Add(item.type);
         }
 
-        for (int i = 0; i < c2.Count; i++)   
+        List<int[]> ChrsList = new List<int[]>(pop);
+
+        for (int i = 0; i < pop; i++)
         {
-            int idx2 = randNum.Next(0, allList.Count);
-            usedIdx2.Add(idx2); 
-
-            if (!usedIdx2.Contains(idx2))
+            
+            int[] chr = new int[7];
+            List<int> usedIdx = new List<int>();
+         
+            for (int j = 0; j < chr.Length; j++)   //filling up each chromosome with rule types
             {
-                c2.Add(allList[idx2]);
+                int idx = randNum.Next(0, allList.Count);
+                usedIdx.Add(idx); //avoiding duplicate rules in a chromosome
+
+                if (!usedIdx.Contains(idx))
+                {
+                    chr[j]=allList[idx];
+                }
             }
+            ChrsList.Add(chr);
         }
-      
-        crossover(c1, c2);
-        
+        fitnessOne(ChrsList,pop);
 
 
+        //List<int> c1 = new List<int>(7); //just adding the types to chromosomes
+        //List<int> c2 = new List<int>(7);
+        //List<int> usedIdx1 = new List<int>();
+        //List<int> usedIdx2 = new List<int>();
+
+
+        ////creating c1 and c2
+        //for (int i = 0; i < c1.Count; i++)   //how long do we want each chromosome to be? a subset of allList
+        //{
+        //    int idx1 = randNum.Next(0,allList.Count); 
+        //    usedIdx1.Add(idx1); //avoiding duplicate rules in a chromosome
+
+        //    if (!usedIdx1.Contains(idx1))
+        //    {
+        //        c1.Add(allList[idx1]);
+        //    }
+        //}
+
+        //for (int i = 0; i < c2.Count; i++)   
+        //{
+        //    int idx2 = randNum.Next(0, allList.Count);
+        //    usedIdx2.Add(idx2); 
+
+        //    if (!usedIdx2.Contains(idx2))
+        //    {
+        //        c2.Add(allList[idx2]);
+        //    }
+        //}
+
+        //crossover(c1, c2);
+        //fitnessOne(c1, c2);
     }
 
-    public void crossover(List<int> c1, List<int> c2)
-    {
-        //crossover in the first half of c1 and c2
-       // int[] chromosomes = new int[c1.Count + c2.Count]; 
-        for (int i = 0; i < c1.Count/2; i++)
-        {
-            int x = c1[i];
-            c1[i] = c2[i];
-            c2[i] = x;
-        }
 
-        fitnessOne(c1, c2);
+
+    
+
+    //public void crossover(List<int> c1, List<int> c2)
+    //{
+    //    //crossover in the first half of c1 and c2
+    //   // int[] chromosomes = new int[c1.Count + c2.Count]; 
+    //    for (int i = 0; i < c1.Count/2; i++)
+    //    {
+    //        int x = c1[i];
+    //        c1[i] = c2[i];
+    //        c2[i] = x;
+    //    }
+
+    //    fitnessOne(c1, c2);
       
 
-    }
+   // }
 
 
-    public void fitnessOne(List<int> c1, List<int> c2)
+    public void fitnessOne(List<int[]> cList, int pop)
     {
+        List<int> fitVals = new List<int>(cList.Count);
+        int[,] fitvals = new int[pop, 2];
+
+        for (int i = 0; i < cList.Count; i++)//is arratlist count the length of which dimension?
+        {
+            
+            int fit = 1;
+            int[] uniqueTypes = new int[11]; //rule types , not using index 0, want to use index 1-10
+            for (int j = 0; j < cList[i].Length; j++) //check the variation in types
+            {
+                uniqueTypes[cList[i][j]]++; //incrementing the unique array with each rule type in a chromosome 
+            }
+            for (int z = 0; z < uniqueTypes.Length; z++)
+            {
+                if (uniqueTypes[z] != 0)
+                {
+                    fit = fit * uniqueTypes[z];
+                   
+                    //fitVals[0].Add(fit);
+                    
+                }
+            }
+            fitVals.Add(fit);//check ranks from here
+            if (fit == 1)
+            {
+                fitVals.Add(fit);
+                PassToMaze(cList[i]);
+            }
+
+        }
+
+
+
+
+
+
+
+
+
+
         //chromosome that has more different types of rules is a better fit rule.
 
         //fitness metrics : 1)variation in types , 2)too much or too less of only color rules/movement rules
