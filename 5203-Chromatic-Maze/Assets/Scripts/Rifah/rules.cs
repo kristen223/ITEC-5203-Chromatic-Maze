@@ -74,7 +74,7 @@ public class Rules : MonoBehaviour
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
     public List<ColorRules> colorRuleSets = new List<ColorRules>();
 
-    void start()
+    void Start()
     {
        
         defineRules();
@@ -232,7 +232,7 @@ public class Rules : MonoBehaviour
     }
 
 
-    public void selectChromosomes(MovementRules m, ColorRules c)
+    public void selectChromosomes(List<MovementRules> m, List<ColorRules> c)
     {
         System.Random randNum = new System.Random();
 
@@ -305,7 +305,6 @@ public class Rules : MonoBehaviour
       
 
     }
-
 
 
     public void fitnessOne(List<int> c1, List<int> c2)

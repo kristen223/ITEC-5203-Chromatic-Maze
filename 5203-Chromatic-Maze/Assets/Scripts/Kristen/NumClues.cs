@@ -5,10 +5,12 @@ using UnityEngine.UI;
 
 public class NumClues : MonoBehaviour
 {
-
+    
     [HideInInspector] private static int width;
     [HideInInspector] private static int height;
 
+
+    
     public static void SetClues(Tile[] tiles)
     {
         width = GenerateGrid.wdth;
