@@ -9,10 +9,37 @@ public class Tile : MonoBehaviour
     public GameObject tilepfab;
     public Material colour;
 
+    //one will be null
+    public MovementRules mRule;
+    public ColorRules cRule;
+
+    public int ruleType;
+    public bool jumpN;
+    public bool jumpS;
+    public bool jumpE;
+    public bool jumpW;
+    public bool jumpTwoN;
+    public bool jumpTwoS;
+    public bool jumpTwoE;
+    public bool jumpTwoW;
+
     public Tile parent;
     public List<Tile> children; //may change to list later
     public int rank;
     public bool border;
+
+
+    private void Awake()
+    {
+        jumpN = false;
+        jumpS = false;
+        jumpE = false;
+        jumpW = false;
+        jumpTwoN = false;
+        jumpTwoS = false;
+        jumpTwoE = false;
+        jumpTwoW = false;
+    }
 
     //This find the root noed of the subset of t
     //Equivalent to Kruskal's Find Function

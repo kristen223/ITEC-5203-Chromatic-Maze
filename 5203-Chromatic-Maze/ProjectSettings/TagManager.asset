@@ -7,6 +7,7 @@ TagManager:
   - checker
   - tile
   - border
+  - cycle
   layers:
   - Default
   - TransparentFX

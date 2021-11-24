@@ -131,11 +131,6 @@ public class KruskalMaze : MonoBehaviour
         int childrenIndex = 0;
         int path = 0;
 
-        foreach(Tile t in leafs)
-        {
-            Debug.Log(t);
-        }
-
         LongestPath LP = new LongestPath();
         LP = RanksAndPath(leafs, subset, childrenIndex, LP, path);
         LP.entrance.transform.Find("triangle-WHITE").gameObject.GetComponent<SpriteRenderer>().enabled = true;
@@ -390,7 +385,7 @@ public class KruskalMaze : MonoBehaviour
         List<Wall> newTree = new List<Wall>(tree);
         List<Tile> newDends = new List<Tile>(leafs);
 
-        //Ensuring cycles won't be added at entrance and exit points
+        //Ensuring cycles won't be added at entrance and exit points (unless another deadend is beside it and all other deadends wiht longer distance from solution path don't work)
         if (leafs.Contains(longestP.entrance)) {
             leafs.Remove(longestP.entrance);
         }
@@ -398,23 +393,28 @@ public class KruskalMaze : MonoBehaviour
             leafs.Remove(longestP.exit);
         }
 
-        //Dictioanry of dead-ends and the path lenght from the dead-end to the solution path
-        Dictionary<Tile, int> dict = new Dictionary<Tile, int>();
+        //1. Create a list of dead-ends and the path length from the dead-end to the solution path
+        //Dictionary<Tile, int> dict = new Dictionary<Tile, int>();
+        List<KeyValuePair<Tile, int>> orderedList = new List<KeyValuePair<Tile, int>>();
 
-        //Add all the leafs and paths to the dictioanry
-        for(int i = 0; i < leafs.Count; i++)
-        {
-            dict.Add(leafs[i], GetPathLength(leafs[i], longestP.path));
+        //2. add all the tiles (dead-ends) and paths to the dictioanry
+        for (int i = 0; i < leafs.Count; i++)
+        {  
+            orderedList.Add(new KeyValuePair<Tile, int>(leafs[i], GetPathLength(leafs[i], longestP.path)));
+            //dict.Add(leafs[i], GetPathLength(leafs[i], longestP.path));
         }
 
-        List<KeyValuePair<Tile, int>> orderedList = dict.ToList();
+        //3. Order list from longest path (to solution path) to shortest
+        //List<KeyValuePair<Tile, int>> orderedList = dict.ToList();
         orderedList.Sort((pair1, pair2) => pair1.Value.CompareTo(pair2.Value));
         orderedList.Reverse();
 
+        //4. Get a list of the dead ends only (in order of path length)
         Dictionary<Tile, int> orderedDict = orderedList.ToDictionary(x => x.Key, x => x.Value);
         List<Tile> orderedLeafs = new List<Tile>(orderedDict.Keys.ToList()); //list of dead-ends in order
 
-        for (int i = 0; i < orderedLeafs.Count; i++) //flip these two for loops around
+        //4. Go through ordered list of dead-ends
+        for (int i = 0; i < orderedLeafs.Count; i++)
         {
             Tile leaf = orderedLeafs[i];
             Tile parent = orderedLeafs[i].parent;
@@ -486,6 +486,7 @@ public class KruskalMaze : MonoBehaviour
 
                                             Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
+                                            e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
                                             addedCycles++;
@@ -548,6 +549,7 @@ public class KruskalMaze : MonoBehaviour
 
                                             Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
+                                            e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
                                             addedCycles++;
@@ -599,6 +601,7 @@ public class KruskalMaze : MonoBehaviour
                         orderedAdjacent[0].destination.children.Add(orderedAdjacent[0].origin);
 
                         orderedAdjacent[0].disableEdge(); //remove wall
+                        orderedAdjacent[0].tag = "cycle";
                         EdgesWithWalls.Remove(orderedAdjacent[0]);
                         newTree.Add(orderedAdjacent[0]); //add edge to the tree (no longer a mst)
                         addedCycles++;
@@ -635,6 +638,7 @@ public class KruskalMaze : MonoBehaviour
             randEdge.origin.children.Add(randEdge.destination);
             randEdge.destination.children.Add(randEdge.origin);
             randEdge.disableEdge(); //remove a random wall
+            randEdge.tag = "cycle";
             tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
             EdgesWithWalls.Remove(randEdge);
 

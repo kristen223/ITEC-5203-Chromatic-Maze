@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
         cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
 
         sText = GameObject.Find("SCount").GetComponent<Text>();
-        sCount = maze.LP.length - 1; //two extra steps
+        sCount = maze.LP.length - 1; //no extra steps
         sText.text = sCount.ToString();
 
         bText = GameObject.Find("BCount").GetComponent<Text>();
@@ -62,7 +62,8 @@ public class PlayerController : MonoBehaviour
             message.text = "Winner!";
         }
 
-        //Game Over - reached dead end and no undo's left
+        //Game Over - reached dead end, no undo's left, and is not a teleport tile
+        //**Add condition: if player.ruleType != 3 (is not teleport rule)
         if (bCount == 0 && maze.deadends.Contains(player))
         {
             gameOver.SetActive(true);
@@ -101,6 +102,17 @@ public class PlayerController : MonoBehaviour
     private void tappedOn(Collider2D tap)
     {
         Tile tapped = tap.gameObject.GetComponent<Tile>();
+        bool oneJump = false;
+        bool twoJump = false;
+
+        if(player.ruleType == 4)
+        {
+            oneJump = true;
+        }
+        else if (player.ruleType == 5)
+        {
+            twoJump = true;
+        }
 
         //Back Tracking
         if (previous.Count > 0 && previous.Peek() == tapped) //they want to back track
@@ -119,7 +131,7 @@ public class PlayerController : MonoBehaviour
                 //update current position
                 player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 player = tapped;
-                player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true; //comment out this line
 
                 //update step count
                 sCount++;
@@ -127,7 +139,8 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
+        //if they didn't tap on player, and this is their first move or they're not backtracking, and they tapped on an adjacent tile (must update with jump moves)
+        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
         {
             //check if checker is on tile
             if (tapped.tag == "checker")
@@ -139,7 +152,7 @@ public class PlayerController : MonoBehaviour
             previous.Push(player);
             
             //update current position
-            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
             player = tapped;
             player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
 
@@ -147,5 +160,100 @@ public class PlayerController : MonoBehaviour
             sCount--;
             sText.text = sCount.ToString();
         }
+
+        //check rule type, direction, colour variables etc. of player tile and compare tapped on tile to rule conditions
+        //MovementRules mr = player.mRule;
+        //ColorRules cr = player.cRule;
+        //if (mr != null) //a movement rule
+        //{
+        //    if (mr.type == 1) //Tmove
+        //    {
+        //        int first = mr.direction / 1000;
+        //        int second = mr.direction  % 1000 / 100;
+        //        int third = mr.direction % 100 / 10;
+        //        int fourth = mr.direction % 10;
+
+        //        if(first == 0) //Can't move North
+        //        {
+        //            //put long if statement here
+        //            Move(tapped);
+        //        }
+        //        else if(second == 0) //Can't move South
+        //        {
+        //            //put long if statement here
+        //            Move(tapped);
+        //        }
+        //        else if (third == 0) //Can't move East
+        //        {
+        //            //put long if statement here
+        //            Move(tapped);
+        //        }
+        //        else if (fourth == 0)//Can't move West
+        //        {
+        //            //put long if statement here
+        //            Move(tapped);
+        //        }
+
+        //        //Other option
+        //        int index;
+        //        foreach(int i in mr.direction)
+        //        {
+        //            if(i == 0)
+        //            {
+        //                index = mr.direction.IndexOf(i);
+        //                break;
+        //            }
+
+        //        }
+
+        //        switch (index)
+        //        {
+        //            case 0: //Can't move North
+        //                //put long if statement here
+        //                Move(tapped);
+        //                break;
+        //            case 1: //Can't move South
+        //                //put long if statement here
+        //                Move(tapped);
+        //                break;
+        //            case 2: //Can't move East
+        //                //put long if statement here
+        //                Move(tapped);
+        //                break;
+        //            case 3: //Can't move West
+        //                //put long if statement here
+        //                Move(tapped);
+        //                break;
+        //        }
+
+        //    }
+        //    if(mr.type == 2) //blank
+        //    {
+        //        //same as above if statement
+        //    }
+
+        //}
+        //I may want to update the parent/child stuff so it keeps track of whic tile is directly N S E or W of a given tile (or I just get them from their names in the scene)
     }
+
+    //private void Move(Tile tapped)
+    //{
+    //    //check if checker is on tile
+    //    if (tapped.tag == "checker")
+    //    {
+    //        cCount++;
+    //        cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+    //    }
+
+    //    previous.Push(player);
+
+    //    //update current position
+    //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
+    //    player = tapped;
+    //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+
+    //    //update step count
+    //    sCount--;
+    //    sText.text = sCount.ToString();
+    //}
 }

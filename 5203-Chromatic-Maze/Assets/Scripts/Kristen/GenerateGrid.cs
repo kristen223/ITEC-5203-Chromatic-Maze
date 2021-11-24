@@ -72,6 +72,40 @@ public class GenerateGrid : MonoBehaviour
                     tile.GetComponent<Tile>().border = false;
                 }
 
+                //Setting Jump Bools
+                if(y <= height -2)
+                {
+                    tile.GetComponent<Tile>().jumpN = true;
+                }
+                if (y >= 3)
+                {
+                    tile.GetComponent<Tile>().jumpS = true;
+                }
+                if (x <= width - 2)
+                {
+                    tile.GetComponent<Tile>().jumpE = true;
+                }
+                if (x >= 3)
+                {
+                    tile.GetComponent<Tile>().jumpW = true;
+                }
+                if (y <= height - 3)
+                {
+                    tile.GetComponent<Tile>().jumpTwoN = true;
+                }
+                if (y >= 4)
+                {
+                    tile.GetComponent<Tile>().jumpTwoS = true;
+                }
+                if (x <= width - 3)
+                {
+                    tile.GetComponent<Tile>().jumpTwoE = true;
+                }
+                if (x >= 4)
+                {
+                    tile.GetComponent<Tile>().jumpTwoW = true;
+                }
+
                 //TEMPORARY - DELETE LATER
                 Material mat = (Material)colours[Random.Range(0, colours.Length)];
                 tile.GetComponent<SpriteRenderer>().material.shader = mat.shader;
