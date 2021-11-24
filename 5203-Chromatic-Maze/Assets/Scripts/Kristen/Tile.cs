@@ -7,11 +7,12 @@ public class Tile : MonoBehaviour
 {
     //The Vertex
     public GameObject tilepfab;
-    public Material colour;
 
-    //one will be null
-    public MovementRules mRule;
+    
+    public MovementRules mRule;//one will be null
     public colourRules cRule;
+    public bool moveRule;
+    public int colour;
 
     public int ruleType;
     public bool jumpN;
@@ -39,6 +40,7 @@ public class Tile : MonoBehaviour
         jumpTwoS = false;
         jumpTwoE = false;
         jumpTwoW = false;
+        moveRule = false;
     }
 
     //This find the root noed of the subset of t

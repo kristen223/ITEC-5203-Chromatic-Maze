@@ -39,6 +39,9 @@ public class KruskalMaze : MonoBehaviour
         public LongestPath LP;
         public Graph tree;
         public List<Tile> deadends; //includes the cycle ones (can be removed easily)
+        public Tile[] tiles;
+        public int h;
+        public int w;
     }
 
     public struct LongestPath
@@ -151,6 +154,9 @@ public class KruskalMaze : MonoBehaviour
         maze = AddCycles(cycles, mst, allEdges, leafs, LP);
         maze.tree.numVertices = graph.numVertices;
         maze.LP = LP;
+        maze.tiles = subset;
+        maze.h = GenerateGrid.hght;
+        maze.w = GenerateGrid.wdth;
 
         return maze;
     }

@@ -23,21 +23,21 @@ public class AssignColour : MonoBehaviour
      * Or could traverse from root node to every child (until child rank == 0) < extra condition needed because of cycles
      */
 
-    //**When you place a colour, set the rule type int of the tile
+    //**When you place a colour, set the rule type, moveRUle bool, colour int, and rule of the tile
     // When placing jump colour, check if that tile's jump bools are true
+    //blank spaces can only be placed at corss sections
 
     private KruskalMaze.Maze maze;
-    private Tile[] tiles; //array of the tile components of the tile game objects
-    private List<MovementRules> mRules;
-    private List<colourRules> cRules;
+    public static List<MovementRules> mRules;
+    public static List<colourRules> cRules;
 
     //may want to split this into two lists?
-    private List<KeyValuePair<int, int>> includes; //first in is index of rule in RuleSet; second int is target colour of rule
+    public static List<KeyValuePair<int, int>> includeRules; //first int is index of rule in RuleSet; second int is the rule's type
+    public static List<KeyValuePair<int, int>> excludeRules;
 
     // Start is called before the first frame update
     void Start()
     {
-        tiles = GenerateGrid.vertices;
         maze = GenerateGrid.maze;
         cRules = new List<colourRules>();
         mRules = new List<MovementRules>();
@@ -49,16 +49,23 @@ public class AssignColour : MonoBehaviour
         mRules = mr;
         cRules = cr;
 
+        //INCLUDE: once you've landed on the src colour, boolean becomes true and you can move onto target colour
+        //EXCLUDE: once you've landed on the src colour, boolean becomes true and you cannot move onto the target colour
+
         foreach (colourRules rule in cRules)
         {
-            if(rule.type == 8 || rule.type == 9) //an include or exclude rule
+            if(rule.type == 8) //an include or exclude rule
             {
-                includes.Add(new KeyValuePair<int, int>(cRules.IndexOf(rule), rule.target));
+                includeRules.Add(new KeyValuePair<int, int>(cRules.IndexOf(rule), rule.type));
+            }
+            else if(rule.type == 9)
+            {
+                excludeRules.Add(new KeyValuePair<int, int>(cRules.IndexOf(rule), rule.type));
             }
         }
 
 
-        for (int t = 0; t < tiles.Length; t++) //change this to traverse maze in certain way
+        for (int t = 0; t < maze.tiles.Length; t++) //change this to traverse maze in certain way
         {
 
 
