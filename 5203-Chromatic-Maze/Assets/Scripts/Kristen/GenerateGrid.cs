@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -75,7 +75,7 @@ public class GenerateGrid : MonoBehaviour
                 //TEMPORARY - DELETE LATER
                 Material mat = (Material)colours[Random.Range(0, colours.Length)];
                 tile.GetComponent<SpriteRenderer>().material.shader = mat.shader;
-                tile.GetComponent<SpriteRenderer>().material.color = mat.color;
+                tile.GetComponent<SpriteRenderer>().material.colour = mat.colour;
 
                 tiles[counter] = tile;
 

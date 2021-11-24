@@ -9,7 +9,7 @@ public struct MovementRules
     public int index;
     public int direction; //N,S,E,W=1111,  dont care=-1
     public int distance; //dont care = -1
-    public int color; //-1 means dont care , 1=yellow, 2=orange, 3=red, 4=green, 5=blue, 6=purple
+    public int colour; //-1 means dont care , 1=yellow, 2=orange, 3=red, 4=green, 5=blue, 6=purple
     public int type; //assigning not done
 
     public static implicit operator MovementRules(List<MovementRules> v)
@@ -18,7 +18,7 @@ public struct MovementRules
     }
 }
 
-public struct ColorRules  
+public struct colourRules  
 {
     public int index;
     public bool inclusion;
@@ -26,7 +26,7 @@ public struct ColorRules
     public int target;
     public int type;//assigning not done 
 
-    public static implicit operator ColorRules(List<ColorRules> v)
+    public static implicit operator colourRules(List<colourRules> v)
     {
         throw new NotImplementedException();
     }
@@ -54,34 +54,34 @@ public class Rules : MonoBehaviour
     public MovementRules jumpTwo;
     public MovementRules warmTemp;
     public MovementRules coldTemp;
-    public ColorRules includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
-    public ColorRules includePR;//same as above
-    public ColorRules includeOG;
-    public ColorRules includeGR;
-    public ColorRules includeRB;
-    public ColorRules includeYP;//more combination possible
-    public ColorRules excludeR;
-    public ColorRules excludeO;
-    public ColorRules excludeY;
-    public ColorRules excludeB;
-    public ColorRules excludeG;
-    public ColorRules excludeP;
-    public ColorRules blockY;
-    public ColorRules blockO;
-    public ColorRules blockR;
-    public ColorRules blockG;
-    public ColorRules blockB;
-    public ColorRules blockP;
+    public colourRules includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
+    public colourRules includePR;//same as above
+    public colourRules includeOG;
+    public colourRules includeGR;
+    public colourRules includeRB;
+    public colourRules includeYP;//more combination possible
+    public colourRules excludeR;
+    public colourRules excludeO;
+    public colourRules excludeY;
+    public colourRules excludeB;
+    public colourRules excludeG;
+    public colourRules excludeP;
+    public colourRules blockY;
+    public colourRules blockO;
+    public colourRules blockR;
+    public colourRules blockG;
+    public colourRules blockB;
+    public colourRules blockP;
 
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
-    public List<ColorRules> colorRuleSets = new List<ColorRules>();
+    public List<colourRules> colourRuleSets = new List<colourRules>();
 
     void Start()
     {
        
         defineRules();
         int popSize = 10;//InputfromUNITY
-        selectChromosomes(movementRuleSets,colorRuleSets,popSize); //mutate and fitness are nested in crossover
+        selectChromosomes(movementRuleSets,colourRuleSets,popSize); //mutate and fitness are nested in crossover
 
     }
 
@@ -92,95 +92,95 @@ public class Rules : MonoBehaviour
         Tmove.index = 0;
         Tmove.direction = 1011;
         Tmove.distance = 1;
-        Tmove.color = -1;
-        Tmove.type = 1;
+        Tmove.colour = -1;
+        Tmove.type = 0;
         movementRuleSets.Add(Tmove);
 
         blank.index = 1;
         blank.direction = 1111;
         blank.distance = 1;
-        blank.color = -1;
-        blank.type = 2;
+        blank.colour = -1;
+        blank.type = 1;
         movementRuleSets.Add(blank);
 
         teleportB.index = 3;
         teleportB.direction = -1;
         teleportB.distance = -1;
-        teleportB.color = 5;
-        teleportB.type = 3;
+        teleportB.colour = 5;
+        teleportB.type = 2;
         movementRuleSets.Add(teleportB);
 
         teleportP.index = 4;
         teleportP.direction = -1;
         teleportP.distance = -1;
-        teleportP.color = 6;
-        teleportP.type = 3;
+        teleportP.colour = 6;
+        teleportP.type = 2;
         movementRuleSets.Add(teleportP);
 
         teleportG.index = 5;
         teleportG.direction = -1;
         teleportG.distance = -1;
-        teleportG.color = 4;
-        teleportG.type = 3;
+        teleportG.colour = 4;
+        teleportG.type = 2;
         movementRuleSets.Add(teleportG);
 
         teleportR.index = 6;
         teleportR.direction = -1;
         teleportR.distance = -1;
-        teleportR.color = 3;
-        teleportR.type = 3;
+        teleportR.colour = 3;
+        teleportR.type = 2;
         movementRuleSets.Add(teleportR);
 
         teleportO.index = 7;
         teleportO.direction = -1;
         teleportO.distance = -1;
-        teleportO.color = 2;
-        teleportO.type = 3;
+        teleportO.colour = 2;
+        teleportO.type = 2;
         movementRuleSets.Add(teleportO);
 
         teleportY.index = 8;
         teleportY.direction = -1;
         teleportY.distance = -1;
-        teleportY.color = 1;
-        teleportY.type = 3;
+        teleportY.colour = 1;
+        teleportY.type = 2;
         movementRuleSets.Add(teleportY);
 
         jumpOne.index = 9;
         jumpOne.direction = 1111;
         jumpOne.distance = 2;
-        jumpOne.color = -1;
-        jumpOne.type = 4;
+        jumpOne.colour = -1;
+        jumpOne.type = 3;
         movementRuleSets.Add(jumpOne);
 
         jumpTwo.index = 10;
         jumpTwo.direction = 1111;
         jumpTwo.distance = 3;
-        jumpTwo.color = -1;
-        jumpTwo.type = 5;
+        jumpTwo.colour = -1;
+        jumpTwo.type = 4;
         movementRuleSets.Add(jumpTwo);
 
         warmTemp.index = 11;
         warmTemp.direction = 1111;
         warmTemp.distance = 1;
-        warmTemp.color = 1 | 2 | 3; //does this work or should it be seperate?
-        warmTemp.type = 6;
+        warmTemp.colour = 1 | 2 | 3; //does this work or should it be seperate?
+        warmTemp.type = 5;
         movementRuleSets.Add(warmTemp);
 
         coldTemp.index = 12;
         coldTemp.direction = 1111;
         coldTemp.distance = 1;
-        coldTemp.color = 4 | 5 | 6;
-        coldTemp.type = 7;
+        coldTemp.colour = 4 | 5 | 6;
+        coldTemp.type = 6;
         movementRuleSets.Add(coldTemp);
 
-        ColorRules includeBY;// if blue, goes to yellow
+        colourRules includeBY;// if blue, goes to yellow
         // int currentpos = 9999;//take from the maze/how to keep track of prevs position when maze is not built?
-        //if(currentpos.color==1)
+        //if(currentpos.colour==1)
         //{
         includeBY.index = 13;
         includeBY.src = 5;
         includeBY.target = 1;
-        includeBY.type = 8;
+        includeBY.type = 7;
         //create more of these
         includeBY.inclusion = true; //not using this anywhere
 
@@ -188,75 +188,75 @@ public class Rules : MonoBehaviour
         excludeR.src = 3;
         excludeR.target = 1 | 2 | 4 | 5 | 6;
         excludeR.inclusion = false;
-        excludeR.type = 9;
+        excludeR.type = 8;
         //add to the list
 
         excludeO.index = 15;
         excludeO.src = 2;
         excludeO.target = 1 | 3 | 4 | 5 | 6;
         excludeO.inclusion = false;
-        excludeO.type = 9;
+        excludeO.type = 8;
 
         excludeY.index = 16;
         excludeY.src = 1;
         excludeY.target = 3 | 2 | 4 | 5 | 6;
         excludeY.inclusion = false;
-        excludeY.type = 9;
+        excludeY.type = 8;
 
         excludeB.index = 17;
         excludeB.src = 5;
         excludeB.target = 1 | 2 | 4 | 3 | 6;
         excludeB.inclusion = false;
-        excludeB.type = 9;
+        excludeB.type = 8;
 
         excludeG.index = 18;
         excludeG.src = 4;
         excludeG.target = 1 | 2 | 3 | 5 | 6;
         excludeG.inclusion = false;
-        excludeG.type = 9;
+        excludeG.type = 8;
 
         excludeP.index = 19;
         excludeP.src = 6;
         excludeP.target = 1 | 2 | 4 | 5 | 3;
         excludeP.inclusion = false;
-        excludeP.type = 9;
+        excludeP.type = 8;
 
         blockY.index = 20;
         blockY.target=2 | 3 | 4 | 5 | 6;
-        blockY.type = 10;
+        blockY.type = 9;
 
         blockO.index = 21;
         blockO.target = 1 | 3 | 4 | 5 | 6;
-        blockO.type = 10;
+        blockO.type = 9;
 
         blockR.index = 22;
         blockR.target = 1 | 2 | 4 | 5 | 6;
-        blockR.type = 10;
+        blockR.type = 9;
 
         blockG.index = 23;
         blockG.target= 1 | 2 | 3 | 5 | 6;
-        blockG.type = 10;
+        blockG.type = 9;
 
         blockB.index = 24;
         blockB.target= 1 | 2 | 3 | 4 | 6;
-        blockB.type = 10;
+        blockB.type = 9;
 
         blockP.index = 25;
         blockP.target = 1 | 2 | 3 | 4 | 5; //src and inclusion not defined yet
-        blockP.type = 10;
+        blockP.type = 9;
 
 
     }
 
 
-    public void selectChromosomes(List<MovementRules> m, List<ColorRules> c, int pop) //add each chromosome size param
+    public void selectChromosomes(List<MovementRules> m, List<colourRules> c, int pop) //add each chromosome size param
     {
         System.Random randNum = new System.Random();
 
 
         // List<object> c1 = new List<object>();
         //List<object> c2 = new List<object>();
-        //List<object> allList = movementRuleSets.Cast<object>().Concat(colorRuleSets).ToList();
+        //List<object> allList = movementRuleSets.Cast<object>().Concat(colourRuleSets).ToList();
 
         //int[] c1 = new int[7];
         //int[] c2 = new int[7]; //7 rules each time
@@ -270,7 +270,7 @@ public class Rules : MonoBehaviour
         {
             allList.Add(item.type);
         }
-        foreach (var item in colorRuleSets)
+        foreach (var item in colourRuleSets)
         {
             allList.Add(item.type);
         }
@@ -361,32 +361,60 @@ public class Rules : MonoBehaviour
     public void fitnessOne(List<Hashtable> cList, int pop)
     {
        // List<int> fitVals = new List<int>(cList.Count);
-        int[] fitvals = new int[pop];
-
-        for (int i = 0; i < cList.Count; i++)//is arratlist count the length of which dimension?
+        //int[] fitvals = new int[pop];
+        Hashtable fitVals = new Hashtable();
+        for (int i = 0; i < cList.Count; i++)//clist contains all chromosomes
         {
 
             int fit = 1;
-            int[] uniqueTypes = new int[11]; //rule types , not using index 0, want to use index 1-10
+            int[] uniqueTypes = new int[10]; //10 rule types
             for (int j = 0; j < cList.Count; j++) //check the variation in types
             {
-                foreach (int key in cList[j].Keys) //clist[j] is a hashtable
+                /*foreach (int key in cList[j].Keys) //clist[j] is a hashtable
                 {
                     x=cList[key];
-                    uniqueTypes[cList[j].Values]++;
+                   
+                }*/
+
+                ICollection valueColl = cList[j].Values; //types are stored in cList.Values
+                foreach (int v in valueColl)
+                {
+                    uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome
                 }
-                uniqueTypes[cList[j]]++; //incrementing the unique array with each rule type in a chromosome 
             }
+
             for (int z = 0; z < uniqueTypes.Length; z++)
             {
                 if (uniqueTypes[z] != 0)
                 {
                     fit = fit * uniqueTypes[z];
 
-                    //fitVals[0].Add(fit);
-
+                    fitVals.Add(i, fit);
                 }
             }
+        }
+        
+        ArrayList allfitvals = new ArrayList(fitVals.Values);
+        allfitvals.Sort();
+        print("The fitness values of the chromosomes ranked are:");
+        foreach(int x in allfitvals)
+        {
+            print(x);
+            if (x == 1)
+            {
+                //pass to maze
+               // fitVals.a
+            }
+        }
+       
+
+      /*  foreach (int v in fv)
+            {
+                uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome
+            }
+
+
+
             fitVals.Add(fit);//check ranks from here
             if (fit == 1)
             {
@@ -395,16 +423,16 @@ public class Rules : MonoBehaviour
             }
             else
             {
-                selectChromosomes(movementRuleSets, colorRuleSets, pop);
+                selectChromosomes(movementRuleSets, colourRuleSets, pop);
             }
 
         }
     
 
-
+        */
         //chromosome that has more different types of rules is a better fit rule.
 
-        //fitness metrics : 1)variation in types , 2)too much or too less of only color rules/movement rules
+        //fitness metrics : 1)variation in types , 2)too much or too less of only colour rules/movement rules
 
         //fitness = [chromosome[1] for chromosome in population ]
         //int fitc1 = 1;
@@ -461,7 +489,7 @@ public class Rules : MonoBehaviour
         //    }
         //    else
         //    {
-        //        selectChromosomes(movementRuleSets, colorRuleSets);
+        //        selectChromosomes(movementRuleSets, colourRuleSets);
         //    }
         //}
         //else
@@ -473,7 +501,7 @@ public class Rules : MonoBehaviour
         //    }
         //    else
         //    {
-        //        selectChromosomes(movementRuleSets, colorRuleSets);
+        //        selectChromosomes(movementRuleSets, colourRuleSets);
         //    }
         }
 
