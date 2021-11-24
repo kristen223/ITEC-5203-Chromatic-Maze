@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,6 +8,7 @@ public class PlayerController : MonoBehaviour
 {
 
     public KruskalMaze.Maze maze;
+    private Tile[] tiles;
     private Tile player;
     private Stack<Tile> previous;
     private List<Tile> solutionP;
@@ -51,6 +53,7 @@ public class PlayerController : MonoBehaviour
         gameOver.SetActive(false);
 
         previous = new Stack<Tile>();
+        tiles = GenerateGrid.vertices;
     }
 
     void Update()
@@ -97,22 +100,11 @@ public class PlayerController : MonoBehaviour
                 tappedOn(tap);
             }
         }
-    }
+    } //checkPath
 
     private void tappedOn(Collider2D tap)
     {
         Tile tapped = tap.gameObject.GetComponent<Tile>();
-        bool oneJump = false;
-        bool twoJump = false;
-
-        if(player.ruleType == 4)
-        {
-            oneJump = true;
-        }
-        else if (player.ruleType == 5)
-        {
-            twoJump = true;
-        }
 
         //Back Tracking
         if (previous.Count > 0 && previous.Peek() == tapped) //they want to back track
@@ -122,12 +114,15 @@ public class PlayerController : MonoBehaviour
                 bCount--;
                 bText.text = bCount.ToString();
 
-                if(player.tag == "checker") //remove checker if applicable
+                if (player.tag == "checker") //remove checker if applicable
                 {
                     cCount--;
                     cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
                 }
                 previous.Pop();
+                //go through previous list and check if include/exclude bools still apply
+
+
                 //update current position
                 player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 player = tapped;
@@ -139,6 +134,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //Delete later
         //if they didn't tap on player, and this is their first move or they're not backtracking, and they tapped on an adjacent tile (must update with jump moves)
         if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
         {
@@ -161,99 +157,244 @@ public class PlayerController : MonoBehaviour
             sText.text = sCount.ToString();
         }
 
-        //check rule type, direction, colour variables etc. of player tile and compare tapped on tile to rule conditions
-        //MovementRules mr = player.mRule;
-        //ColorRules cr = player.cRule;
-        //if (mr != null) //a movement rule
-        //{
-        //    if (mr.type == 1) //Tmove
-        //    {
-        //        int first = mr.direction / 1000;
-        //        int second = mr.direction  % 1000 / 100;
-        //        int third = mr.direction % 100 / 10;
-        //        int fourth = mr.direction % 10;
 
-        //        if(first == 0) //Can't move North
-        //        {
-        //            //put long if statement here
-        //            Move(tapped);
-        //        }
-        //        else if(second == 0) //Can't move South
-        //        {
-        //            //put long if statement here
-        //            Move(tapped);
-        //        }
-        //        else if (third == 0) //Can't move East
-        //        {
-        //            //put long if statement here
-        //            Move(tapped);
-        //        }
-        //        else if (fourth == 0)//Can't move West
-        //        {
-        //            //put long if statement here
-        //            Move(tapped);
-        //        }
 
-        //        //Other option
-        //        int index;
-        //        foreach(int i in mr.direction)
-        //        {
-        //            if(i == 0)
-        //            {
-        //                index = mr.direction.IndexOf(i);
-        //                break;
-        //            }
+        //Start here
+        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped)) //check that player can move and is not backtracking
+        {
+            MovementRules mr = player.mRule;
+            colourRules cr = player.cRule;
+            if (tapped.moveRule == true) //player is on a movement rule
+            {
+                int pindex = Array.IndexOf(tiles, player); //index of player
+                int tindex = Array.IndexOf(tiles, tapped);
+                switch (mr.type)
+                {
+                    case 0: //TMOVE
+                            //Getting which direction they can't move
+                        int first = mr.direction / 1000;
+                        int second = mr.direction % 1000 / 100;
+                        int third = mr.direction % 100 / 10;
+                        int fourth = mr.direction % 10;
+                        if (first == 0) //Can't move North
+                        {
+                            int n = pindex + maze.w;
+                            if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
+                            {
+                                Move(tapped);
+                            }
+                        }
+                        else if (second == 0) //Can't move South
+                        {
+                            int s = pindex - maze.w;
+                            if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
+                            {
+                                Move(tapped);
+                            }
+                        }
+                        else if (third == 0) //Can't move East
+                        {
+                            int e = pindex + 1;
+                            if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
+                            {
+                                if (tapped == player.parent || player.children.Contains(tapped))
+                                {
+                                    Move(tapped);
+                                }
+                            }
+                            else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
+                            {
+                                Move(tapped);
+                            }
+                        }
+                        else if (fourth == 0)//Can't move West
+                        {
+                            int w = pindex - 1;
+                            if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
+                            {
+                                if (tapped == player.parent || player.children.Contains(tapped))
+                                {
+                                    Move(tapped);
+                                }
+                            }
+                            else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
+                            {
+                                Move(tapped);
+                            }
+                        }
+                        break;
 
-        //        }
+                    case 1: //BLANK
+                        if (tapped == player.parent || player.children.Contains(tapped)) //can move to any parent/child
+                        {
+                            Move(tapped);
+                        }
+                        break;
 
-        //        switch (index)
-        //        {
-        //            case 0: //Can't move North
-        //                //put long if statement here
-        //                Move(tapped);
-        //                break;
-        //            case 1: //Can't move South
-        //                //put long if statement here
-        //                Move(tapped);
-        //                break;
-        //            case 2: //Can't move East
-        //                //put long if statement here
-        //                Move(tapped);
-        //                break;
-        //            case 3: //Can't move West
-        //                //put long if statement here
-        //                Move(tapped);
-        //                break;
-        //        }
+                    case 2: //TELEPORT
+                        if (cr.inclusion == true) //can teleport there
+                        {
+                            Move(tapped);
+                        }
+                        break;
 
-        //    }
-        //    if(mr.type == 2) //blank
-        //    {
-        //        //same as above if statement
-        //    }
+                    case 3: //JUMP 1
+                        if (tindex == pindex + 2*maze.w) //if tapped on tile is two spaces North
+                        {
+                            if (player.jumpN == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex - 2 * maze.w) //if tapped on tile is two spaces South
+                        {
+                            if (player.jumpS == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex + 2) //if tapped on tile is two spaces East
+                        {
+                            if (player.jumpE == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex - 2) //if tapped on tile is two spaces West
+                        {
+                            if (player.jumpW == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        break;
 
-        //}
-        //I may want to update the parent/child stuff so it keeps track of whic tile is directly N S E or W of a given tile (or I just get them from their names in the scene)
+                    case 4: //JUMP 2
+                        if (tindex == pindex + 3 * maze.w) //if tapped on tile is three spaces North
+                        {
+                            if (player.jumpTwoN == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex - 3 * maze.w) //if tapped on tile is three spaces South
+                        {
+                            if (player.jumpTwoS == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex + 3) //if tapped on tile is three spaces East
+                        {
+                            if (player.jumpTwoE == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        else if (tindex == pindex - 3) //if tapped on tile is three spaces West
+                        {
+                            if (player.jumpTwoW == true) //if tile exists
+                            {
+                                Move(tapped);
+                                break;
+                            }
+                        }
+                        break;
+                         
+                    case 5: //WARM
+                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == 1 || tapped.colour == 2 || tapped.colour == 3)) //adjacent warm colour
+                        {
+                            Move(tapped);
+                        }
+                        break;
+
+                    case 6: //COOL
+                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == 4 || tapped.colour == 5 || tapped.colour == 6)) //adjacent cool colour
+                        {
+                            Move(tapped);
+                        }
+                        break;
+                }
+            }
+            else //player is on a colour rule
+            {
+                switch (cr.type)
+                {
+                    case 7: //INCLUDE
+                        //if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == player.cRule.target)) //can only move to adjecent tile that's target colour of rule
+                        //{
+                        //    Move(tapped);
+                        //}
+                        break;
+
+                    case 8: //EXCLUDE
+                        //if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.src)) //move to any adjecent colour except rule source colour
+                        //{
+                        //    Move(tapped);
+                        //}
+                        break;
+
+                    case 9: //BLOCK
+
+                        break;
+                }
+                //I may want to update the parent/child stuff so it keeps track of whic tile is directly N S E or W of a given tile (or I just get them from their names in the scene)
+            }
+        }
+
     }
 
-    //private void Move(Tile tapped)
-    //{
-    //    //check if checker is on tile
-    //    if (tapped.tag == "checker")
-    //    {
-    //        cCount++;
-    //        cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
-    //    }
+    private void Move(Tile tapped)
+    {
+        //Check inclusion bools and update
+        foreach (KeyValuePair<int, int> kv in AssignColour.includeRules) //for every include rule
+        {
+            if (tapped.colour == AssignColour.cRules[kv.Key].src)
+            {
+                AssignColour.cRules[kv.Key].inclusion = true;
+            }
+            if (tapped.colour == AssignColour.cRules[kv.Key].target && AssignColour.cRules[kv.Key].inclusion == false) //if source has not been visited yet
+            {
+                return; //can't move onto this tile at the moment
+            }
+        }
 
-    //    previous.Push(player);
+        //Check exclusion bools and update
+        foreach (KeyValuePair<int, int> kv in AssignColour.excludeRules)
+        {
+            if (tapped.colour == AssignColour.cRules[kv.Key].src)
+            {
+                AssignColour.cRules[kv.Key].inclusion = true;
+            }
+            if (tapped.colour == AssignColour.cRules[kv.Key].target && AssignColour.cRules[kv.Key].inclusion == true)
+            {
+                return; //can't move onto this because source colour was visited
+            }
+        }
 
-    //    //update current position
-    //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
-    //    player = tapped;
-    //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+        //check if checker is on tile
+        if (tapped.tag == "checker")
+        {
+            cCount++;
+            cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+        }
 
-    //    //update step count
-    //    sCount--;
-    //    sText.text = sCount.ToString();
-    //}
+        previous.Push(player);
+
+        //update current position
+        player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
+        player = tapped;
+        player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+
+        //update step count
+        sCount--;
+        sText.text = sCount.ToString();
+    }
 }
