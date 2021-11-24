@@ -11,7 +11,7 @@ public class Tile : MonoBehaviour
 
     //one will be null
     public MovementRules mRule;
-    public colourRules cRule;
+    public ColourRules cRule;
 
     public int ruleType;
     public bool jumpN;

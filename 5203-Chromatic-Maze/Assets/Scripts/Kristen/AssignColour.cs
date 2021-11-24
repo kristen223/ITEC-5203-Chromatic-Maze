@@ -29,7 +29,7 @@ public class AssignColour : MonoBehaviour
     private KruskalMaze.Maze maze;
     private Tile[] tiles; //array of the tile components of the tile game objects
     private List<MovementRules> mRules;
-    private List<colourRules> cRules;
+    private List<ColourRules> cRules;
 
     //may want to split this into two lists?
     private List<KeyValuePair<int, int>> includes; //first in is index of rule in RuleSet; second int is target colour of rule
@@ -39,17 +39,17 @@ public class AssignColour : MonoBehaviour
     {
         tiles = GenerateGrid.vertices;
         maze = GenerateGrid.maze;
-        cRules = new List<colourRules>();
+        cRules = new List<ColourRules>();
         mRules = new List<MovementRules>();
     }
 
     //not in start because other script needs to finish first
-    public void SetRules(List<MovementRules> mr, List<colourRules> cr)
+    public void SetRules(List<MovementRules> mr, List<ColourRules> cr)
     {
         mRules = mr;
         cRules = cr;
 
-        foreach (colourRules rule in cRules)
+        foreach (ColourRules rule in cRules)
         {
             if(rule.type == 8 || rule.type == 9) //an include or exclude rule
             {
