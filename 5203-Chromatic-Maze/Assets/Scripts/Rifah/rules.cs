@@ -275,26 +275,32 @@ public class Rules : MonoBehaviour
             allList.Add(item.type);
         }
 
-        List<int[]> ChrsList = new List<int[]>(pop);
+        List<Hashtable> ChrsList = new List<Hashtable>(pop);
+        Hashtable chr = new Hashtable();
+
 
         for (int i = 0; i < pop; i++)
         {
+
+            //List<ArrayList> chr = new List<ArrayList>(7);
+
             
-            int[] chr = new int[7];
             List<int> usedIdx = new List<int>();
          
-            for (int j = 0; j < chr.Length; j++)   //filling up each chromosome with rule types
+            for (int j = 0; j < chr.Count; j++)   //filling up each chromosome with rule types
             {
                 int idx = randNum.Next(0, allList.Count);
                 usedIdx.Add(idx); //avoiding duplicate rules in a chromosome
 
                 if (!usedIdx.Contains(idx))
                 {
-                    chr[j]=allList[idx];
+                    chr.Add(idx,allList[idx]); //adding the rule index and rule type to the chromosome
+                   // chr[j]=allList[idx];
                 }
             }
             ChrsList.Add(chr);
         }
+
         fitnessOne(ChrsList,pop);
 
 
@@ -352,19 +358,24 @@ public class Rules : MonoBehaviour
     // }
 
 
-    public void fitnessOne(List<int[]> cList, int pop)
+    public void fitnessOne(List<Hashtable> cList, int pop)
     {
-        List<int> fitVals = new List<int>(cList.Count);
-        int[,] fitvals = new int[pop, 2];
+       // List<int> fitVals = new List<int>(cList.Count);
+        int[] fitvals = new int[pop];
 
         for (int i = 0; i < cList.Count; i++)//is arratlist count the length of which dimension?
         {
 
             int fit = 1;
             int[] uniqueTypes = new int[11]; //rule types , not using index 0, want to use index 1-10
-            for (int j = 0; j < cList[i].Length; j++) //check the variation in types
+            for (int j = 0; j < cList.Count; j++) //check the variation in types
             {
-                uniqueTypes[cList[i][j]]++; //incrementing the unique array with each rule type in a chromosome 
+                foreach (int key in cList[j].Keys) //clist[j] is a hashtable
+                {
+                    x=cList[key];
+                    uniqueTypes[cList[j].Values]++;
+                }
+                uniqueTypes[cList[j]]++; //incrementing the unique array with each rule type in a chromosome 
             }
             for (int z = 0; z < uniqueTypes.Length; z++)
             {
