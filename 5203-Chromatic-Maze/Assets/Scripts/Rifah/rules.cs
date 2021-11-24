@@ -18,15 +18,16 @@ public struct MovementRules
     }
 }
 
-public struct colourRules  
+public struct ColourRules  
 {
     public int index;
     public bool inclusion;
     public int src;
     public int target;
+    public int notTarget;
     public int type;//assigning not done 
 
-    public static implicit operator colourRules(List<colourRules> v)
+    public static implicit operator ColourRules(List<ColourRules> v)
     {
         throw new NotImplementedException();
     }
@@ -54,27 +55,27 @@ public class Rules : MonoBehaviour
     public MovementRules jumpTwo;
     public MovementRules warmTemp;
     public MovementRules coldTemp;
-    public colourRules includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
-    public colourRules includePR;//same as above
-    public colourRules includeOG;
-    public colourRules includeGR;
-    public colourRules includeRB;
-    public colourRules includeYP;//more combination possible
-    public colourRules excludeR;
-    public colourRules excludeO;
-    public colourRules excludeY;
-    public colourRules excludeB;
-    public colourRules excludeG;
-    public colourRules excludeP;
-    public colourRules blockY;
-    public colourRules blockO;
-    public colourRules blockR;
-    public colourRules blockG;
-    public colourRules blockB;
-    public colourRules blockP;
-
+    public ColourRules includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
+    public ColourRules includePR;//same as above
+    public ColourRules includeOG;
+    public ColourRules includeGR;
+    public ColourRules includeRB;
+    public ColourRules includeYP;//more combination possible
+    public ColourRules excludeR;
+    public ColourRules excludeO;
+    public ColourRules excludeY;
+    public ColourRules excludeB;
+    public ColourRules excludeG;
+    public ColourRules excludeP;
+    public ColourRules blockY;
+    public ColourRules blockO;
+    public ColourRules blockR;
+    public ColourRules blockG;
+    public ColourRules blockB;
+    public ColourRules blockP;
+    public ColourRules checkPath;
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
-    public List<colourRules> colourRuleSets = new List<colourRules>();
+    public List<ColourRules> colourRuleSets = new List<ColourRules>();
 
     void Start()
     {
@@ -173,7 +174,7 @@ public class Rules : MonoBehaviour
         coldTemp.type = 6;
         movementRuleSets.Add(coldTemp);
 
-        colourRules includeBY;// if blue, goes to yellow
+        ColourRules includeBY;// if blue, goes to yellow
         // int currentpos = 9999;//take from the maze/how to keep track of prevs position when maze is not built?
         //if(currentpos.colour==1)
         //{
@@ -249,7 +250,7 @@ public class Rules : MonoBehaviour
     }
 
 
-    public void selectChromosomes(List<MovementRules> m, List<colourRules> c, int pop) //add each chromosome size param
+    public void selectChromosomes(List<MovementRules> m, List<ColourRules> c, int pop) //add each chromosome size param
     {
         System.Random randNum = new System.Random();
 
@@ -397,112 +398,26 @@ public class Rules : MonoBehaviour
         ArrayList allfitvals = new ArrayList(fitVals.Values);
         allfitvals.Sort();
         print("The fitness values of the chromosomes ranked are:");
-        foreach(int x in allfitvals)
+        foreach(int x in allfitvals) 
         {
-            print(x);
-            if (x == 1)
-            {
+            print(x);//ranks
+            //if (x == 1)
+            //{
                 //pass to maze
-               // fitVals.a
+                // fitVals.a
+                //finalRules(cList[i]);
+            //}
+        }
+        foreach(int val in fitVals)
+        {
+            if (val == 1)
+            {
+                //finalRules();//key of this val
             }
         }
        
 
-      /*  foreach (int v in fv)
-            {
-                uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome
-            }
-
-
-
-            fitVals.Add(fit);//check ranks from here
-            if (fit == 1)
-            {
-                fitVals.Add(fit);
-                finalRules(cList[i],allList);
-            }
-            else
-            {
-                selectChromosomes(movementRuleSets, colourRuleSets, pop);
-            }
-
-        }
-    
-
-        */
-        //chromosome that has more different types of rules is a better fit rule.
-
-        //fitness metrics : 1)variation in types , 2)too much or too less of only colour rules/movement rules
-
-        //fitness = [chromosome[1] for chromosome in population ]
-        //int fitc1 = 1;
-        //int fitc2 = 1;
-        
-        //int t=0;
-        //int[] uniqueTypesc1 = new int[11]; //rule types , not using index 0, want to use index 1-10
-        //for (int i = 0; i < c1.Count; i++) //check the variation in types
-        //{
-        //    t = c1[i];
-        //    uniqueTypesc1[t]++; //incrementing the rule types using rule types as index
-        //}
-
-        //for (int i = 0; i < uniqueTypesc1.Length; i++)
-        //{
-        //    if (uniqueTypesc1[i] != 0)
-        //    {
-        //        fitc1 = fitc1 * uniqueTypesc1[i];
-        //    }
-        //}
-
-
-
-
-       // print("fitness 1 : all rule types are used only once");
-        //print("fitness value 1-2 is good. Higher value means same type of rule is being repeated more than twice, which is not good.");
-        //print("fitness value is " + fit1);
-
-
-
-        //int s = 0;
-        //int[] uniqueTypesc2 = new int[11]; //rule types , not using index 0, want to use index 1-10
-        //for (int i = 0; i < c2.Count; i++) //check the variation in types
-        //{
-        //    s = c2[i];
-        //    uniqueTypesc2[s]++; //incrementing the rule types using rule types as index
-        //}
-
-        //for (int i = 0; i < uniqueTypesc2.Length; i++)
-        //{
-
-        //    if (uniqueTypesc2[i] != 0)
-        //    {
-        //        fitc2 = fitc2 * uniqueTypesc2[i];
-        //    }
-        //}
-
-        //if (fitc1 < fitc2)
-        //{
-        //    if (fitc1 <= 2)
-        //    {
-        //        print("c1 selected with fitness value "+ fitc1);
-        //        //pass c1 to maze
-        //    }
-        //    else
-        //    {
-        //        selectChromosomes(movementRuleSets, colourRuleSets);
-        //    }
-        //}
-        //else
-        //{
-        //    if (fitc2 <= 2)
-        //    {
-        //        print("c2 selected with fitness value " + fitc2);
-        //        //pass c2 to maze
-        //    }
-        //    else
-        //    {
-        //        selectChromosomes(movementRuleSets, colourRuleSets);
-        //    }
+     
         }
 
     public void finalRules(List<int> clist,List <int> allList)
