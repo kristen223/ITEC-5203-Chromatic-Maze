@@ -8,9 +8,9 @@ public class Tile : MonoBehaviour
     //The Vertex
     public GameObject tilepfab;
 
-    
-    public MovementRules mRule;//one will be null
-    public colourRules cRule;
+    //one will be null
+    public MovementRules mRule;
+    public ColourRules cRule;
     public bool moveRule;
     public int colour;
 
