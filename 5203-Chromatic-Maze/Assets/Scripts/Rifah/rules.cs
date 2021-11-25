@@ -83,12 +83,14 @@ public class Rules : MonoBehaviour
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
     public List<ColourRules> colourRuleSets = new List<ColourRules>();
 
+    public int popSize;
+
+
     void Start()
     {
        
         defineRules();
-        int popSize = 10;//InputfromUNITY
-        selectChromosomes(movementRuleSets,colourRuleSets,popSize); //mutate and fitness are nested in crossover
+        selectChromosomes(movementRuleSets,colourRuleSets,popSize); //mutate and fitness are nested inside
 
     }
 
@@ -301,7 +303,7 @@ public class Rules : MonoBehaviour
 
         //global list to keep track of all chromosomes
 
-        //global list containing all possible rules:
+        //list containing all possible rules:
         List<int> allList = new List<int>();
 
         foreach (var item in movementRuleSets)
@@ -436,8 +438,10 @@ public class Rules : MonoBehaviour
 
         //printing the ranks here:
         ArrayList allfitvals = new ArrayList(fitVals.Values);
+        print(fitVals.Keys.ToString());
         allfitvals.Sort();
         print("The fitness values of the chromosomes ranked are:");
+       // print(allfitvals[2]);
         foreach(int x in allfitvals) 
         {
             print("fitness value: "+ x);//ranks
@@ -450,7 +454,7 @@ public class Rules : MonoBehaviour
         }
         
         int finalFitness=(int)allfitvals[0]; //the first value in the sorted arraylist is the best fit
-
+        print(finalFitness);
         int min = 1;
         int finalCIdx=-1;//chromosome index, not rule!
         foreach (int y in fitVals.Values)
@@ -458,6 +462,7 @@ public class Rules : MonoBehaviour
             if (y == min)
             {
                 finalCIdx = y;
+                print(finalCIdx);
             }
         }
 
@@ -485,7 +490,7 @@ public class Rules : MonoBehaviour
 
         for (int i = 0; i < finalIdxs.Length; i++)
         {
-            if (finalIdxs[i] <= 15)
+            if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed
             {
                 mr.Add(movementRuleSets[i]);
             }
