@@ -189,7 +189,7 @@ public class Rules : MonoBehaviour
         includeBY.target = 1;
         includeBY.type = 7;
         //create more of these
-        includeBY.inclusion = true; //not using this anywhere
+        includeBY.inclusion = false; //not using this anywhere
 
         excludeR.index = 14;
         excludeR.src = 3;
@@ -448,6 +448,7 @@ public class Rules : MonoBehaviour
             if (val == 1)
             {
                 //finalRules();//key of this val
+
             }
         }
        
