@@ -43,7 +43,10 @@ public class Rules : MonoBehaviour
 {
 
     //global variables => rules 
-    public MovementRules Tmove;
+    public MovementRules TmoveU;
+    public MovementRules TmoveD;
+    public MovementRules TmoveL;
+    public MovementRules TmoveR;
     public MovementRules blank;
     public MovementRules teleportB;
     public MovementRules teleportP;
@@ -73,7 +76,10 @@ public class Rules : MonoBehaviour
     public ColourRules blockG;
     public ColourRules blockB;
     public ColourRules blockP;
-    public ColourRules checkPath;
+    public ColourRules checkPathYG;
+    public ColourRules checkPathOP;
+    public ColourRules checkPathBR;
+  
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
     public List<ColourRules> colourRuleSets = new List<ColourRules>();
 
@@ -90,12 +96,12 @@ public class Rules : MonoBehaviour
 
     public void defineRules()
     {
-        Tmove.index = 0;
-        Tmove.direction = 1011;
-        Tmove.distance = 1;
-        Tmove.colour = -1;
-        Tmove.type = 0;
-        movementRuleSets.Add(Tmove);
+        TmoveU.index = 0;
+        TmoveU.direction = 1011;
+        TmoveU.distance = 1;
+        TmoveU.colour = -1;
+        TmoveU.type = 0;
+        movementRuleSets.Add(TmoveU);
 
         blank.index = 1;
         blank.direction = 1111;
@@ -187,65 +193,94 @@ public class Rules : MonoBehaviour
 
         excludeR.index = 14;
         excludeR.src = 3;
-        excludeR.target = 1 | 2 | 4 | 5 | 6;
+        excludeR.notTarget = 3;
         excludeR.inclusion = false;
         excludeR.type = 8;
         //add to the list
 
         excludeO.index = 15;
-        excludeO.src = 2;
-        excludeO.target = 1 | 3 | 4 | 5 | 6;
+      
+        excludeO.notTarget = 2;
         excludeO.inclusion = false;
         excludeO.type = 8;
 
         excludeY.index = 16;
-        excludeY.src = 1;
-        excludeY.target = 3 | 2 | 4 | 5 | 6;
+      
+        excludeY.notTarget = 1;
         excludeY.inclusion = false;
         excludeY.type = 8;
 
         excludeB.index = 17;
-        excludeB.src = 5;
-        excludeB.target = 1 | 2 | 4 | 3 | 6;
+        excludeB.notTarget = 5;
         excludeB.inclusion = false;
         excludeB.type = 8;
 
         excludeG.index = 18;
-        excludeG.src = 4;
-        excludeG.target = 1 | 2 | 3 | 5 | 6;
+        excludeG.notTarget = 4;
         excludeG.inclusion = false;
         excludeG.type = 8;
 
         excludeP.index = 19;
-        excludeP.src = 6;
-        excludeP.target = 1 | 2 | 4 | 5 | 3;
+        excludeP.notTarget = 6;
         excludeP.inclusion = false;
         excludeP.type = 8;
 
         blockY.index = 20;
-        blockY.target=2 | 3 | 4 | 5 | 6;
+        blockY.notTarget = 1;
         blockY.type = 9;
 
         blockO.index = 21;
-        blockO.target = 1 | 3 | 4 | 5 | 6;
+        blockO.notTarget = 2;
         blockO.type = 9;
 
         blockR.index = 22;
-        blockR.target = 1 | 2 | 4 | 5 | 6;
+        blockR.notTarget = 3;
         blockR.type = 9;
 
         blockG.index = 23;
-        blockG.target= 1 | 2 | 3 | 5 | 6;
+        blockG.notTarget= 4;
         blockG.type = 9;
 
         blockB.index = 24;
-        blockB.target= 1 | 2 | 3 | 4 | 6;
+        blockB.notTarget= 5;
         blockB.type = 9;
 
         blockP.index = 25;
-        blockP.target = 1 | 2 | 3 | 4 | 5; //src and inclusion not defined yet
+        blockP.notTarget =6; //src and inclusion not defined yet
         blockP.type = 9;
 
+        TmoveD.index = 26;
+        TmoveD.direction = 0111;
+        TmoveD.distance = 1;
+        TmoveD.colour = -1;
+        TmoveD.type = 0;
+        movementRuleSets.Add(TmoveD);
+
+        TmoveL.index = 27;
+        TmoveL.direction = 1101;
+        TmoveL.distance = 1;
+        TmoveL.colour = -1;
+        TmoveL.type = 0;
+        movementRuleSets.Add(TmoveL);
+
+        TmoveR.index = 28;
+        TmoveR.direction = 1110;
+        TmoveR.distance = 1;
+        TmoveR.colour = -1;
+        TmoveR.type = 0;
+        movementRuleSets.Add(TmoveR);
+
+        checkPathYG.index = 29;
+        checkPathYG.src = 1;
+        checkPathYG.target = 4;
+
+        checkPathOP.index = 30;
+        checkPathOP.src = 2;
+        checkPathOP.target = 6;
+
+        checkPathBR.index = 31;
+        checkPathBR.src = 5;
+        checkPathBR.target = 3;
 
     }
 
