@@ -482,6 +482,7 @@ public class Rules : MonoBehaviour
         foreach (int i in indexs)
         {
             finalIdxs[r] = (int)i;
+            r++;
         }
         //all the final indexes are set in finalIdxs
 
@@ -492,11 +493,11 @@ public class Rules : MonoBehaviour
         {
             if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed
             {
-                mr.Add(movementRuleSets[i]);
+                mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[i])));
             }
             else
             {
-                cr.Add(colourRuleSets[i]);
+                cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[i])));
             }
             
           
