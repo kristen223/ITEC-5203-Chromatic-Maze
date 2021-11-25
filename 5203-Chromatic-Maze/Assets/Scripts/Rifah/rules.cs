@@ -180,95 +180,97 @@ public class Rules : MonoBehaviour
         coldTemp.type = 6;
         movementRuleSets.Add(coldTemp);
 
-        ColourRules includeBY;// if blue, goes to yellow
-        // int currentpos = 9999;//take from the maze/how to keep track of prevs position when maze is not built?
-        //if(currentpos.colour==1)
-        //{
-        includeBY.index = 13;
-        includeBY.src = 5;
-        includeBY.target = 1;
-        includeBY.type = 7;
-        //create more of these
-        includeBY.inclusion = false; //not using this anywhere
-
-        excludeR.index = 14;
-        excludeR.src = 3;
-        excludeR.notTarget = 3;
-        excludeR.inclusion = false;
-        excludeR.type = 8;
-        //add to the list
-
-        excludeO.index = 15;
-      
-        excludeO.notTarget = 2;
-        excludeO.inclusion = false;
-        excludeO.type = 8;
-
-        excludeY.index = 16;
-      
-        excludeY.notTarget = 1;
-        excludeY.inclusion = false;
-        excludeY.type = 8;
-
-        excludeB.index = 17;
-        excludeB.notTarget = 5;
-        excludeB.inclusion = false;
-        excludeB.type = 8;
-
-        excludeG.index = 18;
-        excludeG.notTarget = 4;
-        excludeG.inclusion = false;
-        excludeG.type = 8;
-
-        excludeP.index = 19;
-        excludeP.notTarget = 6;
-        excludeP.inclusion = false;
-        excludeP.type = 8;
-
-        blockY.index = 20;
-        blockY.notTarget = 1;
-        blockY.type = 9;
-
-        blockO.index = 21;
-        blockO.notTarget = 2;
-        blockO.type = 9;
-
-        blockR.index = 22;
-        blockR.notTarget = 3;
-        blockR.type = 9;
-
-        blockG.index = 23;
-        blockG.notTarget= 4;
-        blockG.type = 9;
-
-        blockB.index = 24;
-        blockB.notTarget= 5;
-        blockB.type = 9;
-
-        blockP.index = 25;
-        blockP.notTarget =6; //src and inclusion not defined yet
-        blockP.type = 9;
-
-        TmoveD.index = 26;
+        TmoveD.index = 13;
         TmoveD.direction = 0111;
         TmoveD.distance = 1;
         TmoveD.colour = -1;
         TmoveD.type = 0;
         movementRuleSets.Add(TmoveD);
 
-        TmoveL.index = 27;
+        TmoveL.index = 14;
         TmoveL.direction = 1101;
         TmoveL.distance = 1;
         TmoveL.colour = -1;
         TmoveL.type = 0;
         movementRuleSets.Add(TmoveL);
 
-        TmoveR.index = 28;
+        TmoveR.index = 15;
         TmoveR.direction = 1110;
         TmoveR.distance = 1;
         TmoveR.colour = -1;
         TmoveR.type = 0;
         movementRuleSets.Add(TmoveR);
+
+        //ColourRules includeBY;// if blue, goes to yellow
+        // int currentpos = 9999;//take from the maze/how to keep track of prevs position when maze is not built?
+        //if(currentpos.colour==1)
+        //{
+        includeBY.index = 16;
+        includeBY.src = 5;
+        includeBY.target = 1;
+        includeBY.type = 7;
+        //create more of these
+        includeBY.inclusion = false; //not using this anywhere
+
+        excludeR.index = 17;
+        excludeR.src = 3;
+        excludeR.notTarget = 3;
+        excludeR.inclusion = false;
+        excludeR.type = 8;
+        //add to the list
+
+        excludeO.index = 18;
+      
+        excludeO.notTarget = 2;
+        excludeO.inclusion = false;
+        excludeO.type = 8;
+
+        excludeY.index = 19;
+      
+        excludeY.notTarget = 1;
+        excludeY.inclusion = false;
+        excludeY.type = 8;
+
+        excludeB.index = 20;
+        excludeB.notTarget = 5;
+        excludeB.inclusion = false;
+        excludeB.type = 8;
+
+        excludeG.index = 21;
+        excludeG.notTarget = 4;
+        excludeG.inclusion = false;
+        excludeG.type = 8;
+
+        excludeP.index = 22;
+        excludeP.notTarget = 6;
+        excludeP.inclusion = false;
+        excludeP.type = 8;
+
+        blockY.index = 23;
+        blockY.notTarget = 1;
+        blockY.type = 9;
+
+        blockO.index = 24;
+        blockO.notTarget = 2;
+        blockO.type = 9;
+
+        blockR.index = 25;
+        blockR.notTarget = 3;
+        blockR.type = 9;
+
+        blockG.index = 26;
+        blockG.notTarget= 4;
+        blockG.type = 9;
+
+        blockB.index = 27;
+        blockB.notTarget= 5;
+        blockB.type = 9;
+
+        blockP.index = 28;
+        blockP.notTarget =6; //src and inclusion not defined yet
+        blockP.type = 9;
+
+        
 
         checkPathYG.index = 29;
         checkPathYG.src = 1;
@@ -429,7 +431,10 @@ public class Rules : MonoBehaviour
                 }
             }
         }
-        
+
+     
+
+        //printing the ranks here:
         ArrayList allfitvals = new ArrayList(fitVals.Values);
         allfitvals.Sort();
         print("The fitness values of the chromosomes ranked are:");
@@ -443,25 +448,59 @@ public class Rules : MonoBehaviour
                 //finalRules(cList[i]);
             //}
         }
-        foreach(int val in fitVals)
-        {
-            if (val == 1)
-            {
-                //finalRules();//key of this val
+        
+        int finalFitness=(int)allfitvals[0]; //the first value in the sorted arraylist is the best fit
 
+        int min = 1;
+        int finalCIdx=-1;//chromosome index, not rule!
+        foreach (int y in fitVals.Values)
+        {
+            if (y == min)
+            {
+                finalCIdx = y;
             }
         }
-       
 
-     
-        }
+        finalRules(cList[finalCIdx]); //passing the fit chromosome
 
-    public void finalRules(List<int> clist,List <int> allList)
+
+
+
+    }
+
+    public void finalRules(Hashtable c) //get the indexes (keys) of this hashtable
     {
-        for (int i = 0; i < clist.Count; i++)
+        
+        ICollection indexs = c.Keys;
+        int[] finalIdxs = new int[7];
+        int r = 0;
+        foreach (int i in indexs)
         {
-            int typ=allList[clist[i]];
+            finalIdxs[r] = (int)i;
         }
+        //all the final indexes are set in finalIdxs
+
+        List<MovementRules> mr = new List<MovementRules>();
+        List<ColourRules> cr = new List<ColourRules>();
+
+        for (int i = 0; i < finalIdxs.Length; i++)
+        {
+            if (finalIdxs[i] <= 15)
+            {
+                mr.Add(movementRuleSets[i]);
+            }
+            else
+            {
+                cr.Add(colourRuleSets[i]);
+            }
+            
+          
+
+        }
+        AssignColour.SetRules(mr,cr);
+
+
+
     }
 
 }
