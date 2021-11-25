@@ -56,11 +56,3 @@ public class Tile : MonoBehaviour
         }
     }
 }
-
-/*
- * Current state of player will have the current colour they're on
- * When they tap on a tile:
- *      - Check if its orthogonally adjecent
- *      - Get the colour of the tapped tile
- *      - Based on rule system, check if move i sacceptable
- */

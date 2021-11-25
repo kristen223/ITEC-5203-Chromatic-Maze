@@ -23,9 +23,9 @@ public class AssignColour : MonoBehaviour
      * Or could traverse from root node to every child (until child rank == 0) < extra condition needed because of cycles
      */
 
-    //**When you place a colour, set the rule type, moveRUle bool, colour int, and rule of the tile
+    //**When you place a colour, set the rule type, moveRule bool, colour int, and rule of the tile
     // When placing jump colour, check if that tile's jump bools are true
-    //blank spaces can only be placed at corss sections
+    //blank spaces can only be placed at cross sections
 
     private static KruskalMaze.Maze maze;
     public static List<MovementRules> mRules;
