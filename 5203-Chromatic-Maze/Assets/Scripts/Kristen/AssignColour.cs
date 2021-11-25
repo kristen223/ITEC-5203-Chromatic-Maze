@@ -5,16 +5,16 @@ using UnityEngine;
 public class AssignColour : MonoBehaviour
 {
     /*for each tile in the grid
-     *      check which directions you can move (N S E W) within 1, 2 and 3 space
+     *      check which directions you can move (N S E W) within 1, 2 and 3 space 
      *      Based on the above, get list of possible rules to place down
      *      pick a random rule, except some rules will have a higher likelihood of being selected (generally and based on previously placed rules)
      *      if includeC rule exits, you can place down colour c2 anywhere if the rule colour has already been placed
-     *
+     *      
      *      if its a dead end, either place a teleport colour or anythign else (doesn't matter)
      *          If teleport, tile doesn't count as a dead-end and won't cause a game over if no more undo's left
-     *
+     *          
      *      everytime a colour is placed, check to see if any false inclusion.exclusion rule booleans need to be updated
-     *
+     *      
      *      We only need to make sure they can step forward (including looped areas) not backwards
      */
 
@@ -27,14 +27,13 @@ public class AssignColour : MonoBehaviour
     // When placing jump colour, check if that tile's jump bools are true
     //blank spaces can only be placed at corss sections
 
-    private KruskalMaze.Maze maze;
-    private Tile[] tiles; //array of the tile components of the tile game objects
-    private List<MovementRules> mRules;
-    private List<ColourRules> cRules;
+    private static KruskalMaze.Maze maze;
+    public static List<MovementRules> mRules;
+    public static List<ColourRules> cRules;
 
     //may want to split this into two lists?
-    public static List<KeyValuePair<int, int>> includeRules; //first int is index of rule in RuleSet; second int is the rule's type
-    public static List<KeyValuePair<int, int>> excludeRules;
+    public static List<int> includeRules; //first int is index of rule in RuleSet; second int is the rule's type
+    public static List<int> excludeRules;
 
     // Start is called before the first frame update
     void Start()
@@ -45,23 +44,24 @@ public class AssignColour : MonoBehaviour
     }
 
     //not in start because other script needs to finish first
-    public void SetRules(List<MovementRules> mr, List<ColourRules> cr)
+    public static void SetRules(List<MovementRules> mr, List<ColourRules> cr)
     {
         mRules = mr;
         cRules = cr;
 
-//INCLUDE: once you've landed on the src colour, boolean becomes true and you can move onto target colour
-//EXCLUDE: once you've landed on the src colour, boolean becomes true and you cannot move onto the target colour
 
-  foreach (ColourRules rule in cRules)
+        //INCLUDE: once you've landed on the src colour, boolean becomes true and you can move onto target colour
+        //EXCLUDE: once you've landed on the src colour, boolean becomes true and you cannot move onto the target colour
+
+        foreach (ColourRules rule in cRules)
         {
-            if(rule.type == 8) //an include or exclude rule
+            if(rule.type == 10) //check path include
             {
-                includeRules.Add(new KeyValuePair<int, int>(cRules.IndexOf(rule), rule.type));
+                includeRules.Add(cRules.IndexOf(rule));
             }
-            else if(rule.type == 9)
+            else if(rule.type == 11) //check path exclude
             {
-                excludeRules.Add(new KeyValuePair<int, int>(cRules.IndexOf(rule), rule.type));
+                excludeRules.Add(cRules.IndexOf(rule));
             }
         }
 
