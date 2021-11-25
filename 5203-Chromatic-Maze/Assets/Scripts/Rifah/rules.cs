@@ -440,7 +440,7 @@ public class Rules : MonoBehaviour
         print("The fitness values of the chromosomes ranked are:");
         foreach(int x in allfitvals) 
         {
-            print(x);//ranks
+            print("fitness value: "+ x);//ranks
             //if (x == 1)
             //{
                 //pass to maze
