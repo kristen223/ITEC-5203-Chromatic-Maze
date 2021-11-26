@@ -453,33 +453,21 @@ public class KruskalMaze : MonoBehaviour
                                     //find the opposite edge to the parent in same row
                                     if (leafNum + 1 == parentNum) //parent beside leaf
                                     {
-                                        Debug.Log("parent beside leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         other = GameObject.Find("Tile-" + (leafNum - 1).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else if (leafNum - 1 == parentNum)
                                     {
-                                        Debug.Log("parent beside leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         other = GameObject.Find("Tile-" + (leafNum + 1).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else if (parentNum > leafNum) //parent above leaf
                                     {
-                                        Debug.Log("parent above leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         //get tile below leaf (tile number - width)
                                         other = GameObject.Find("Tile-" + (leafNum - GenerateGrid.wdth).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else //leaf above parent
                                     {
-                                        Debug.Log("parent below leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         //get tile above leaf (tile number + width)
                                         other = GameObject.Find("Tile-" + (leafNum + GenerateGrid.wdth).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
 
                                     foreach (Wall e in EdgesWithWalls)
@@ -490,7 +478,6 @@ public class KruskalMaze : MonoBehaviour
                                             e.origin.children.Add(e.destination);
                                             e.destination.children.Add(e.origin);
 
-                                            Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
                                             e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
@@ -516,33 +503,21 @@ public class KruskalMaze : MonoBehaviour
                                     //find the opposite edge to the parent in same row
                                     if (leafNum + 1 == parentNum) //parent beside leaf
                                     {
-                                        Debug.Log("parent beside leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         other = GameObject.Find("Tile-" + (leafNum - 1).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else if (leafNum - 1 == parentNum)
                                     {
-                                        Debug.Log("parent beside leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         other = GameObject.Find("Tile-" + (leafNum + 1).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else if (parentNum > leafNum) //parent above leaf
                                     {
-                                        Debug.Log("parent above leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         //get tile below leaf (tile number - width)
                                         other = GameObject.Find("Tile-" + (leafNum - GenerateGrid.wdth).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                     }
                                     else //leaf above parent
                                     {
-                                        Debug.Log("parent below leaf");
-                                        Debug.Log("leaf = " + leaf + "num " + leafNum + "parent = " + parent + "parentNum " + parentNum);
                                         //get tile above leaf (tile number + width)
                                         other = GameObject.Find("Tile-" + (leafNum + GenerateGrid.wdth).ToString()).GetComponent<Tile>();
-                                        Debug.Log("other = " + other);
                                         //this tile doesnt exist
                                     }
 
@@ -553,7 +528,6 @@ public class KruskalMaze : MonoBehaviour
                                             e.origin.children.Add(e.destination);
                                             e.destination.children.Add(e.origin);
 
-                                            Debug.Log("remove edge");
                                             e.disableEdge(); //remove wall
                                             e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
@@ -572,25 +546,37 @@ public class KruskalMaze : MonoBehaviour
                                     }
                                 }
                             }
-                           Debug.Log("break");
                            break; //maybe here??
                         }
                     }
                 }
                 else //deadend on border, therefore, remove wall with longest path on the other side of it
                 {
-                    Debug.Log("second check");
                     Dictionary<Wall, int> adjacentWalls = new Dictionary<Wall, int>();
 
                     foreach (Wall edge in EdgesWithWalls)
                     {
                         if (edge.origin == leaf)
                         {
-                            adjacentWalls.Add(edge, GetPathLength(edge.destination, longestP.path));
+                            String otherNumS = edge.destination.name.Substring(edge.destination.name.IndexOf("-") + 1, edge.destination.name.Length - edge.destination.name.IndexOf("-") - 1);
+                            int otherNum = int.Parse(otherNumS);
+
+                            //if other tile isn't a corner
+                            if (otherNum != 1 && otherNum != GenerateGrid.wdth && otherNum != (GenerateGrid.wdth * GenerateGrid.hght - GenerateGrid.wdth + 1) && otherNum != (GenerateGrid.wdth * GenerateGrid.hght))
+                            {
+                                adjacentWalls.Add(edge, GetPathLength(edge.destination, longestP.path));
+                            }     
                         }
                         if (edge.destination == leaf)
                         {
-                            adjacentWalls.Add(edge, GetPathLength(edge.origin, longestP.path));
+                            String otherNumS = edge.origin.name.Substring(edge.origin.name.IndexOf("-") + 1, edge.origin.name.Length - edge.origin.name.IndexOf("-") - 1);
+                            int otherNum = int.Parse(otherNumS);
+
+                            //if other tile isn't a corner
+                            if (otherNum != 1 && otherNum != GenerateGrid.wdth && otherNum != (GenerateGrid.wdth * GenerateGrid.hght - GenerateGrid.wdth + 1) && otherNum != (GenerateGrid.wdth * GenerateGrid.hght))
+                            {
+                                adjacentWalls.Add(edge, GetPathLength(edge.origin, longestP.path));
+                            }
                         }
                     }
 
@@ -620,8 +606,6 @@ public class KruskalMaze : MonoBehaviour
                         {
                             newDends.Remove(orderedAdjacent[0].destination);
                         }
-
-                        Debug.Log("remove wall = " + orderedAdjacent[0]);
                     }
                 }
 
@@ -689,55 +673,3 @@ public class KruskalMaze : MonoBehaviour
     }
 
 }
-
-
-//This is the old cycle code
-//for (int i = 0; i < EdgesWithWalls.Count; i++) //flip these two for loops around
-//{
-//    Wall edge = EdgesWithWalls[i];
-
-//    for (int j = 0; j < leafs.Count; j++)
-//    {
-
-//        if (edge.origin == leafs[j] || edge.destination == leafs[j])
-//        {
-//            edge.disableEdge(); //remove a random wall
-//            EdgesWithWalls.Remove(edge);
-//            tree.Add(edge); //add the random edge to the tree (no longer a mst)
-//            leafs.Remove(leafs[j]); //no longer a dead-end, so remove from list
-//            addedCycles++;
-
-//            //This checks if the wall was between two dead-ends, therefore removing two dead-ends from the list
-//            if (edge.origin == leafs[j])
-//            {
-//                if (leafs.Contains(edge.destination))
-//                {
-//                    leafs.Remove(edge.destination);
-//                }
-//            }
-//            if (edge.destination == leafs[j])
-//            {
-//                if (leafs.Contains(edge.origin))
-//                {
-//                    leafs.Remove(edge.origin);
-//                }
-//            }
-//        }
-
-//        if (addedCycles == cycles)
-//        {
-//            return tree; //exit function
-//        }
-//    }
-//}
-
-////If there wasn't enough dead-ends, remove random wall
-//for (int c = addedCycles; c < cycles; c++)
-//{
-//    Wall randEdge = EdgesWithWalls[UnityEngine.Random.Range(0, EdgesWithWalls.Count)];
-//    Debug.Log("remove random");
-//    randEdge.disableEdge(); //remove a random wall
-//    tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
-//    EdgesWithWalls.Remove(randEdge);
-//}
-//return tree;
