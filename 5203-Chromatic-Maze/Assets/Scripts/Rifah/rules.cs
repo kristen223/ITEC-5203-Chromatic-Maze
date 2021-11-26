@@ -407,7 +407,7 @@ public class Rules : MonoBehaviour
         {
 
             int fit = 1;
-            int[] uniqueTypes = new int[10]; //10 rule types
+            int[] uniqueTypes = new int[10]; //10 rule types "zero initiatilization"
             for (int j = 0; j < cList.Count; j++) //check the variation in types
             {
                 /*foreach (int key in cList[j].Keys) //clist[j] is a hashtable
@@ -420,6 +420,7 @@ public class Rules : MonoBehaviour
                 foreach (int v in valueColl)
                 {
                     uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome
+                    print(v);
                 }
             }
 
@@ -430,14 +431,20 @@ public class Rules : MonoBehaviour
                     fit = fit * uniqueTypes[z];
 
                     fitVals.Add(i, fit);
+                    print("fitness is"+fit);
                 }
             }
         }
 
-     
+
 
         //printing the ranks here:
+        print(fitVals.Values.ToString());
         ArrayList allfitvals = new ArrayList(fitVals.Values);
+        foreach (var v in fitVals.Values)
+        {
+            allfitvals.Add(v);
+        }
         print(fitVals.Keys.ToString());
         allfitvals.Sort();
         print("The fitness values of the chromosomes ranked are:");
@@ -452,17 +459,18 @@ public class Rules : MonoBehaviour
                 //finalRules(cList[i]);
             //}
         }
-        
-        int finalFitness=(int)allfitvals[0]; //the first value in the sorted arraylist is the best fit
+
+        int finalFitness = (int)allfitvals[index: 0]; //the first value in the sorted arraylist is the best fit
         print(finalFitness);
         int min = 1;
-        int finalCIdx=-1;//chromosome index, not rule!
+        int finalCIdx=0;//chromosome index, not rule!
         foreach (int y in fitVals.Values)
         {
             if (y == min)
             {
                 finalCIdx = y;
                 print(finalCIdx);
+                break;
             }
         }
 
@@ -491,7 +499,7 @@ public class Rules : MonoBehaviour
 
         for (int i = 0; i < finalIdxs.Length; i++)
         {
-            if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed
+            if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed ENUMS
             {
                 mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[i])));
             }
