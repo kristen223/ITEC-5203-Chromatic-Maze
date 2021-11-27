@@ -55,11 +55,11 @@ public class AssignColour : MonoBehaviour
 
         foreach (ColourRules rule in cRules)
         {
-            if(rule.type == 10) //check path include
+            if(rule.type == Type.checkPathInc) //check path include
             {
                 includeRules.Add(cRules.IndexOf(rule));
             }
-            else if(rule.type == 11) //check path exclude
+            else if(rule.type == Type.checkPathExc) //check path exclude
             {
                 excludeRules.Add(cRules.IndexOf(rule));
             }

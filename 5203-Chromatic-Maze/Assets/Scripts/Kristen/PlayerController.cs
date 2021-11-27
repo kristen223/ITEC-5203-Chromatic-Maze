@@ -121,103 +121,103 @@ public class PlayerController : MonoBehaviour
                 }
                 previous.Pop(); //remove player from path
 
-                ////Go through previous list and check if include/exclude bools still apply
-                bool pExclude = false;
-                foreach (int exc in AssignColour.excludeRules) //Check if player was on exclude source colour
-                {
-                    if (player.colour == AssignColour.cRules[exc].src)
-                    {
-                        pExclude = true; //we potentially want to change this rule's bool back to false
-                        break;
-                    }
-                }
+                //Go through previous list and check if include/exclude bools still apply
+                //bool pExclude = false;
+                //foreach (int exc in AssignColour.excludeRules) //Check if player was on exclude source colour
+                //{
+                //    if (player.colour == AssignColour.cRules[exc].src)
+                //    {
+                //        pExclude = true; //we potentially want to change this rule's bool back to false
+                //        break;
+                //    }
+                //}
 
-                int colExc = player.colour;
-                bool excSrcExists = false;
-                if (pExclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
-                {
-                    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
-                    {
-                        if (AssignColour.cRules[exc].src == colExc)
-                        {
-                            foreach (Tile t in previous)
-                            {
-                                if (t.colour == colExc)
-                                {
-                                    //the boolean can stay true
-                                    excSrcExists = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (excSrcExists == true)
-                        {
-                            break;
-                        }
-                    }
-                }
+                //Colour colExc = player.colour;
+                //bool excSrcExists = false;
+                //if (pExclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
+                //{
+                //    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
+                //    {
+                //        if (AssignColour.cRules[exc].src == colExc)
+                //        {
+                //            foreach (Tile t in previous)
+                //            {
+                //                if (t.colour == colExc)
+                //                {
+                //                    //the boolean can stay true
+                //                    excSrcExists = true;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        if (excSrcExists == true)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //}
 
-                if (excSrcExists == false)
-                {
-                    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
-                    {
-                        if (AssignColour.cRules[exc].src == colExc)
-                        {
-                            ColourRules c = AssignColour.cRules[exc];
-                            c.inclusion = false;
-                            AssignColour.cRules[exc] = c;
-                        }
-                    }
-                }
+                //if (excSrcExists == false)
+                //{
+                //    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
+                //    {
+                //        if (AssignColour.cRules[exc].src == colExc)
+                //        {
+                //            ColourRules c = AssignColour.cRules[exc];
+                //            c.inclusion = false;
+                //            AssignColour.cRules[exc] = c;
+                //        }
+                //    }
+                //}
 
 
-                bool pInclude = false;
-                foreach (int inc in AssignColour.includeRules) //Check if player was on exclude source colour
-                {
-                    if (player.colour == AssignColour.cRules[inc].src)
-                    {
-                        pInclude = true; //we potentially want to change this rule's bool back to false
-                        break;
-                    }
-                }
+                //bool pInclude = false;
+                //foreach (int inc in AssignColour.includeRules) //Check if player was on exclude source colour
+                //{
+                //    if (player.colour == AssignColour.cRules[inc].src)
+                //    {
+                //        pInclude = true; //we potentially want to change this rule's bool back to false
+                //        break;
+                //    }
+                //}
 
-                int colInc = player.colour;
-                bool incSrcExists = false;
-                if (pInclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
-                {
-                    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
-                    {
-                        if (AssignColour.cRules[inc].src == colInc)
-                        {
-                            foreach (Tile t in previous)
-                            {
-                                if (t.colour == colInc)
-                                {
-                                    //the boolean can stay true
-                                    incSrcExists = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (incSrcExists == true)
-                        {
-                            break;
-                        }
-                    }
-                }
+                //Colour colInc = player.colour;
+                //bool incSrcExists = false;
+                //if (pInclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
+                //{
+                //    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
+                //    {
+                //        if (AssignColour.cRules[inc].src == colInc)
+                //        {
+                //            foreach (Tile t in previous)
+                //            {
+                //                if (t.colour == colInc)
+                //                {
+                //                    //the boolean can stay true
+                //                    incSrcExists = true;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        if (incSrcExists == true)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //}
 
-                if (incSrcExists == false)
-                {
-                    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
-                    {
-                        if (AssignColour.cRules[inc].src == colInc)
-                        {
-                            ColourRules c = AssignColour.cRules[inc];
-                            c.inclusion = false;
-                            AssignColour.cRules[inc] = c;
-                        }
-                    }
-                }
+                //if (incSrcExists == false)
+                //{
+                //    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
+                //    {
+                //        if (AssignColour.cRules[inc].src == colInc)
+                //        {
+                //            ColourRules c = AssignColour.cRules[inc];
+                //            c.inclusion = false;
+                //            AssignColour.cRules[inc] = c;
+                //        }
+                //    }
+                //}
 
 
                 //update current position
@@ -232,219 +232,215 @@ public class PlayerController : MonoBehaviour
         }
 
         //Start here
-        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped)) //check that player can move and is not backtracking
-        {
-            MovementRules mr = player.mRule;
-            ColourRules cr = player.cRule;
-            if (tapped.moveRule == true) //player is on a movement rule
-            {
-                int pindex = Array.IndexOf(tiles, player); //index of player
-                int tindex = Array.IndexOf(tiles, tapped);
-                switch (mr.type)
-                {
-                    case 0: //TMOVE
-                            //Getting which direction they can't move
-                        int first = mr.direction / 1000;
-                        int second = mr.direction % 1000 / 100;
-                        int third = mr.direction % 100 / 10;
-                        int fourth = mr.direction % 10;
-                        if (first == 0) //Can't move North
-                        {
-                            int n = pindex + maze.w;
-                            if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        else if (second == 0) //Can't move South
-                        {
-                            int s = pindex - maze.w;
-                            if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        else if (third == 0) //Can't move East
-                        {
-                            int e = pindex + 1;
-                            if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
-                            {
-                                if (tapped == player.parent || player.children.Contains(tapped))
-                                {
-                                    Move(tapped);
-                                }
-                            }
-                            else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        else if (fourth == 0)//Can't move West
-                        {
-                            int w = pindex - 1;
-                            if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
-                            {
-                                if (tapped == player.parent || player.children.Contains(tapped))
-                                {
-                                    Move(tapped);
-                                }
-                            }
-                            else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        break;
+        //if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped)) //check that player can move and is not backtracking
+        //{
+        //    MovementRules mr = player.mRule;
+        //    ColourRules cr = player.cRule;
+        //    if (tapped.moveRule == true) //player is on a movement rule
+        //    {
+        //        int pindex = Array.IndexOf(tiles, player); //index of player
+        //        int tindex = Array.IndexOf(tiles, tapped);
+        //        switch (mr.type)
+        //        {
+        //            case Type.Tmove:
 
-                    case 1: //BLANK
-                        if (tapped == player.parent || player.children.Contains(tapped)) //can move to any parent/child
-                        {
-                            Move(tapped);
-                        }
-                        break;
+        //                if (mr.direction == Direction.North) //Can't move North
+        //                {
+        //                    int n = pindex + maze.w;
+        //                    if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
+        //                    {
+        //                        Move(tapped);
+        //                    }
+        //                }
+        //                else if (mr.direction == Direction.South) //Can't move South
+        //                {
+        //                    int s = pindex - maze.w;
+        //                    if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
+        //                    {
+        //                        Move(tapped);
+        //                    }
+        //                }
+        //                else if (mr.direction == Direction.East) //Can't move East
+        //                {
+        //                    int e = pindex + 1;
+        //                    if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
+        //                    {
+        //                        if (tapped == player.parent || player.children.Contains(tapped))
+        //                        {
+        //                            Move(tapped);
+        //                        }
+        //                    }
+        //                    else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
+        //                    {
+        //                        Move(tapped);
+        //                    }
+        //                }
+        //                else if (mr.direction == Direction.West)//Can't move West
+        //                {
+        //                    int w = pindex - 1;
+        //                    if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
+        //                    {
+        //                        if (tapped == player.parent || player.children.Contains(tapped))
+        //                        {
+        //                            Move(tapped);
+        //                        }
+        //                    }
+        //                    else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
+        //                    {
+        //                        Move(tapped);
+        //                    }
+        //                }
+        //                break;
 
-                    case 2: //TELEPORT
-                        if (cr.inclusion == true) //can teleport there
-                        {
-                            Move(tapped);
-                        }
-                        break;
+        //            case Type.blank:
+        //                if (tapped == player.parent || player.children.Contains(tapped)) //can move to any parent/child
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
 
-                    case 3: //JUMP 1
-                        if (tindex == pindex + 2 * maze.w) //if tapped on tile is two spaces North
-                        {
-                            if (player.jumpN == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex - 2 * maze.w) //if tapped on tile is two spaces South
-                        {
-                            if (player.jumpS == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex + 2) //if tapped on tile is two spaces East
-                        {
-                            if (player.jumpE == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex - 2) //if tapped on tile is two spaces West
-                        {
-                            if (player.jumpW == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        break;
+        //            case Type.teleport:
+        //                if (mr.colour == tapped.colour) //can teleport there
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
 
-                    case 4: //JUMP 2
-                        if (tindex == pindex + 3 * maze.w) //if tapped on tile is three spaces North
-                        {
-                            if (player.jumpTwoN == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex - 3 * maze.w) //if tapped on tile is three spaces South
-                        {
-                            if (player.jumpTwoS == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex + 3) //if tapped on tile is three spaces East
-                        {
-                            if (player.jumpTwoE == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        else if (tindex == pindex - 3) //if tapped on tile is three spaces West
-                        {
-                            if (player.jumpTwoW == true) //if tile exists
-                            {
-                                Move(tapped);
-                                break;
-                            }
-                        }
-                        break;
+        //            case Type.jump1:
+        //                if (tindex == pindex + 2 * maze.w) //if tapped on tile is two spaces North
+        //                {
+        //                    if (player.jumpN == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex - 2 * maze.w) //if tapped on tile is two spaces South
+        //                {
+        //                    if (player.jumpS == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex + 2) //if tapped on tile is two spaces East
+        //                {
+        //                    if (player.jumpE == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex - 2) //if tapped on tile is two spaces West
+        //                {
+        //                    if (player.jumpW == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                break;
 
-                    case 5: //WARM
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == 1 || tapped.colour == 2 || tapped.colour == 3)) //adjacent warm colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
+        //            case Type.jump2:
+        //                if (tindex == pindex + 3 * maze.w) //if tapped on tile is three spaces North
+        //                {
+        //                    if (player.jumpTwoN == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex - 3 * maze.w) //if tapped on tile is three spaces South
+        //                {
+        //                    if (player.jumpTwoS == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex + 3) //if tapped on tile is three spaces East
+        //                {
+        //                    if (player.jumpTwoE == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                else if (tindex == pindex - 3) //if tapped on tile is three spaces West
+        //                {
+        //                    if (player.jumpTwoW == true) //if tile exists
+        //                    {
+        //                        Move(tapped);
+        //                        break;
+        //                    }
+        //                }
+        //                break;
 
-                    case 6: //COOL
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == 4 || tapped.colour == 5 || tapped.colour == 6)) //adjacent cool colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
-                }
-            }
-            else //player is on a colour rule
-            {
-                switch (cr.type)
-                {
-                    case 7: //INCLUDE
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == player.cRule.target)) //can only move to adjacent tile that's target colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
+        //            case Type.warm:
+        //                if ((tapped == player.parent || player.children.Contains(tapped)) && tapped.colour == Colour.Warm) //adjacent warm colour
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
 
-                    case 8: //EXCLUDE
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjacent tile except tile with target colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
+        //            case Type.cool:
+        //                if ((tapped == player.parent || player.children.Contains(tapped)) && tapped.colour == Colour.Cool) //adjacent cool colour
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
+        //        }
+        //    }
+        //    else //player is on a colour rule
+        //    {
+        //        switch (cr.type)
+        //        {
+        //            case Type.include:
+        //                if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == player.cRule.target)) //can only move to adjacent tile that's target colour
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
 
-                    case 9: //BLOCK
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.notTarget)) //move to any adjecent colour except rule source colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
-                }
-            }
-        }
+        //            case Type.exclude:
+        //                if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjacent tile except tile with target colour
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
+
+        //            case Type.block:
+        //                if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjecent colour except rule source colour
+        //                {
+        //                    Move(tapped);
+        //                }
+        //                break;
+        //        }
+        //    }
+        //}
+
 
         //Old PLayer Controller
-        //if they didn't tap on player, and this is their first move or they're not backtracking, and they tapped on an adjacent tile (must update with jump moves)
-        //if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
-        //{
-        //    //check if checker is on tile
-        //    if (tapped.tag == "checker")
-        //    {
-        //        cCount++;
-        //        cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
-        //    }
+        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
+        {
+            //check if checker is on tile
+            if (tapped.tag == "checker")
+            {
+                cCount++;
+                cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+            }
 
-        //    previous.Push(player);
+            previous.Push(player);
 
-        //    //update current position
-        //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
-        //    player = tapped;
-        //    player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+            //update current position
+            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
+            player = tapped;
+            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
 
-        //    //update step count
-        //    sCount--;
-        //    sText.text = sCount.ToString();
-        //}
+            //update step count
+            sCount--;
+            sText.text = sCount.ToString();
+        }
 
     }
 

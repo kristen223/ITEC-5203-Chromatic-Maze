@@ -12,9 +12,11 @@ public class Tile : MonoBehaviour
     public MovementRules mRule;
     public ColourRules cRule;
     public bool moveRule;
-    public int colour;
 
-    public int ruleType;
+    //these should be set to the same thing
+    public Colour colour;
+
+    public Type ruleType;
     public bool jumpN;
     public bool jumpS;
     public bool jumpE;

@@ -4,13 +4,23 @@ using System.Collections.Generic;
 using UnityEngine;
 //structs cannot inehrit , used for small groups of variables
 
+
+//ADDED ENUMS AND UPDATED TWO STRUCTS
+public enum Type {Tmove, blank, teleport, jump1, jump2, warm, cool,include, exclude, block, checkPathInc, checkPathExc };
+public enum Direction {North, South, East, West, All};
+public enum Colour {Red, Orange, Yellow, Green, Blue, Purple, Warm, Cool, All}; //colour of tapped tile
+
 public struct MovementRules
 {
     public int index;
-    public int direction; //N,S,E,W=1111,  dont care=-1
-    public int distance; //dont care = -1
-    public int colour; //-1 means dont care , 1=yellow, 2=orange, 3=red, 4=green, 5=blue, 6=purple
-    public int type; //assigning not done
+    public int distance;
+    public Type type;
+    public Direction direction;
+    public Colour colour;
+
+    //public int direction; //N,S,E,W=1111,  dont care=-1
+    //public int colour; //-1 means dont care , 1=yellow, 2=orange, 3=red, 4=green, 5=blue, 6=purple
+    //public int type;
 
     public static implicit operator MovementRules(List<MovementRules> v)
     {
@@ -21,11 +31,15 @@ public struct MovementRules
 public struct ColourRules  
 {
     public int index;
-    public bool inclusion;
-    public int src;
-    public int target;
-    public int notTarget;
-    public int type;//assigning not done 
+    public bool inclusion; //true if the src colour was passed for both CheckPath rule types
+    public Type type;
+    public Colour src;
+    public Colour target; //for CheckPath rules, can only move onto this colour if inclusion == true or false depending
+    
+    //public int src; 
+    //public int target; 
+    //public int notTarget; 
+    //public int type;
 
     public static implicit operator ColourRules(List<ColourRules> v)
     {
@@ -43,10 +57,10 @@ public class Rules : MonoBehaviour
 {
 
     //global variables => rules 
-    public MovementRules TmoveU;
-    public MovementRules TmoveD;
-    public MovementRules TmoveL;
-    public MovementRules TmoveR;
+    public MovementRules TmoveN;
+    public MovementRules TmoveS;
+    public MovementRules TmoveE;
+    public MovementRules TmoveW;
     public MovementRules blank;
     public MovementRules teleportB;
     public MovementRules teleportP;
@@ -70,16 +84,21 @@ public class Rules : MonoBehaviour
     public ColourRules excludeB;
     public ColourRules excludeG;
     public ColourRules excludeP;
-    public ColourRules blockY;
-    public ColourRules blockO;
     public ColourRules blockR;
+    public ColourRules blockO;
+    public ColourRules blockY;
     public ColourRules blockG;
     public ColourRules blockB;
     public ColourRules blockP;
-    public ColourRules checkPathYG;
-    public ColourRules checkPathOP;
-    public ColourRules checkPathBR;
-  
+
+    //I UPDATED/ADDED THESE. NOT SURE WHICH COLOUR COMBOS ARE BEST SO YOU MAY WANT TO UPDATE THESE NAMES AND THEIR RULE DEFINITIONS BELOW
+    public ColourRules checkPathIncludeYG;
+    public ColourRules checkPathIncludeOP;
+    public ColourRules checkPathIncludeBR;
+    public ColourRules checkPathExcludeGO;
+    public ColourRules checkPathExcludePB;
+    public ColourRules checkPathExcludeRY;
+
     public List<MovementRules> movementRuleSets = new List<MovementRules>();
     public List<ColourRules> colourRuleSets = new List<ColourRules>();
 
@@ -95,197 +114,251 @@ public class Rules : MonoBehaviour
     }
 
   
-
+    //I UPDATED ALL OF THE RULE DEFINITIONS TO USE THE ENUMS
+    //I ADDED MORE DEFINTIONS SO THE NUMBER OF UNIQUE INDEXES HAS CHANGED
+    //I ADDED THE COLOUR RULES TO THE COLOUR RULE LIST
     public void defineRules()
     {
-        TmoveU.index = 0;
-        TmoveU.direction = 1011;
-        TmoveU.distance = 1;
-        TmoveU.colour = -1;
-        TmoveU.type = 0;
-        movementRuleSets.Add(TmoveU);
+        TmoveS.index = 0;
+        TmoveS.direction = Direction.South;
+        TmoveS.distance = 1;
+        TmoveS.colour = Colour.All;
+        TmoveS.type = Type.Tmove;
+        movementRuleSets.Add(TmoveS);
+
+        TmoveN.index = 13; //I MOVED THESE TMOVE RULE DEFINITIONS FROM BOTTOM SO THAT CHANGES ORDER OF ITEMS IN LIST
+        TmoveN.direction = Direction.North;
+        TmoveN.distance = 1;
+        TmoveN.colour = Colour.All;
+        TmoveN.type = Type.Tmove;
+        movementRuleSets.Add(TmoveN);
+
+        TmoveW.index = 14;
+        TmoveW.direction = Direction.West;
+        TmoveW.distance = 1;
+        TmoveW.colour = Colour.All;
+        TmoveW.type = Type.Tmove;
+        movementRuleSets.Add(TmoveW);
+
+        TmoveE.index = 15;
+        TmoveE.direction = Direction.East;
+        TmoveE.distance = 1;
+        TmoveE.colour = Colour.All;
+        TmoveE.type = Type.Tmove;
+        movementRuleSets.Add(TmoveE);
 
         blank.index = 1;
-        blank.direction = 1111;
+        blank.direction = Direction.All;
         blank.distance = 1;
-        blank.colour = -1;
-        blank.type = 1;
+        blank.colour = Colour.All;
+        blank.type = Type.blank;
         movementRuleSets.Add(blank);
 
         teleportB.index = 3;
-        teleportB.direction = -1;
+        teleportB.direction = Direction.All;
         teleportB.distance = -1;
-        teleportB.colour = 5;
-        teleportB.type = 2;
+        teleportB.colour = Colour.Blue;
+        teleportB.type = Type.teleport;
         movementRuleSets.Add(teleportB);
 
         teleportP.index = 4;
-        teleportP.direction = -1;
+        teleportP.direction = Direction.All;
         teleportP.distance = -1;
-        teleportP.colour = 6;
-        teleportP.type = 2;
+        teleportP.colour = Colour.Purple;
+        teleportP.type = Type.teleport;
         movementRuleSets.Add(teleportP);
 
         teleportG.index = 5;
-        teleportG.direction = -1;
+        teleportG.direction = Direction.All;
         teleportG.distance = -1;
-        teleportG.colour = 4;
-        teleportG.type = 2;
+        teleportG.colour = Colour.Green;
+        teleportG.type = Type.teleport;
         movementRuleSets.Add(teleportG);
 
         teleportR.index = 6;
-        teleportR.direction = -1;
+        teleportR.direction = Direction.All;
         teleportR.distance = -1;
-        teleportR.colour = 3;
-        teleportR.type = 2;
+        teleportR.colour = Colour.Red;
+        teleportR.type = Type.teleport;
         movementRuleSets.Add(teleportR);
 
         teleportO.index = 7;
-        teleportO.direction = -1;
+        teleportO.direction = Direction.All;
         teleportO.distance = -1;
-        teleportO.colour = 2;
-        teleportO.type = 2;
+        teleportO.colour = Colour.Orange;
+        teleportO.type = Type.teleport;
         movementRuleSets.Add(teleportO);
 
         teleportY.index = 8;
-        teleportY.direction = -1;
+        teleportY.direction = Direction.All;
         teleportY.distance = -1;
-        teleportY.colour = 1;
-        teleportY.type = 2;
+        teleportY.colour = Colour.Yellow;
+        teleportY.type = Type.teleport;
         movementRuleSets.Add(teleportY);
 
         jumpOne.index = 9;
-        jumpOne.direction = 1111;
+        jumpOne.direction = Direction.All;
         jumpOne.distance = 2;
-        jumpOne.colour = -1;
-        jumpOne.type = 3;
+        jumpOne.colour = Colour.All;
+        jumpOne.type = Type.jump1;
         movementRuleSets.Add(jumpOne);
 
         jumpTwo.index = 10;
-        jumpTwo.direction = 1111;
+        jumpTwo.direction = Direction.All;
         jumpTwo.distance = 3;
-        jumpTwo.colour = -1;
-        jumpTwo.type = 4;
+        jumpTwo.colour = Colour.All;
+        jumpTwo.type = Type.jump2;
         movementRuleSets.Add(jumpTwo);
 
         warmTemp.index = 11;
-        warmTemp.direction = 1111;
+        warmTemp.direction = Direction.All;
         warmTemp.distance = 1;
-        warmTemp.colour = 1 | 2 | 3; //does this work or should it be seperate?
-        warmTemp.type = 5;
+        warmTemp.colour = Colour.Warm; //does this work or should it be seperate?
+        warmTemp.type = Type.warm;
         movementRuleSets.Add(warmTemp);
 
         coldTemp.index = 12;
-        coldTemp.direction = 1111;
+        coldTemp.direction = Direction.All;
         coldTemp.distance = 1;
-        coldTemp.colour = 4 | 5 | 6;
-        coldTemp.type = 6;
+        coldTemp.colour = Colour.Cool;
+        coldTemp.type = Type.cool;
         movementRuleSets.Add(coldTemp);
 
-        TmoveD.index = 13;
-        TmoveD.direction = 0111;
-        TmoveD.distance = 1;
-        TmoveD.colour = -1;
-        TmoveD.type = 0;
-        movementRuleSets.Add(TmoveD);
 
-        TmoveL.index = 14;
-        TmoveL.direction = 1101;
-        TmoveL.distance = 1;
-        TmoveL.colour = -1;
-        TmoveL.type = 0;
-        movementRuleSets.Add(TmoveL);
+        //Colour Rules
 
-        TmoveR.index = 15;
-        TmoveR.direction = 1110;
-        TmoveR.distance = 1;
-        TmoveR.colour = -1;
-        TmoveR.type = 0;
-        movementRuleSets.Add(TmoveR);
-
-        //ColourRules includeBY;// if blue, goes to yellow
-        // int currentpos = 9999;//take from the maze/how to keep track of prevs position when maze is not built?
-        //if(currentpos.colour==1)
-        //{
         includeBY.index = 16;
-        includeBY.src = 5;
-        includeBY.target = 1;
-        includeBY.type = 7;
-        //create more of these
-        includeBY.inclusion = false; //not using this anywhere
+        includeBY.src = Colour.Blue;
+        includeBY.target = Colour.Yellow;
+        includeBY.type = Type.include;
+        colourRuleSets.Add(includeBY);
 
-        excludeR.index = 17;
-        excludeR.src = 3;
-        excludeR.notTarget = 3;
-        excludeR.inclusion = false;
-        excludeR.type = 8;
-        //add to the list
+        //I ADDED THE BELOW INCLUDE DEFINITIONS
+        includePR.index = 17;
+        includePR.src = Colour.Purple;
+        includePR.target = Colour.Red;
+        includePR.type = Type.include;
+        colourRuleSets.Add(includePR);
 
-        excludeO.index = 18;
-      
-        excludeO.notTarget = 2;
-        excludeO.inclusion = false;
-        excludeO.type = 8;
+        includeOG.index = 18;
+        includeOG.src = Colour.Orange;
+        includeOG.target = Colour.Green;
+        includeOG.type = Type.include;
+        colourRuleSets.Add(includeOG);
 
-        excludeY.index = 19;
-      
-        excludeY.notTarget = 1;
-        excludeY.inclusion = false;
-        excludeY.type = 8;
+        includeGR.index = 19;
+        includeGR.src = Colour.Green;
+        includeGR.target = Colour.Blue;
+        includeGR.type = Type.include;
+        colourRuleSets.Add(includeGR);
 
-        excludeB.index = 20;
-        excludeB.notTarget = 5;
-        excludeB.inclusion = false;
-        excludeB.type = 8;
+        includeRB.index = 20;
+        includeRB.src = Colour.Red;
+        includeRB.target = Colour.Blue;
+        includeRB.type = Type.include;
+        colourRuleSets.Add(includeRB);
 
-        excludeG.index = 21;
-        excludeG.notTarget = 4;
-        excludeG.inclusion = false;
-        excludeG.type = 8;
+        excludeR.index = 21;
+        excludeR.target = Colour.Red;
+        excludeR.type = Type.exclude;
+        colourRuleSets.Add(excludeR);
 
-        excludeP.index = 22;
-        excludeP.notTarget = 6;
-        excludeP.inclusion = false;
-        excludeP.type = 8;
+        excludeO.index = 22;
+        excludeO.target = Colour.Orange;
+        excludeO.type = Type.exclude;
+        colourRuleSets.Add(excludeO);
 
-        blockY.index = 23;
-        blockY.notTarget = 1;
-        blockY.type = 9;
+        excludeY.index = 23;
+        excludeY.target = Colour.Yellow;
+        excludeY.type = Type.exclude;
+        colourRuleSets.Add(excludeY);
 
-        blockO.index = 24;
-        blockO.notTarget = 2;
-        blockO.type = 9;
+        excludeB.index = 24;
+        excludeB.target = Colour.Blue;
+        excludeB.type = Type.exclude;
+        colourRuleSets.Add(excludeB);
 
-        blockR.index = 25;
-        blockR.notTarget = 3;
-        blockR.type = 9;
+        excludeG.index = 25;
+        excludeG.target = Colour.Green;
+        excludeG.type = Type.exclude;
+        colourRuleSets.Add(excludeG);
 
-        blockG.index = 26;
-        blockG.notTarget= 4;
-        blockG.type = 9;
+        excludeP.index = 26;
+        excludeP.target = Colour.Purple;
+        excludeP.type = Type.exclude;
+        colourRuleSets.Add(excludeP);
 
-        blockB.index = 27;
-        blockB.notTarget= 5;
-        blockB.type = 9;
+        blockY.index = 27;
+        blockY.target = Colour.Yellow;
+        blockY.type = Type.block;
+        colourRuleSets.Add(blockY);
 
-        blockP.index = 28;
-        blockP.notTarget =6; //src and inclusion not defined yet
-        blockP.type = 9;
+        blockO.index = 28;
+        blockO.target = Colour.Orange;
+        blockO.type = Type.block;
+        colourRuleSets.Add(blockO);
 
-        
+        blockR.index = 29;
+        blockR.target = Colour.Red;
+        blockR.type = Type.block;
+        colourRuleSets.Add(blockR);
 
-        checkPathYG.index = 29;
-        checkPathYG.src = 1;
-        checkPathYG.target = 4;
+        blockG.index = 30;
+        blockG.target = Colour.Green;
+        blockG.type = Type.block;
+        colourRuleSets.Add(blockG);
 
-        checkPathOP.index = 30;
-        checkPathOP.src = 2;
-        checkPathOP.target = 6;
+        blockB.index = 31;
+        blockB.target = Colour.Blue;
+        blockB.type = Type.block;
+        colourRuleSets.Add(blockB);
 
-        checkPathBR.index = 31;
-        checkPathBR.src = 5;
-        checkPathBR.target = 3;
+        blockP.index = 32;
+        blockP.target = Colour.Purple;
+        blockP.type = Type.block;
+        colourRuleSets.Add(blockP);
 
+        checkPathIncludeYG.index = 33;
+        checkPathIncludeYG.src = Colour.Yellow;
+        checkPathIncludeYG.target = Colour.Green;
+        checkPathIncludeYG.inclusion = false;
+        checkPathIncludeYG.type = Type.checkPathInc;
+        colourRuleSets.Add(checkPathIncludeYG);
+
+        checkPathIncludeOP.index = 34;
+        checkPathIncludeOP.src = Colour.Orange;
+        checkPathIncludeOP.target = Colour.Purple;
+        checkPathIncludeOP.inclusion = false;
+        checkPathIncludeOP.type = Type.checkPathInc;
+        colourRuleSets.Add(checkPathIncludeOP);
+
+        checkPathIncludeBR.index = 35;
+        checkPathIncludeBR.src = Colour.Blue;
+        checkPathIncludeBR.target = Colour.Red;
+        checkPathIncludeBR.inclusion = false;
+        checkPathIncludeBR.type = Type.checkPathInc;
+        colourRuleSets.Add(checkPathIncludeBR);
+
+        checkPathExcludeGO.index = 36;
+        checkPathExcludeGO.src = Colour.Green;
+        checkPathExcludeGO.target = Colour.Orange;
+        checkPathExcludeGO.inclusion = false;
+        checkPathExcludeGO.type = Type.checkPathExc;
+        colourRuleSets.Add(checkPathExcludeGO);
+
+        checkPathExcludePB.index = 36;
+        checkPathExcludePB.src = Colour.Purple;
+        checkPathExcludePB.target = Colour.Blue;
+        checkPathExcludePB.inclusion = false;
+        checkPathExcludePB.type = Type.checkPathExc;
+        colourRuleSets.Add(checkPathExcludePB);
+
+        checkPathExcludeRY.index = 36;
+        checkPathExcludeRY.src = Colour.Red;
+        checkPathExcludeRY.target = Colour.Yellow;
+        checkPathExcludeRY.inclusion = false;
+        checkPathExcludeRY.type = Type.checkPathExc;
+        colourRuleSets.Add(checkPathExcludeRY);
     }
 
 
@@ -304,7 +377,8 @@ public class Rules : MonoBehaviour
         //global list to keep track of all chromosomes
 
         //list containing all possible rules:
-        List<int> allList = new List<int>();
+        //I CHANGED THE LIST FROM INT TO TYPE
+        List<Type> allList = new List<Type>();
 
         foreach (var item in movementRuleSets)
         {
