@@ -15,6 +15,7 @@ public class Tile : MonoBehaviour
 
     //these should be set to the same thing
     public Colour colour;
+    public bool assigned;
 
     public Type ruleType;
     public bool jumpN;
@@ -34,6 +35,7 @@ public class Tile : MonoBehaviour
 
     private void Awake()
     {
+        assigned = false;
         jumpN = false;
         jumpS = false;
         jumpE = false;

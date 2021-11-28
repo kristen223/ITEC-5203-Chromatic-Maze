@@ -57,48 +57,46 @@ public struct RuleTypes //chromosomes (total 10 types of rules)
 public class Rules : MonoBehaviour
 {
 
-    //global variables => rules 
-    public MovementRule TmoveN;
+    //I UPDATED/ADDED CHECK PATH RULES AND EXCLUDE/INCLUDE RULES
+    public static MovementRule TmoveN;
     public static MovementRule TmoveS;
-    public MovementRule TmoveE;
-    public MovementRule TmoveW;
-    public MovementRule blank;
-    public MovementRule teleportB;
-    public MovementRule teleportP;
-    public MovementRule teleportG;
-    public MovementRule teleportR;
-    public MovementRule teleportO;
-    public MovementRule teleportY;
-    public MovementRule jumpOne;
-    public MovementRule jumpTwo;
-    public MovementRule warmTemp;
-    public MovementRule coldTemp;
-    public ColourRule includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
-    public ColourRule includePR;//same as above
-    public ColourRule includeOG;
-    public ColourRule includeGR;
-    public ColourRule includeRB;
-    public ColourRule includeYP;//more combination possible
-    public ColourRule excludeR;
-    public ColourRule excludeO;
-    public ColourRule excludeY;
-    public ColourRule excludeB;
-    public ColourRule excludeG;
-    public ColourRule excludeP;
-    public ColourRule blockR;
-    public ColourRule blockO;
-    public ColourRule blockY;
-    public ColourRule blockG;
-    public ColourRule blockB;
-    public ColourRule blockP;
-
-    //I UPDATED/ADDED THESE. NOT SURE WHICH COLOUR COMBOS ARE BEST SO YOU MAY WANT TO UPDATE THESE NAMES AND THEIR RULE DEFINITIONS BELOW
-    public ColourRule checkPathIncludeYG;
-    public ColourRule checkPathIncludeOP;
-    public ColourRule checkPathIncludeBR;
-    public ColourRule checkPathExcludeGO;
-    public ColourRule checkPathExcludePB;
-    public ColourRule checkPathExcludeRY;
+    public static MovementRule TmoveE;
+    public static MovementRule TmoveW;
+    public static MovementRule blank;
+    public static MovementRule teleportB;
+    public static MovementRule teleportP;
+    public static MovementRule teleportG;
+    public static MovementRule teleportR;
+    public static MovementRule teleportO;
+    public static MovementRule teleportY;
+    public static MovementRule jumpOne;
+    public static MovementRule jumpTwo;
+    public static MovementRule warmTemp;
+    public static MovementRule coldTemp;
+    public static ColourRule includeRB;
+    public static ColourRule includeOG;
+    public static ColourRule includeYP;
+    public static ColourRule includeGR;
+    public static ColourRule includeBY;
+    public static ColourRule includePR;
+    public static ColourRule excludeRP;
+    public static ColourRule excludeOB;
+    public static ColourRule excludeYG;
+    public static ColourRule excludeGY;
+    public static ColourRule excludeBR;
+    public static ColourRule excludePO;
+    public static ColourRule blockR;
+    public static ColourRule blockO;
+    public static ColourRule blockY;
+    public static ColourRule blockG;
+    public static ColourRule blockB;
+    public static ColourRule blockP;
+    public static ColourRule checkPathIncludeYG;
+    public static ColourRule checkPathIncludeOP;
+    public static ColourRule checkPathIncludeBR;
+    public static ColourRule checkPathExcludeGO;
+    public static ColourRule checkPathExcludePB;
+    public static ColourRule checkPathExcludeRY;
 
     public List<MovementRule> movementRuleSets = new List<MovementRule>();
     public List<ColourRule> colourRuleSets = new List<ColourRule>();
@@ -141,7 +139,7 @@ public class Rules : MonoBehaviour
         TmoveW.type = Type.Tmove;
         movementRuleSets.Add(TmoveW);
 
-        TmoveE.index = 15;
+        TmoveE.index = 2;
         TmoveE.direction = Direction.East;
         TmoveE.distance = 1;
         TmoveE.target = Colour.All;
@@ -259,50 +257,56 @@ public class Rules : MonoBehaviour
         includeRB.type = Type.include;
         colourRuleSets.Add(includeRB);
 
-        excludeR.index = 21;
-        excludeR.target = Colour.Red;
-        excludeR.type = Type.exclude;
-        colourRuleSets.Add(excludeR);
+        excludeRP.index = 21;
+        excludeRP.src = Colour.Red;
+        excludeRP.target = Colour.Purple;
+        excludeRP.type = Type.exclude;
+        colourRuleSets.Add(excludeRP);
 
-        excludeO.index = 22;
-        excludeO.target = Colour.Orange;
-        excludeO.type = Type.exclude;
-        colourRuleSets.Add(excludeO);
+        excludeOB.index = 22;
+        excludeOB.src = Colour.Orange;
+        excludeOB.target = Colour.Blue;
+        excludeOB.type = Type.exclude;
+        colourRuleSets.Add(excludeOB);
 
-        excludeY.index = 23;
-        excludeY.target = Colour.Yellow;
-        excludeY.type = Type.exclude;
-        colourRuleSets.Add(excludeY);
+        excludeYG.index = 23;
+        excludeYG.src = Colour.Yellow;
+        excludeYG.target = Colour.Green;
+        excludeYG.type = Type.exclude;
+        colourRuleSets.Add(excludeYG);
 
-        excludeB.index = 24;
-        excludeB.target = Colour.Blue;
-        excludeB.type = Type.exclude;
-        colourRuleSets.Add(excludeB);
+        excludeBR.index = 24;
+        excludeBR.src = Colour.Blue;
+        excludeBR.target = Colour.Red;
+        excludeBR.type = Type.exclude;
+        colourRuleSets.Add(excludeBR);
 
-        excludeG.index = 25;
-        excludeG.target = Colour.Green;
-        excludeG.type = Type.exclude;
-        colourRuleSets.Add(excludeG);
+        excludeGY.index = 25;
+        excludeGY.src = Colour.Green;
+        excludeGY.target = Colour.Yellow;
+        excludeGY.type = Type.exclude;
+        colourRuleSets.Add(excludeGY);
 
-        excludeP.index = 26;
-        excludeP.target = Colour.Purple;
-        excludeP.type = Type.exclude;
-        colourRuleSets.Add(excludeP);
+        excludePO.index = 26;
+        excludePO.src = Colour.Purple;
+        excludePO.target = Colour.Orange;
+        excludePO.type = Type.exclude;
+        colourRuleSets.Add(excludePO);
 
-        blockY.index = 27;
-        blockY.target = Colour.Yellow;
-        blockY.type = Type.block;
-        colourRuleSets.Add(blockY);
+        blockR.index = 27;
+        blockR.target = Colour.Red;
+        blockR.type = Type.block;
+        colourRuleSets.Add(blockR);
 
         blockO.index = 28;
         blockO.target = Colour.Orange;
         blockO.type = Type.block;
         colourRuleSets.Add(blockO);
 
-        blockR.index = 29;
-        blockR.target = Colour.Red;
-        blockR.type = Type.block;
-        colourRuleSets.Add(blockR);
+        blockY.index = 29;
+        blockY.target = Colour.Yellow;
+        blockY.type = Type.block;
+        colourRuleSets.Add(blockY);
 
         blockG.index = 30;
         blockG.target = Colour.Green;
@@ -347,14 +351,14 @@ public class Rules : MonoBehaviour
         checkPathExcludeGO.type = Type.checkPathExc;
         colourRuleSets.Add(checkPathExcludeGO);
 
-        checkPathExcludePB.index = 36;
+        checkPathExcludePB.index = 37;
         checkPathExcludePB.src = Colour.Purple;
         checkPathExcludePB.target = Colour.Blue;
         checkPathExcludePB.inclusion = false;
         checkPathExcludePB.type = Type.checkPathExc;
         colourRuleSets.Add(checkPathExcludePB);
 
-        checkPathExcludeRY.index = 36;
+        checkPathExcludeRY.index = 15;
         checkPathExcludeRY.src = Colour.Red;
         checkPathExcludeRY.target = Colour.Yellow;
         checkPathExcludeRY.inclusion = false;
@@ -593,6 +597,103 @@ public class Rules : MonoBehaviour
 
 
 
+    }
+
+    public static MovementRule GetMRule(int index)
+    {
+        switch(index)
+        {
+            case 0:
+                return TmoveS;
+            case 1:
+                return blank;
+            case 2:
+                return TmoveE;
+            case 3:
+                return teleportB;
+            case 4:
+                return teleportP;
+            case 5:
+                return teleportG;
+            case 6:
+                return teleportR;
+            case 7:
+                return teleportO;
+            case 8:
+                return teleportY;
+            case 9:
+                return jumpOne;
+            case 10:
+                return jumpTwo;
+            case 11:
+                return warmTemp;
+            case 12:
+                return coldTemp;
+            case 13:
+                return TmoveN;
+            case 14:
+                return TmoveW;
+        }
+
+        Debug.Log("ERROR: returned blank by mistake");
+        return blank; //will never happen
+
+    }
+
+    public static ColourRule GetCRule(int index)
+    {
+        switch (index)
+        {
+            case 15:
+                return checkPathExcludeRY;
+            case 16:
+                return includeBY;
+            case 17:
+                return includePR;
+            case 18:
+                return includeOG;
+            case 19:
+                return includeGR;
+            case 20:
+                return includeRB;
+            case 21:
+                return excludeRP;
+            case 22:
+                return excludeOB;
+            case 23:
+                return excludeYG;
+            case 24:
+                return excludeBR;
+            case 25:
+                return excludeGY;
+            case 26:
+                return excludePO;
+            case 27:
+                return blockR;
+            case 28:
+                return blockO;
+            case 29:
+                return blockY;
+            case 30:
+                return blockG;
+            case 31:
+                return blockB;
+            case 32:
+                return blockP;
+            case 33:
+                return checkPathIncludeYG;
+            case 34:
+                return checkPathIncludeOP;
+            case 35:
+                return checkPathIncludeBR;
+            case 36:
+                return checkPathExcludeGO;
+            case 37:
+                return checkPathExcludePB;
+        }
+
+        Debug.LogError("ERROR: returned blockR by mistake");
+        return blockR; //will never happen
     }
 
 }
