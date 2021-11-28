@@ -9,8 +9,8 @@ public class Tile : MonoBehaviour
     public GameObject tilepfab;
 
     //one will be null
-    public MovementRules mRule;
-    public ColourRules cRule;
+    public MovementRule mRule;
+    public ColourRule cRule;
     public bool moveRule;
 
     //these should be set to the same thing
@@ -24,13 +24,13 @@ public class Tile : MonoBehaviour
     public bool jumpTwoN;
     public bool jumpTwoS;
     public bool jumpTwoE;
-    public bool jumpTwoW;
+    public bool jumpTwoW; 
 
     public Tile parent;
     public List<Tile> children; //may change to list later
     public int rank;
     public bool border;
-
+    public int passedChecker;
 
     private void Awake()
     {
@@ -43,6 +43,8 @@ public class Tile : MonoBehaviour
         jumpTwoE = false;
         jumpTwoW = false;
         moveRule = false;
+        passedChecker = 0;
+        rank = 0;
     }
 
     //This find the root noed of the subset of t

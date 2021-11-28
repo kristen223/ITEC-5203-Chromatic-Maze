@@ -276,7 +276,7 @@ public class KruskalMaze : MonoBehaviour
             for (int i = 1; i < fromOtoRoot.Count; i++)
             {
                 fromOtoRoot[i].rank = startingRank + i;
-                fromOtoRoot[i].GetComponentInChildren<Text>().text = fromOtoRoot[i].rank.ToString();
+                //fromOtoRoot[i].GetComponentInChildren<Text>().text = fromOtoRoot[i].rank.ToString();
 
                 if (i < fromOtoRoot.Count - 1) //update parents except for the oriignal origin
                 {
@@ -315,7 +315,7 @@ public class KruskalMaze : MonoBehaviour
         foreach (Tile t in tiles)
         {
             t.rank = 0;
-            t.parent.GetComponentInChildren<Text>().text = t.parent.rank.ToString();
+            //t.parent.GetComponentInChildren<Text>().text = t.parent.rank.ToString();
         }
     }
 
@@ -332,7 +332,7 @@ public class KruskalMaze : MonoBehaviour
             if (child.parent.rank - child.rank <= 0)
             {
                 child.parent.rank = child.rank + 1;
-                child.parent.GetComponentInChildren<Text>().text = child.parent.rank.ToString();
+                //child.parent.GetComponentInChildren<Text>().text = child.parent.rank.ToString();
             }
             n++;
             child = child.parent;

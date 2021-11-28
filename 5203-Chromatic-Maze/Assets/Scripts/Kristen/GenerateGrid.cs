@@ -24,7 +24,7 @@ public class GenerateGrid : MonoBehaviour
     [HideInInspector] public int EdgeIndex = 0;
     [HideInInspector] public GameObject[] tiles;
     [HideInInspector] public static Tile[] vertices;
-    private Object[] colours;
+    private Object[] colours; //TEMPORARY
 
     private GameObject BorderFolder;
     private GameObject EdgeFolder;
@@ -58,10 +58,10 @@ public class GenerateGrid : MonoBehaviour
 
                 GameObject tile = Instantiate(tilePrefab, new Vector3((x * 20) - 20f, (y * 20) - 10f, 0), Quaternion.Euler(0, 0, 0));
                 tile.name = "Tile-" + (counter + 1);
-                tile.GetComponent<Tile>().rank = 0;
+                //tile.GetComponent<Tile>().rank = 0;
                 tile.GetComponentInChildren<Text>().text = "0";
                 tile.GetComponent<Tile>().parent = tile.GetComponent<Tile>();
-                tile.GetComponentInChildren<Text>().text = tile.GetComponent<Tile>().rank.ToString();
+                //tile.GetComponentInChildren<Text>().text = tile.GetComponent<Tile>().rank.ToString();
 
                 if (y == 1 || y == height || x == 1 || x == width)
                 {
@@ -107,9 +107,10 @@ public class GenerateGrid : MonoBehaviour
                 }
 
                 //TEMPORARY - DELETE LATER
+                SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
                 Material mat = (Material)colours[Random.Range(0, colours.Length)];
-                tile.GetComponent<SpriteRenderer>().material.shader = mat.shader;
-                tile.GetComponent<SpriteRenderer>().material.color = mat.color;
+                sr.material.shader = mat.shader;
+                sr.material.color = mat.color;
 
                 tiles[counter] = tile;
 

@@ -10,25 +10,26 @@ public enum Type {Tmove, blank, teleport, jump1, jump2, warm, cool,include, excl
 public enum Direction {North, South, East, West, All};
 public enum Colour {Red, Orange, Yellow, Green, Blue, Purple, Warm, Cool, All}; //colour of tapped tile
 
-public struct MovementRules
+public struct MovementRule
 {
     public int index;
     public int distance;
     public Type type;
     public Direction direction;
-    public Colour colour;
+    public Colour src; //set this later
+    public Colour target;
 
     //public int direction; //N,S,E,W=1111,  dont care=-1
     //public int colour; //-1 means dont care , 1=yellow, 2=orange, 3=red, 4=green, 5=blue, 6=purple
     //public int type;
 
-    public static implicit operator MovementRules(List<MovementRules> v)
+    public static implicit operator MovementRule(List<MovementRule> v)
     {
         throw new NotImplementedException();
     }
 }
 
-public struct ColourRules  
+public struct ColourRule  
 {
     public int index;
     public bool inclusion; //true if the src colour was passed for both CheckPath rule types
@@ -41,7 +42,7 @@ public struct ColourRules
     //public int notTarget; 
     //public int type;
 
-    public static implicit operator ColourRules(List<ColourRules> v)
+    public static implicit operator ColourRule(List<ColourRule> v)
     {
         throw new NotImplementedException();
     }
@@ -57,50 +58,50 @@ public class Rules : MonoBehaviour
 {
 
     //global variables => rules 
-    public MovementRules TmoveN;
-    public MovementRules TmoveS;
-    public MovementRules TmoveE;
-    public MovementRules TmoveW;
-    public MovementRules blank;
-    public MovementRules teleportB;
-    public MovementRules teleportP;
-    public MovementRules teleportG;
-    public MovementRules teleportR;
-    public MovementRules teleportO;
-    public MovementRules teleportY;
-    public MovementRules jumpOne;
-    public MovementRules jumpTwo;
-    public MovementRules warmTemp;
-    public MovementRules coldTemp;
-    public ColourRules includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
-    public ColourRules includePR;//same as above
-    public ColourRules includeOG;
-    public ColourRules includeGR;
-    public ColourRules includeRB;
-    public ColourRules includeYP;//more combination possible
-    public ColourRules excludeR;
-    public ColourRules excludeO;
-    public ColourRules excludeY;
-    public ColourRules excludeB;
-    public ColourRules excludeG;
-    public ColourRules excludeP;
-    public ColourRules blockR;
-    public ColourRules blockO;
-    public ColourRules blockY;
-    public ColourRules blockG;
-    public ColourRules blockB;
-    public ColourRules blockP;
+    public MovementRule TmoveN;
+    public static MovementRule TmoveS;
+    public MovementRule TmoveE;
+    public MovementRule TmoveW;
+    public MovementRule blank;
+    public MovementRule teleportB;
+    public MovementRule teleportP;
+    public MovementRule teleportG;
+    public MovementRule teleportR;
+    public MovementRule teleportO;
+    public MovementRule teleportY;
+    public MovementRule jumpOne;
+    public MovementRule jumpTwo;
+    public MovementRule warmTemp;
+    public MovementRule coldTemp;
+    public ColourRule includeBY; //if this is applied, other B? cant be applied.Make sure this rule is not the same as temperature. need to NOT have the temperature thing here.
+    public ColourRule includePR;//same as above
+    public ColourRule includeOG;
+    public ColourRule includeGR;
+    public ColourRule includeRB;
+    public ColourRule includeYP;//more combination possible
+    public ColourRule excludeR;
+    public ColourRule excludeO;
+    public ColourRule excludeY;
+    public ColourRule excludeB;
+    public ColourRule excludeG;
+    public ColourRule excludeP;
+    public ColourRule blockR;
+    public ColourRule blockO;
+    public ColourRule blockY;
+    public ColourRule blockG;
+    public ColourRule blockB;
+    public ColourRule blockP;
 
     //I UPDATED/ADDED THESE. NOT SURE WHICH COLOUR COMBOS ARE BEST SO YOU MAY WANT TO UPDATE THESE NAMES AND THEIR RULE DEFINITIONS BELOW
-    public ColourRules checkPathIncludeYG;
-    public ColourRules checkPathIncludeOP;
-    public ColourRules checkPathIncludeBR;
-    public ColourRules checkPathExcludeGO;
-    public ColourRules checkPathExcludePB;
-    public ColourRules checkPathExcludeRY;
+    public ColourRule checkPathIncludeYG;
+    public ColourRule checkPathIncludeOP;
+    public ColourRule checkPathIncludeBR;
+    public ColourRule checkPathExcludeGO;
+    public ColourRule checkPathExcludePB;
+    public ColourRule checkPathExcludeRY;
 
-    public List<MovementRules> movementRuleSets = new List<MovementRules>();
-    public List<ColourRules> colourRuleSets = new List<ColourRules>();
+    public List<MovementRule> movementRuleSets = new List<MovementRule>();
+    public List<ColourRule> colourRuleSets = new List<ColourRule>();
 
     public int popSize;
 
@@ -122,105 +123,105 @@ public class Rules : MonoBehaviour
         TmoveS.index = 0;
         TmoveS.direction = Direction.South;
         TmoveS.distance = 1;
-        TmoveS.colour = Colour.All;
+        TmoveS.target = Colour.All;
         TmoveS.type = Type.Tmove;
         movementRuleSets.Add(TmoveS);
 
         TmoveN.index = 13; //I MOVED THESE TMOVE RULE DEFINITIONS FROM BOTTOM SO THAT CHANGES ORDER OF ITEMS IN LIST
         TmoveN.direction = Direction.North;
         TmoveN.distance = 1;
-        TmoveN.colour = Colour.All;
+        TmoveN.target = Colour.All;
         TmoveN.type = Type.Tmove;
         movementRuleSets.Add(TmoveN);
 
         TmoveW.index = 14;
         TmoveW.direction = Direction.West;
         TmoveW.distance = 1;
-        TmoveW.colour = Colour.All;
+        TmoveW.target = Colour.All;
         TmoveW.type = Type.Tmove;
         movementRuleSets.Add(TmoveW);
 
         TmoveE.index = 15;
         TmoveE.direction = Direction.East;
         TmoveE.distance = 1;
-        TmoveE.colour = Colour.All;
+        TmoveE.target = Colour.All;
         TmoveE.type = Type.Tmove;
         movementRuleSets.Add(TmoveE);
 
         blank.index = 1;
         blank.direction = Direction.All;
         blank.distance = 1;
-        blank.colour = Colour.All;
+        blank.target = Colour.All;
         blank.type = Type.blank;
         movementRuleSets.Add(blank);
 
         teleportB.index = 3;
         teleportB.direction = Direction.All;
         teleportB.distance = -1;
-        teleportB.colour = Colour.Blue;
+        teleportB.target = Colour.Blue;
         teleportB.type = Type.teleport;
         movementRuleSets.Add(teleportB);
 
         teleportP.index = 4;
         teleportP.direction = Direction.All;
         teleportP.distance = -1;
-        teleportP.colour = Colour.Purple;
+        teleportP.target = Colour.Purple;
         teleportP.type = Type.teleport;
         movementRuleSets.Add(teleportP);
 
         teleportG.index = 5;
         teleportG.direction = Direction.All;
         teleportG.distance = -1;
-        teleportG.colour = Colour.Green;
+        teleportG.target = Colour.Green;
         teleportG.type = Type.teleport;
         movementRuleSets.Add(teleportG);
 
         teleportR.index = 6;
         teleportR.direction = Direction.All;
         teleportR.distance = -1;
-        teleportR.colour = Colour.Red;
+        teleportR.target = Colour.Red;
         teleportR.type = Type.teleport;
         movementRuleSets.Add(teleportR);
 
         teleportO.index = 7;
         teleportO.direction = Direction.All;
         teleportO.distance = -1;
-        teleportO.colour = Colour.Orange;
+        teleportO.target = Colour.Orange;
         teleportO.type = Type.teleport;
         movementRuleSets.Add(teleportO);
 
         teleportY.index = 8;
         teleportY.direction = Direction.All;
         teleportY.distance = -1;
-        teleportY.colour = Colour.Yellow;
+        teleportY.target = Colour.Yellow;
         teleportY.type = Type.teleport;
         movementRuleSets.Add(teleportY);
 
         jumpOne.index = 9;
         jumpOne.direction = Direction.All;
         jumpOne.distance = 2;
-        jumpOne.colour = Colour.All;
+        jumpOne.target = Colour.All;
         jumpOne.type = Type.jump1;
         movementRuleSets.Add(jumpOne);
 
         jumpTwo.index = 10;
         jumpTwo.direction = Direction.All;
         jumpTwo.distance = 3;
-        jumpTwo.colour = Colour.All;
+        jumpTwo.target = Colour.All;
         jumpTwo.type = Type.jump2;
         movementRuleSets.Add(jumpTwo);
 
         warmTemp.index = 11;
         warmTemp.direction = Direction.All;
         warmTemp.distance = 1;
-        warmTemp.colour = Colour.Warm; //does this work or should it be seperate?
+        warmTemp.target = Colour.Warm; //does this work or should it be seperate?
         warmTemp.type = Type.warm;
         movementRuleSets.Add(warmTemp);
 
         coldTemp.index = 12;
         coldTemp.direction = Direction.All;
         coldTemp.distance = 1;
-        coldTemp.colour = Colour.Cool;
+        coldTemp.target = Colour.Cool;
         coldTemp.type = Type.cool;
         movementRuleSets.Add(coldTemp);
 
@@ -362,7 +363,7 @@ public class Rules : MonoBehaviour
     }
 
 
-    public void selectChromosomes(List<MovementRules> m, List<ColourRules> c, int pop) //add each chromosome size param
+    public void selectChromosomes(List<MovementRule> m, List<ColourRule> c, int pop) //add each chromosome size param
     {
         System.Random randNum = new System.Random();
 
@@ -414,6 +415,7 @@ public class Rules : MonoBehaviour
             }
             ChrsList.Add(chr);
         }
+
 
         fitnessOne(ChrsList,pop);
 
@@ -500,6 +502,7 @@ public class Rules : MonoBehaviour
 
             for (int z = 0; z < uniqueTypes.Length; z++)
             {
+                Debug.Log(uniqueTypes[z]);
                 if (uniqueTypes[z] != 0)
                 {
                     fit = fit * uniqueTypes[z];
@@ -511,7 +514,7 @@ public class Rules : MonoBehaviour
         }
 
 
-
+        Debug.Log("fitvals" + fitVals.Count);
         //printing the ranks here:
         print(fitVals.Values.ToString());
         ArrayList allfitvals = new ArrayList(fitVals.Values);
@@ -525,6 +528,7 @@ public class Rules : MonoBehaviour
        // print(allfitvals[2]);
         foreach(int x in allfitvals) 
         {
+            Debug.Log("dfsdlfjfjdsklfjdsklf");
             print("fitness value: "+ x);//ranks
             //if (x == 1)
             //{
@@ -568,8 +572,8 @@ public class Rules : MonoBehaviour
         }
         //all the final indexes are set in finalIdxs
 
-        List<MovementRules> mr = new List<MovementRules>();
-        List<ColourRules> cr = new List<ColourRules>();
+        List<MovementRule> mr = new List<MovementRule>();
+        List<ColourRule> cr = new List<ColourRule>();
 
         for (int i = 0; i < finalIdxs.Length; i++)
         {
@@ -585,7 +589,7 @@ public class Rules : MonoBehaviour
           
 
         }
-        AssignColour.SetRules(mr,cr);
+        ColourAssigner.SetRules(mr,cr);
 
 
 

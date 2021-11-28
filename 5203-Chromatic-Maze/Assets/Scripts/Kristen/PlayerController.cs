@@ -22,14 +22,14 @@ public class PlayerController : MonoBehaviour
     private Text cText;
     private Text sText;
     private Text bText;
-
     private Text message;
+
+    private Text endMessage;
     //private GameObject rButton;
     private GameObject gameOver;
 
     void Start()
     {
-        
         maze = GenerateGrid.maze;
         solutionP = new List<Tile>(maze.LP.path);
         player = maze.LP.entrance;
@@ -44,11 +44,12 @@ public class PlayerController : MonoBehaviour
         sText.text = sCount.ToString();
 
         bText = GameObject.Find("BCount").GetComponent<Text>();
-        bCount = 5;
+        bCount = 10;
         bText.text = bCount.ToString();
 
-        gameOver = GameObject.Find("GameOver"); 
-        message = GameObject.Find("AlertMessage").GetComponent<Text>();
+        gameOver = GameObject.Find("GameOver");
+        endMessage = GameObject.Find("AlertMessage").GetComponent<Text>();
+        message = GameObject.Find("Alert").GetComponent<Text>();
         //rButton = GameObject.Find("Button");
         gameOver.SetActive(false);
 
@@ -62,7 +63,7 @@ public class PlayerController : MonoBehaviour
         if (player == maze.LP.exit)
         {
             gameOver.SetActive(true);
-            message.text = "Winner!";
+            endMessage.text = "Winner!";
         }
 
         //Game Over - reached dead end, no undo's left, and is not a teleport tile
@@ -70,14 +71,14 @@ public class PlayerController : MonoBehaviour
         if (bCount == 0 && maze.deadends.Contains(player))
         {
             gameOver.SetActive(true);
-            message.text = "Out of Moves - Game Over";
+            endMessage.text = "Out of Moves - Game Over";
         }
 
         //Game Over - Out of Moves and no undo's
         if(sCount == 0 && bCount == 0 && player != maze.LP.exit)
         {
             gameOver.SetActive(true);
-            message.text = "Out of Moves - Game Over";
+            endMessage.text = "Out of Moves - Game Over";
         }
 
         //Desktop Input
@@ -116,16 +117,22 @@ public class PlayerController : MonoBehaviour
 
                 if (player.tag == "checker") //remove checker if applicable
                 {
-                    cCount--;
+                    player.passedChecker--;
+                    if (player.passedChecker == 0)
+                    {
+                        player.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                        cCount--;
+                    }
+                    
                     cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
                 }
                 previous.Pop(); //remove player from path
 
                 //Go through previous list and check if include/exclude bools still apply
                 //bool pExclude = false;
-                //foreach (int exc in AssignColour.excludeRules) //Check if player was on exclude source colour
+                //foreach (int exc in ColourAssigner.excludeRules) //Check if player was on exclude source colour
                 //{
-                //    if (player.colour == AssignColour.cRules[exc].src)
+                //    if (player.colour == ColourAssigner.cRules[exc].src)
                 //    {
                 //        pExclude = true; //we potentially want to change this rule's bool back to false
                 //        break;
@@ -136,9 +143,9 @@ public class PlayerController : MonoBehaviour
                 //bool excSrcExists = false;
                 //if (pExclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
                 //{
-                //    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
+                //    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
                 //    {
-                //        if (AssignColour.cRules[exc].src == colExc)
+                //        if (ColourAssigner.cRules[exc].src == colExc)
                 //        {
                 //            foreach (Tile t in previous)
                 //            {
@@ -159,22 +166,22 @@ public class PlayerController : MonoBehaviour
 
                 //if (excSrcExists == false)
                 //{
-                //    foreach (int exc in AssignColour.excludeRules) //Check inclusion bools and update
+                //    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
                 //    {
-                //        if (AssignColour.cRules[exc].src == colExc)
+                //        if (ColourAssigner.cRules[exc].src == colExc)
                 //        {
-                //            ColourRules c = AssignColour.cRules[exc];
+                //            ColourRule c = ColourAssigner.cRules[exc];
                 //            c.inclusion = false;
-                //            AssignColour.cRules[exc] = c;
+                //            ColourAssigner.cRules[exc] = c;
                 //        }
                 //    }
                 //}
 
 
                 //bool pInclude = false;
-                //foreach (int inc in AssignColour.includeRules) //Check if player was on exclude source colour
+                //foreach (int inc in ColourAssigner.includeRules) //Check if player was on exclude source colour
                 //{
-                //    if (player.colour == AssignColour.cRules[inc].src)
+                //    if (player.colour == ColourAssigner.cRules[inc].src)
                 //    {
                 //        pInclude = true; //we potentially want to change this rule's bool back to false
                 //        break;
@@ -185,9 +192,9 @@ public class PlayerController : MonoBehaviour
                 //bool incSrcExists = false;
                 //if (pInclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
                 //{
-                //    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
+                //    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
                 //    {
-                //        if (AssignColour.cRules[inc].src == colInc)
+                //        if (ColourAssigner.cRules[inc].src == colInc)
                 //        {
                 //            foreach (Tile t in previous)
                 //            {
@@ -208,22 +215,27 @@ public class PlayerController : MonoBehaviour
 
                 //if (incSrcExists == false)
                 //{
-                //    foreach (int inc in AssignColour.includeRules) //Check inclusion bools and update
+                //    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
                 //    {
-                //        if (AssignColour.cRules[inc].src == colInc)
+                //        if (ColourAssigner.cRules[inc].src == colInc)
                 //        {
-                //            ColourRules c = AssignColour.cRules[inc];
+                //            ColourRule c = ColourAssigner.cRules[inc];
                 //            c.inclusion = false;
-                //            AssignColour.cRules[inc] = c;
+                //            ColourAssigner.cRules[inc] = c;
                 //        }
                 //    }
                 //}
 
 
-                //update current position
+                //update current position and path
                 player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false;
                 player = tapped;
                 player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true; //comment out this line
+                SpriteRenderer sr = player.gameObject.GetComponent<SpriteRenderer>();
+                float r = sr.material.color.r - .20f;
+                float b = sr.material.color.b - .20f;
+                float g = sr.material.color.g - .20f;
+                sr.material.color = new Color(r, g, b, 1);
 
                 //update step count
                 sCount++;
@@ -234,8 +246,8 @@ public class PlayerController : MonoBehaviour
         //Start here
         //if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped)) //check that player can move and is not backtracking
         //{
-        //    MovementRules mr = player.mRule;
-        //    ColourRules cr = player.cRule;
+        //    MovementRule mr = player.mRule;
+        //    ColourRule cr = player.cRule;
         //    if (tapped.moveRule == true) //player is on a movement rule
         //    {
         //        int pindex = Array.IndexOf(tiles, player); //index of player
@@ -426,15 +438,27 @@ public class PlayerController : MonoBehaviour
             //check if checker is on tile
             if (tapped.tag == "checker")
             {
-                cCount++;
-                cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+                if(tapped.passedChecker == 0)
+                {
+                    cCount++;
+                    cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+                    tapped.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                }
+                tapped.passedChecker++;
             }
 
             previous.Push(player);
 
+            
             //update current position
-            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
-            player = tapped;
+            SpriteRenderer sr = player.gameObject.GetComponent<SpriteRenderer>();
+            float r = sr.material.color.r + .20f;
+            float b = sr.material.color.b + .20f;
+            float g = sr.material.color.g + .20f;
+            sr.material.color = new Color(r, g, b, 1);
+            player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false;
+
+            player = tapped; //update player tile
             player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
 
             //update step count
@@ -447,34 +471,34 @@ public class PlayerController : MonoBehaviour
     private void Move(Tile tapped)
     {
         //Check inclusion bools and update
-        foreach (int inc in AssignColour.includeRules) //for every include rule
+        foreach (int inc in ColourAssigner.includeRules) //for every include rule
         {
-            if (tapped.colour == AssignColour.cRules[inc].src)
+            if (tapped.colour == ColourAssigner.cRules[inc].src)
             {
-                ColourRules c = AssignColour.cRules[inc];
+                ColourRule c = ColourAssigner.cRules[inc];
                 c.inclusion = true;
-                AssignColour.cRules[inc] = c;
+                ColourAssigner.cRules[inc] = c;
             }
-            if (tapped.colour == AssignColour.cRules[inc].target && AssignColour.cRules[inc].inclusion == false) //if source has not been visited yet
+            if (tapped.colour == ColourAssigner.cRules[inc].target && ColourAssigner.cRules[inc].inclusion == false) //if source has not been visited yet
             {
-                //let player know why you can't move there
-                return; //can't move onto this tile at the moment
+                message.text = "Cannot move onto " + ColourAssigner.cRules[inc].target + ", you have not passed " + ColourAssigner.cRules[inc].src + " yet!";
+                return;
             }
         }
 
         //Check exclusion bools and update
-        foreach (int exc in AssignColour.excludeRules)
+        foreach (int exc in ColourAssigner.excludeRules)
         {
-            if (tapped.colour == AssignColour.cRules[exc].src)
+            if (tapped.colour == ColourAssigner.cRules[exc].src)
             {
-                ColourRules c = AssignColour.cRules[exc];
+                ColourRule c = ColourAssigner.cRules[exc];
                 c.inclusion = true;
-                AssignColour.cRules[exc] = c;
+                ColourAssigner.cRules[exc] = c;
             }
-            if (tapped.colour == AssignColour.cRules[exc].target && AssignColour.cRules[exc].inclusion == true)
+            if (tapped.colour == ColourAssigner.cRules[exc].target && ColourAssigner.cRules[exc].inclusion == true)
             {
-                //let player know why you can't move there
-                return; //can't move onto this because source colour was visited
+                message.text = "Cannot move onto " + ColourAssigner.cRules[exc].target.ToString().ToLower() + ", you have already passed " + ColourAssigner.cRules[exc].src.ToString().ToLower() + "!";
+                return;
             }
         }
 
@@ -482,7 +506,7 @@ public class PlayerController : MonoBehaviour
         if (tapped.tag == "checker")
         {
             cCount++;
-            cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+            cText.text = cCount + "/" + Shinro.checkerCount;
         }
 
         previous.Push(player);
