@@ -44,7 +44,21 @@ public class PlayerController : MonoBehaviour
         sText.text = sCount.ToString();
 
         bText = GameObject.Find("BCount").GetComponent<Text>();
-        bCount = 10;
+
+        //Can't accurately set this until the colour assigner is properly set up
+        if(sCount > 25)
+        {
+            bCount = (int)Math.Ceiling(sCount * .2f);
+        }
+        else if(sCount > 15)
+        {
+            bCount = (int)Math.Ceiling(sCount * .3f);
+        }
+        else
+        {
+            bCount = (int)Math.Ceiling(sCount * .4f);
+        }
+
         bText.text = bCount.ToString();
 
         gameOver = GameObject.Find("GameOver");

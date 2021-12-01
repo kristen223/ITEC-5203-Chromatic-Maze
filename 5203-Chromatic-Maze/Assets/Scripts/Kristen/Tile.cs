@@ -25,7 +25,14 @@ public class Tile : MonoBehaviour
     public bool jumpTwoN;
     public bool jumpTwoS;
     public bool jumpTwoE;
-    public bool jumpTwoW; 
+    public bool jumpTwoW;
+
+    public bool canBeRed;
+    public bool canBeOrange;
+    public bool canBeYellow;
+    public bool canBeGreen;
+    public bool canBeBlue;
+    public bool canBePurple;
 
     public Tile parent;
     public List<Tile> children; //may change to list later
@@ -45,6 +52,13 @@ public class Tile : MonoBehaviour
         jumpTwoE = false;
         jumpTwoW = false;
         moveRule = false;
+
+        canBeRed = true;
+        canBeOrange = true;
+        canBeYellow = true;
+        canBeGreen = true;
+        canBeBlue = true;
+        canBePurple = true;
         passedChecker = 0;
         rank = 0;
     }
