@@ -394,8 +394,9 @@ public class Rules : MonoBehaviour
             allList.Add(item.type);
         }
 
-        List<Hashtable> ChrsList = new List<Hashtable>(pop);
-        Hashtable chr = new Hashtable();
+        List<Dictionary<int,Type>> ChrsDict = new List<Dictionary<int, Type>>(pop);
+        Dictionary<int, Type> chr = new Dictionary<int, Type>();
+        //Hashtable chr = new Hashtable();
 
 
         for (int i = 0; i < pop; i++)
@@ -417,11 +418,11 @@ public class Rules : MonoBehaviour
                    // chr[j]=allList[idx];
                 }
             }
-            ChrsList.Add(chr);
+            ChrsDict.Add(chr);
         }
 
 
-        fitnessOne(ChrsList,pop);
+        fitnessOne(ChrsDict,pop);
 
 
         //List<int> c1 = new List<int>(7); //just adding the types to chromosomes
@@ -478,16 +479,26 @@ public class Rules : MonoBehaviour
     // }
 
 
-    public void fitnessOne(List<Hashtable> cList, int pop)
+    public void fitnessOne(List<Dictionary<int,Type>> cList, int pop)
     {
        // List<int> fitVals = new List<int>(cList.Count);
         //int[] fitvals = new int[pop];
         Hashtable fitVals = new Hashtable();
-        for (int i = 0; i < cList.Count; i++)//clist contains all chromosomes
+        for (int i = 0; i < cList.Count; i++)//clist contains all chromosomes so checking for each chromosome
         {
 
-            int fit = 1;
-            int[] uniqueTypes = new int[10]; //10 rule types "zero initiatilization"
+            int fit = 0;
+            Debug.Log(sizeof(Type));
+
+            List<Type> uniqueTypes = new List<Type>(); //new unique list
+
+            //old unique array:
+            //int[] uniqueTypes = new int[sizeof(Type)]; //12 rule types "zero initiatilization"
+            //for (int k = 0; k < uniqueTypes.Length; k++)
+            //{
+            //    uniqueTypes[k] = 0;
+            //}
+
             for (int j = 0; j < cList.Count; j++) //check the variation in types
             {
                 /*foreach (int key in cList[j].Keys) //clist[j] is a hashtable
@@ -497,52 +508,67 @@ public class Rules : MonoBehaviour
                 }*/
 
                 ICollection valueColl = cList[j].Values; //types are stored in cList.Values
-                foreach (int v in valueColl)
+                foreach (Type v in valueColl)
                 {
-                    uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome
-                    print(v);
+                    // uniqueTypes[v]++; //incrementing the unique array with each rule type in a chromosome (old)
+                    if (!uniqueTypes.Contains(v)) //types are added if they dont already exist in the list
+                    {
+                        uniqueTypes.Add(v);
+                        print(v);
+                    }
+
+                    
                 }
             }
-
-            for (int z = 0; z < uniqueTypes.Length; z++)
+            //new fitness function with list length
+            if (uniqueTypes.Count == 7) //length is 7 if all types are unique, from line 515
             {
-                Debug.Log(uniqueTypes[z]);
-                if (uniqueTypes[z] != 0)
-                {
-                    fit = fit * uniqueTypes[z];
-
-                    fitVals.Add(i, fit);
-                    print("fitness is"+fit);
-                }
+                fit = 1;
+                fitVals.Add(i, fit);
+                print("fitness of"+i+"is"+fit);
             }
+            else
+            {
+                fit = 7 - uniqueTypes.Count + 1;  //if 2 same types among 7, then fit=2
+                fitVals.Add(i, fit);
+                print("fitness of" + i + "is" + fit);
+            }                                     //if 3 same types among 7, then fit = 3
+
+            //old fitness funct with unique array: 
+            //for (int z = 0; z < uniqueTypes.Count; z++)
+            //{
+            //    Debug.Log(uniqueTypes[z]);
+            //    if (uniqueTypes[z] != 0)
+            //    {
+            //        fit = fit * uniqueTypes[z];
+
+            //        fitVals.Add(i, fit);
+            //        print("fitness is"+fit);
+            //    }
+            //}
         }
 
 
         Debug.Log("fitvals" + fitVals.Count);
         //printing the ranks here:
         print(fitVals.Values.ToString());
-        ArrayList allfitvals = new ArrayList(fitVals.Values);
-        foreach (var v in fitVals.Values)
+        ArrayList ranks = new ArrayList(fitVals.Values); //changed "allfitvals" to "ranks"
+        foreach (int v in fitVals.Values)
         {
-            allfitvals.Add(v);
+            ranks.Add(v);
         }
         print(fitVals.Keys.ToString());
-        allfitvals.Sort();
+        ranks.Sort();
         print("The fitness values of the chromosomes ranked are:");
        // print(allfitvals[2]);
-        foreach(int x in allfitvals) 
+        foreach(int x in ranks) 
         {
             Debug.Log("dfsdlfjfjdsklfjdsklf");
             print("fitness value: "+ x);//ranks
-            //if (x == 1)
-            //{
-                //pass to maze
-                // fitVals.a
-                //finalRules(cList[i]);
-            //}
+          
         }
 
-        int finalFitness = (int)allfitvals[index: 0]; //the first value in the sorted arraylist is the best fit
+        int finalFitness = (int)ranks[index: 0]; //the first value in the sorted arraylist is the best fit
         print(finalFitness);
         int min = 1;
         int finalCIdx=0;//chromosome index, not rule!
@@ -563,13 +589,15 @@ public class Rules : MonoBehaviour
 
     }
 
-    public void finalRules(Hashtable c) //get the indexes (keys) of this hashtable
+
+    
+
+    public void finalRules(Dictionary<int,Type> c) //get the indexes (keys) of this hashtable
     {
-        
-        ICollection indexs = c.Keys;
+       
         int[] finalIdxs = new int[7];
         int r = 0;
-        foreach (int i in indexs)
+        foreach (int i in c.Keys)
         {
             finalIdxs[r] = (int)i;
             r++;
@@ -579,26 +607,56 @@ public class Rules : MonoBehaviour
         List<MovementRule> mr = new List<MovementRule>();
         List<ColourRule> cr = new List<ColourRule>();
 
-        for (int i = 0; i < finalIdxs.Length; i++)
+        
+        foreach(KeyValuePair<int,Type> kvp in c)
         {
-            if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed ENUMS
+            if (kvp.Value.Equals("Tmove") | kvp.Value.Equals("blank") | kvp.Value.Equals("teleport") | kvp.Value.Equals("jump1") | kvp.Value.Equals("jump2") | kvp.Value.Equals("warm") | kvp.Value.Equals("cool")) 
             {
-                mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[i])));
+                mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[kvp.Key])));
             }
             else
             {
-                cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[i])));
+                cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[kvp.Key])));
             }
+        }
+
+
+        //foreach (Type t in c.Values)
+        //{
+            
+        //    if (t.Equals("Tmove") | t.Equals("blank") | t.Equals("teleport") | t.Equals("jump1") | t.Equals("jump2") | t.Equals("warm") | t.Equals("cool")) 
+        //    {
+        //        mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[c.Keys])));
+        //    }
+        //    else
+        //    {
+
+        //    }
+
+        //}
+
+
+
+        //for (int i = 0; i < finalIdxs.Length; i++)
+        //{
+        //    if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed ENUMS
+        //    {
+        //        mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[i])));
+        //    }
+        //    else
+        //    {
+        //        cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[i])));
+        //    }
             
           
 
-        }
+        //}
         ColourAssigner.SetRules(mr,cr);
 
 
 
     }
-
+    //I dont think we need the codes below bec i already did this work in line 615 and 619 (Rifah)
     public static MovementRule GetMRule(int index)
     {
         switch(index)
