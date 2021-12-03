@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 // A tile represents a vertex, a node in the tree
 public class Tile : MonoBehaviour
@@ -59,6 +60,8 @@ public class Tile : MonoBehaviour
             {Colour.Green, true},
             {Colour.Blue, true},
             {Colour.Purple, true},
+            {Colour.Pink, true},
+            {Colour.Teal, true},
         };
 
         passedChecker = 0;
@@ -77,4 +80,5 @@ public class Tile : MonoBehaviour
             return GetRootParent(t.parent); //Goes up the tree until it can't anymore
         }
     }
+       
 }

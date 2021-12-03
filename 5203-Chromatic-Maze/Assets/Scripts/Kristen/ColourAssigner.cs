@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class ColourAssigner : MonoBehaviour
@@ -41,6 +42,17 @@ public class ColourAssigner : MonoBehaviour
     public static List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
 
+
+    //DELETE LATER
+    static MovementRule TmoveS = new MovementRule();
+    static MovementRule teleportB = new MovementRule();
+    static MovementRule teleportR = new MovementRule();
+    static MovementRule jumpOne = new MovementRule();
+    static MovementRule blank = new MovementRule();
+    static MovementRule coldTemp = new MovementRule();
+    static MovementRule warm = new MovementRule();
+    static ColourRule excludeBR = new ColourRule();
+
     // Start is called before the first frame update
     void Start()
     {        
@@ -57,24 +69,20 @@ public class ColourAssigner : MonoBehaviour
             (Material)Resources.Load("Materials/Yellow"),
             (Material)Resources.Load("Materials/Green"),
             (Material)Resources.Load("Materials/Blue"),
-            (Material)Resources.Load("Materials/Purple")
+            (Material)Resources.Load("Materials/Purple"),
+            (Material)Resources.Load("Materials/Pink"),
+            (Material)Resources.Load("Materials/Teal")
         };
 
-        Test();
-    }
 
-
-    private void Test()
-    {
-        MovementRule TmoveS = new MovementRule();
+        //DELETE LATER
         TmoveS.index = 0;
         TmoveS.direction = Direction.South;
         TmoveS.distance = 1;
         TmoveS.src = Colour.Green;
         TmoveS.target = Colour.All;
         TmoveS.type = Type.Tmove;
-
-        MovementRule teleportB = new MovementRule();
+        
         teleportB.index = 3;
         teleportB.direction = Direction.All;
         teleportB.distance = -1;
@@ -82,7 +90,13 @@ public class ColourAssigner : MonoBehaviour
         teleportB.target = Colour.Blue;
         teleportB.type = Type.teleport;
 
-        MovementRule jumpOne = new MovementRule();
+        teleportR.index = 2;
+        teleportR.direction = Direction.All;
+        teleportR.distance = -1;
+        teleportR.src = Colour.Teal;
+        teleportR.target = Colour.Pink;
+        teleportR.type = Type.teleport;
+
         jumpOne.index = 9;
         jumpOne.direction = Direction.All;
         jumpOne.distance = 2;
@@ -90,7 +104,6 @@ public class ColourAssigner : MonoBehaviour
         jumpOne.target = Colour.All;
         jumpOne.type = Type.jump1;
 
-        MovementRule blank = new MovementRule();
         blank.index = 1;
         blank.direction = Direction.All;
         blank.distance = 1;
@@ -98,7 +111,6 @@ public class ColourAssigner : MonoBehaviour
         blank.target = Colour.All;
         blank.type = Type.blank;
 
-        MovementRule coldTemp = new MovementRule();
         coldTemp.index = 12;
         coldTemp.direction = Direction.All;
         coldTemp.distance = 1;
@@ -106,13 +118,95 @@ public class ColourAssigner : MonoBehaviour
         coldTemp.target = Colour.Cool;
         coldTemp.type = Type.cool;
 
-        ColourRule excludeBR = new ColourRule();
         excludeBR.index = 24;
         excludeBR.src = Colour.Blue;
-        excludeBR.target = Colour.Yellow;
+        excludeBR.target = Colour.Green;
         excludeBR.type = Type.exclude;
 
+        warm.index = 13;
+        warm.direction = Direction.All;
+        warm.distance = 1;
+        warm.src = Colour.Pink;
+        warm.target = Colour.Warm;
+        warm.type = Type.warm;
 
+        Test();
+        RoundOne(); //Tmove and blank rules will be removed from mRules after this point
+        RoundTwo();
+        Round3();
+    }
+
+
+    //TEMPORARY, needs to be in Rules
+    //delete this and change bac to Rules.GetMRule
+    public static MovementRule GetMRule(int index)
+    {
+        MovementRule r = blank;
+        bool changed = false;
+        switch (index)
+        {
+            case 0:
+                r = TmoveS;
+                changed = true;
+                break;
+            case 1:
+                r = blank;
+                changed = true;
+                break;
+            case 2:
+                r = teleportR;
+                changed = true;
+                break;
+            case 3:
+                r = teleportB;
+                changed = true;
+                break;
+            case 9:
+                r = jumpOne;
+                changed = true;
+                break;
+            case 12:
+                r = coldTemp;
+                changed = true;
+                break;
+            case 13:
+                r = warm;
+                changed = true;
+                break;
+        }
+
+        if(changed == false)
+        {
+            Debug.Log("ERROR: returned blank by mistake");
+        }
+        
+        return r; //will never happen
+
+    }
+
+    public static ColourRule GetCRule(int index)
+    {
+        ColourRule r = excludeBR;
+        bool changed = false;
+        switch (index)
+        {
+            case 24:
+                r = excludeBR;
+                changed = true;
+                break;
+        }
+
+        if (changed == false)
+        {
+            Debug.LogError("ERROR: returned excludeBR by mistake");
+        }
+        return r; //will never happen
+    }
+
+
+    private void Test()
+    {
+        
         List<MovementRule> m = new List<MovementRule>()
         {
             {TmoveS},
@@ -120,6 +214,7 @@ public class ColourAssigner : MonoBehaviour
             {jumpOne},
             {blank},
             {coldTemp},
+            {warm},
         };
         List<ColourRule> c = new List<ColourRule>()
         {
@@ -132,8 +227,6 @@ public class ColourAssigner : MonoBehaviour
     //not in start because other script needs to finish first
     public static void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
-        Debug.Log(cr[0]);
-        Debug.Log("mr:  " + mr.Count + "   cr: " + cr.Count);
         mRules = mr;
         cRules = cr;
 
@@ -158,7 +251,6 @@ public class ColourAssigner : MonoBehaviour
             ruleTypes.Add(rule.type);
         }
 
-        Debug.Log(identifiers.Count);
 
         //used = new int[identifiers.Count];
         //for (int i = 0; i < used.Length; i++)
@@ -166,9 +258,6 @@ public class ColourAssigner : MonoBehaviour
         //    used[i] = 0;
         //}
 
-
-        RoundOne(); //Tmove and blank rules will be removed from mRules after this point
-        RoundTwo();
     }
 
     private static void AssignByMRule(Tile t, MovementRule rule)
@@ -179,7 +268,6 @@ public class ColourAssigner : MonoBehaviour
         t.moveRule = true;
         t.colour = rule.src;
         t.index = rule.index;
-        Debug.Log(t.name + " index " + rule.index);
 
         int index = identifiers.IndexOf(rule.index);
         //used[index]++;
@@ -201,11 +289,13 @@ public class ColourAssigner : MonoBehaviour
             t.parent.canBe[Colour.Green] = false;
             t.parent.canBe[Colour.Blue] = false;
             t.parent.canBe[Colour.Purple] = false;
+            t.parent.canBe[Colour.Teal] = false;
             foreach (Tile c in t.children)
             {
                 c.canBe[Colour.Green] = false;
                 c.canBe[Colour.Blue] = false;
                 c.canBe[Colour.Purple] = false;
+                t.parent.canBe[Colour.Teal] = false;
             }
 
 
@@ -228,11 +318,13 @@ public class ColourAssigner : MonoBehaviour
             t.parent.canBe[Colour.Red] = false;
             t.parent.canBe[Colour.Orange] = false;
             t.parent.canBe[Colour.Yellow] = false;
+            t.parent.canBe[Colour.Pink] = false;
             foreach (Tile c in t.children)
             {
                 c.canBe[Colour.Red] = false;
                 c.canBe[Colour.Orange] = false;
                 c.canBe[Colour.Yellow] = false;
+                t.parent.canBe[Colour.Pink] = false;
             }
 
             //if ((t.parent.canBeBlue || t.parent.canBeGreen|| t.parent.canBePurple) && t.parent.assigned == false)
@@ -286,8 +378,6 @@ public class ColourAssigner : MonoBehaviour
         t.moveRule = true;
         t.colour = rule.src;
         t.index = rule.index;
-
-        Debug.Log(t.name + " index " + rule.index);
 
         int index = identifiers.IndexOf(rule.index);
         //used[index]++;
@@ -343,6 +433,7 @@ public class ColourAssigner : MonoBehaviour
     }
 
     //Used to set parents/children of a tile, when the tile's target colour is predetermined (colour rules)
+    //The colour could be "warm" "cool" or a specific colour meaning multiple rule options potentially
     private static void AssignByColour(Tile t, Colour c)
     {
 
@@ -356,14 +447,14 @@ public class ColourAssigner : MonoBehaviour
         {
             foreach (MovementRule rule in mRules)
             {
-                if ((rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Yellow) && rule.type != Type.blank && rule.type != Type.Tmove)
+                if ((rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Yellow || rule.src == Colour.Pink) && rule.type != Type.blank && rule.type != Type.Tmove)
                 {
                     indexes.Add(rule.index);
                 }
             }
             foreach (ColourRule rule in cRules)
             {
-                if ((rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Yellow) && rule.type != Type.blank && rule.type != Type.Tmove)
+                if ((rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Yellow || rule.src == Colour.Pink) && rule.type != Type.blank && rule.type != Type.Tmove)
                 {
                     indexes.Add(rule.index);
                 }
@@ -373,14 +464,14 @@ public class ColourAssigner : MonoBehaviour
         {
             foreach (MovementRule rule in mRules)
             {
-                if ((rule.src == Colour.Blue || rule.src == Colour.Green || rule.src == Colour.Purple) && rule.type != Type.blank && rule.type != Type.Tmove)
+                if ((rule.src == Colour.Blue || rule.src == Colour.Green || rule.src == Colour.Purple || rule.src == Colour.Teal) && rule.type != Type.blank && rule.type != Type.Tmove)
                 {
                     indexes.Add(rule.index);
                 }
             }
             foreach (ColourRule rule in cRules)
             {
-                if ((rule.src == Colour.Blue || rule.src == Colour.Green || rule.src == Colour.Purple) && rule.type != Type.blank && rule.type != Type.Tmove)
+                if ((rule.src == Colour.Blue || rule.src == Colour.Green || rule.src == Colour.Purple || rule.src == Colour.Teal) && rule.type != Type.blank && rule.type != Type.Tmove)
                 {
                     indexes.Add(rule.index);
                 }
@@ -439,17 +530,6 @@ public class ColourAssigner : MonoBehaviour
     {
         foreach(MovementRule rule in mRules)
         {
-            if (rule.type == Type.blank)
-            {
-                foreach (Tile t in maze.tiles)
-                {
-                    if (t.children.Count + 1 == 4) //Cross section piece
-                    {
-                        Debug.Log("cross");
-                        AssignByMRule(t, rule); //this includes the exit where its parent is itself
-                    }
-                }
-            }
             if (rule.type == Type.Tmove)
             {
                 foreach (Tile t in maze.tiles)
@@ -519,6 +599,24 @@ public class ColourAssigner : MonoBehaviour
                     }
                 }
             }
+            if (rule.type == Type.blank)
+            {
+                foreach (Tile t in maze.tiles)
+                {
+                    if(t.assigned == false)
+                    {
+                        if (t.children.Count + 1 == 3 && t.border == true && t != maze.LP.exit)
+                        {
+                            AssignByMRule(t, rule); //this includes the exit where its parent is itself
+                        }
+
+                        else if (t.children.Count + 1 == 4) //Cross section piece
+                        {
+                            AssignByMRule(t, rule); //this includes the exit where its parent is itself
+                        }
+                    }
+                }
+            }
         }
 
 
@@ -539,6 +637,26 @@ public class ColourAssigner : MonoBehaviour
                 i--;
             }
         }
+
+
+        //foreach(MovementRule r in mRules)
+        //{
+        //    Debug.Log("index " + r.index);
+        //    Debug.Log("type " + r.type);
+        //    Debug.Log("source " + r.src);
+        //    Debug.Log("target " + r.target);
+        //}
+
+        //foreach(int i in identifiers)
+        //{
+        //    Debug.Log("index " + i);
+        //}
+        //foreach (Type t in ruleTypes)
+        //{
+        //    Debug.Log("type " + t);
+        //}
+
+
     }
 
     /* Round 2
@@ -558,24 +676,27 @@ public class ColourAssigner : MonoBehaviour
             {
                 bool check = false;
 
-                List<Tile> adjacent = new List<Tile>(); //list of all assigned children and parent except pevious tile
+                //get list of all adjacent tiles that are not parent/children and are assigned
+                List<Tile> wallNeighbours = getAdjacentWallTiles(tile);
 
-                if (tile.parent.assigned == true && tile.parent != lastTile)
+                List<Tile> relatedNeighbours = new List<Tile>(); //list of all assigned children and parent except pevious tile
+
+                if (tile.parent.assigned == true && tile.parent != lastTile) //not last tile because tile is gauranteed to be part of the solution path, it won't be down a subtree
                 {
-                    adjacent.Add(tile.parent);
+                    relatedNeighbours.Add(tile.parent);
                 }
 
                 foreach (Tile c in tile.children)
                 {
                     if (c.assigned == true && c != lastTile)
                     {
-                        adjacent.Add(c);
+                        relatedNeighbours.Add(c);
                     }
                 }
 
-                if (adjacent.Count > 0) //at least one adjacent tile is assigned already
+                if (relatedNeighbours.Count > 0 || wallNeighbours.Count > 0) //at least one adjacent tile is assigned already
                 {
-                    check = AdjacentAssigned(tile, adjacent, check);
+                    check = AdjacentAssigned(tile, relatedNeighbours, wallNeighbours, check);
                 }
                 else //parent and children unassigned, pick a random rule besides Tmove and Blank
                 {
@@ -594,18 +715,19 @@ public class ColourAssigner : MonoBehaviour
 
                         if (identifiers[rand] <= 14) //MovementRule
                         {
-                            MovementRule r = Rules.GetMRule(identifiers[rand]); //assign current tile (DOESN'T GET A RULE, GETS A TMOVE OLD RULE WITH WRONG SOURCE COLOUR??)
+                            MovementRule r = GetMRule(identifiers[rand]); //assign current tile (DOESN'T GET A RULE, GETS A TMOVE OLD RULE WITH WRONG SOURCE COLOUR??)
 
                             if (tile.canBe[r.src] == true)
                             {
                                 check = true;
+                                
                                 AssignByMRule(tile, r);
                             }
 
                         }
                         else
                         {
-                            ColourRule r = Rules.GetCRule(identifiers[rand]); //assign current tile
+                            ColourRule r = GetCRule(identifiers[rand]); //assign current tile
 
                             if (tile.canBe[r.src] == true)
                             {
@@ -655,25 +777,25 @@ public class ColourAssigner : MonoBehaviour
         {
             bool check = false;
 
-            List<Tile> adjacent = new List<Tile>(); //list of all assigned children and parent
+            //get list of all adjacent tiles that are not parent/children and are assigned
+            List<Tile> wallNeighbours = getAdjacentWallTiles(tile);
 
+            List<Tile> relatedNeighbours = new List<Tile>(); //list of all assigned children and parent
             if (tile.parent.assigned == true)
             {
-                adjacent.Add(tile.parent);
+                relatedNeighbours.Add(tile.parent);
             }
-
             foreach (Tile c in tile.children)
             {
                 if (c.assigned == true)
                 {
-                    adjacent.Add(c);
+                    relatedNeighbours.Add(c);
                 }
             }
 
-
-            if (adjacent.Count > 0)
+            if (relatedNeighbours.Count > 0|| wallNeighbours.Count > 0)
             {
-                check = AdjacentAssigned(tile, adjacent, check);
+                check = AdjacentAssigned(tile, relatedNeighbours, wallNeighbours, check);
             }
             else //This will only happen if previosu tile couldn't be assigned
             {
@@ -692,7 +814,7 @@ public class ColourAssigner : MonoBehaviour
 
                     if (identifiers[rand] <= 14) //MovementRule
                     {
-                        MovementRule r = Rules.GetMRule(identifiers[rand]); //assign current tile
+                        MovementRule r = GetMRule(identifiers[rand]); //assign current tile
 
                         if (tile.canBe[r.src] == true)
                         {
@@ -703,7 +825,7 @@ public class ColourAssigner : MonoBehaviour
                     }
                     else
                     {
-                        ColourRule r = Rules.GetCRule(identifiers[rand]); //assign current tile
+                        ColourRule r = GetCRule(identifiers[rand]); //assign current tile
 
                         if (tile.canBe[r.src] == true)
                         {
@@ -727,7 +849,14 @@ public class ColourAssigner : MonoBehaviour
         {
             foreach (Tile c in tile.children)
             {
-                if (c.assigned == false) //condition so you don't inifnetly go between two cycled tiles
+                if(c.assigned == true && c.moveRule == true)
+                {
+                    if(c.mRule.type == Type.Tmove || c.mRule.type == Type.blank)
+                    {
+                        ParentToChild(c); 
+                    }
+                }
+                else if (c.assigned == false) //condition so you don't infinitely go between two cycled tiles
                 {
                     ParentToChild(c); //go down each child until you reach a dead end or cycle
                 }
@@ -743,7 +872,7 @@ public class ColourAssigner : MonoBehaviour
     *  - if none of that is possible try include
     *  - if none of the above worked, no rules work
     */
-    private static bool AdjacentAssigned(Tile tile, List<Tile> adjacent, bool check)
+    private static bool AdjacentAssigned(Tile tile, List<Tile> adjacent, List<Tile> walls, bool check)
     {
         foreach (MovementRule m in mRules) //first try to assign a warm or cool rule
         {
@@ -752,10 +881,18 @@ public class ColourAssigner : MonoBehaviour
                 bool warm = true;
                 foreach(Tile a in adjacent)
                 {
-                    if(a.colour != Colour.Red && a.colour != Colour.Orange && a.colour != Colour.Yellow)
+                    if(a.colour != Colour.Red && a.colour != Colour.Orange && a.colour != Colour.Yellow && a.colour != Colour.Pink)
                     {
                         warm = false;
                         break;
+                    }
+                    foreach (Tile w in walls)
+                    {
+                        if (w.colour == Colour.Red || w.colour == Colour.Orange || w.colour == Colour.Yellow || w.colour == Colour.Pink)
+                        {
+                            warm = false;
+                            break;
+                        }
                     }
                 }
 
@@ -770,7 +907,15 @@ public class ColourAssigner : MonoBehaviour
                 bool cool = true;
                 foreach (Tile a in adjacent)
                 {
-                    if (a.colour != Colour.Blue && a.colour != Colour.Green && a.colour != Colour.Purple)
+                    if (a.colour != Colour.Blue && a.colour != Colour.Green && a.colour != Colour.Purple && a.colour != Colour.Teal)
+                    {
+                        cool = false;
+                        break;
+                    }
+                }
+                foreach (Tile w in walls)
+                {
+                    if (w.colour == Colour.Blue || w.colour == Colour.Green || w.colour == Colour.Purple || w.colour == Colour.Teal)
                     {
                         cool = false;
                         break;
@@ -784,29 +929,44 @@ public class ColourAssigner : MonoBehaviour
                 }
             }
         }
-        if (!check) //then try to assign a jump or teleport rule
+        if (!check) //then try to assign a random jump or teleport rule
         {
+            List<MovementRule> otherMRules = new List<MovementRule>();
             foreach (MovementRule m in mRules)
             {
                 if (m.type == Type.jump1 || m.type == Type.jump2 || m.type == Type.teleport)
                 {
-                    if (tile.canBe[m.src] == true)
-                    {
-                        check = true;
-                        AssignByMRule(tile, m);
-                        break;
-                    }
+                    otherMRules.Add(m);
                 }
             }
+
+            List<int> randIndex = new List<int>(); //list of list indexes of possible rules
+            for (int i = 0; i < otherMRules.Count; i++)
+            {
+                randIndex.Add(i); //add indexes 0 to otherMRules count - 1
+            }
+            while (randIndex.Count > 0)
+            {
+                int randListItem = UnityEngine.Random.Range(0, randIndex.Count); //get a random index
+                int rand = randIndex[randListItem];
+                randIndex.RemoveAt(randListItem);
+                MovementRule m = mRules[rand];
+
+                if (tile.canBe[m.src] == true)
+                {
+                    check = true;
+                    AssignByMRule(tile, m);
+                    break;
+                }
+            } 
         }
         if (!check) //then try to assign exclude or block
         {
             foreach (ColourRule c in cRules)
             {
 
-                if (c.type == Type.exclude || c.type == Type.block)
+                if (c.type == Type.exclude)
                 {
-
                     bool canPlace = true;
                     foreach (Tile a in adjacent)
                     {
@@ -816,8 +976,16 @@ public class ColourAssigner : MonoBehaviour
                             break;
                         }
                     }
+                    foreach (Tile w in walls)
+                    {
+                        if (w.colour != c.target)
+                        {
+                            canPlace = false;
+                            break;
+                        }
+                    }
 
-                    if(canPlace == true && tile.canBe[c.src] == true)
+                    if (canPlace == true && tile.canBe[c.src] == true)
                     {
                         check = true;
                         AssignByCRule(tile, c);
@@ -841,6 +1009,14 @@ public class ColourAssigner : MonoBehaviour
                             break;
                         }
                     }
+                    foreach (Tile w in walls)
+                    {
+                        if (w.colour == c.target)
+                        {
+                            canPlace = false;
+                            break;
+                        }
+                    }
 
                     if (canPlace == true && tile.canBe[c.src] == true)
                     {
@@ -854,6 +1030,307 @@ public class ColourAssigner : MonoBehaviour
 
         return check;
 
+    }
+
+    private static List<Tile> getAdjacentWallTiles(Tile tile)
+    {
+
+        List<Tile> wallNeighbours = new List<Tile>();
+        String tileNumS = tile.name.Substring(tile.name.IndexOf("-") + 1, tile.name.Length - tile.name.IndexOf("-") - 1);
+        int tileNum = int.Parse(tileNumS) - 1; //tile index
+        bool child = false;
+
+        if(tileNum + 1 != maze.w * maze.h) //not top right tile
+        {
+            Tile east = maze.tiles[tileNum + 1];
+            if (tile.border == false || east.border == false) //east tile exists
+            {
+                if (east.assigned == true)
+                {
+                    if (east != tile.parent) //if eastward tile is assigned and not child/parent, add to list
+                    {
+                        foreach (Tile c in tile.children)
+                        {
+                            if (c == east)
+                            {
+                                child = true;
+                                break;
+                            }
+                        }
+                        if (child == false)
+                        {
+                            wallNeighbours.Add(east);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if(tileNum != 0) //not bottom left tile
+        {
+            Tile west = maze.tiles[tileNum - 1];
+            if (tile.border == false || west.border == false) //west tile exists
+            {
+                if (west.assigned == true)
+                {
+                    if (west != tile.parent) //if westward tile is assigned and not child/parent, add to list
+                    {
+                        foreach (Tile c in tile.children)
+                        {
+                            if (c == west)
+                            {
+                                child = true;
+                                break;
+                            }
+                        }
+                        if (child == false)
+                        {
+                            wallNeighbours.Add(west);
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (tileNum + maze.w < maze.w * maze.h) //north tile exists
+        {
+            Tile north = maze.tiles[tileNum + maze.w];
+            if (north.assigned == true)
+            {
+                if (north != tile.parent) //if northward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == north)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(north);
+                    }
+                }
+            }
+        }
+        if (tileNum - maze.w >= 0) //south tile exists
+        {
+            Tile south = maze.tiles[tileNum - maze.w];
+            if (south.assigned == true)
+            {
+                if (south != tile.parent) //if southward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == south)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(south);
+                    }
+                }
+            }
+        }
+
+        return wallNeighbours;
+    }
+
+
+    /* Round 3
+     * - Ensure the exit tile is coloured
+     * - Colour the tiles that are only reachable by going past exit
+     * - try not to colour them with a teleport colour
+     */
+
+    private void Round3()
+    {
+        //1. Ensure exit tile is coloured
+        if (maze.LP.exit.assigned == false)
+        {
+            Tile exit = maze.LP.exit;
+            foreach (Tile c in exit.children)
+            {
+                if (maze.LP.path.Contains(c))
+                {
+                    List<Colour> teleports = new List<Colour>(); //List of teleport rule target colours. Don't give exit these colours if possible.
+
+                    foreach (MovementRule r in mRules)
+                    {
+                        if (r.type == Type.teleport)
+                        {
+                            teleports.Add(r.target);
+                        }
+                    }
+
+                    List<Colour> others = new List<Colour>() //All other colours
+                    {
+                        {Colour.Red},
+                        {Colour.Orange},
+                        {Colour.Yellow},
+                        {Colour.Green},
+                        {Colour.Blue},
+                        {Colour.Purple},
+                        {Colour.Pink},
+                        {Colour.Teal}
+                    };
+
+                    for (int i = 0; i < others.Count; i++)
+                    {
+                        if (teleports.Contains(others[i]))
+                        {
+                            others.Remove(others[i]);
+                            i--;
+                        }
+                    }
+
+                    Colour col; //get target colour of child on SP
+                    if (c.moveRule)
+                    {
+                        col = c.mRule.target;
+                    }
+                    else
+                    {
+                        col = c.cRule.target;
+                    }
+
+                    SpriteRenderer sr = exit.GetComponent<SpriteRenderer>();
+                    if (col == Colour.All)
+                    {
+                        if (others.Count > 0)
+                        {
+                            exit.colour = others[0];
+                        }
+                        else
+                        {
+                            exit.colour = teleports[0];
+                        }
+
+                        //Set material
+                        foreach (Material mat in colours)
+                        {
+                            if (mat.name == exit.colour.ToString())
+                            {
+                                sr.material.shader = mat.shader;
+                                sr.material.color = mat.color;
+                                break;
+                            }
+                        }
+                    }
+                    else if (col == Colour.Warm)
+                    {
+                        bool coloured = false;
+                        foreach (Colour cc in others)
+                        {
+                            if (cc == Colour.Red || cc == Colour.Orange || cc == Colour.Yellow || cc == Colour.Pink)
+                            {
+                                exit.colour = cc;
+                                coloured = true;
+                                break;
+                            }
+                        }
+                        if (coloured == false)
+                        {
+                            foreach (Colour cc in teleports)
+                            {
+                                if (cc == Colour.Red || cc == Colour.Orange || cc == Colour.Yellow || cc == Colour.Pink)
+                                {
+                                    exit.colour = cc;
+                                    coloured = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //Set material
+                        foreach (Material mat in colours)
+                        {
+                            if (mat.name == exit.colour.ToString())
+                            {
+                                sr.material.shader = mat.shader;
+                                sr.material.color = mat.color;
+                                break;
+                            }
+                        }
+                    }
+                    else if (col == Colour.Cool)
+                    {
+                        bool coloured = false;
+                        foreach (Colour cc in others)
+                        {
+                            if (cc == Colour.Blue || cc == Colour.Green || cc == Colour.Purple || cc == Colour.Teal)
+                            {
+                                exit.colour = cc;
+                                coloured = true;
+                                break;
+                            }
+                        }
+                        if (coloured == false)
+                        {
+                            foreach (Colour cc in teleports)
+                            {
+                                if (cc == Colour.Blue || cc == Colour.Green || cc == Colour.Purple || cc == Colour.Teal)
+                                {
+                                    exit.colour = cc;
+                                    coloured = true;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //Set material
+                        foreach (Material mat in colours)
+                        {
+                            if (mat.name == exit.colour.ToString())
+                            {
+                                sr.material.shader = mat.shader;
+                                sr.material.color = mat.color;
+                                break;
+                            }
+                        }
+                    }
+                    else //target is specific colour
+                    {
+                        exit.colour = col; //no rule assigned but doesn't need one
+                        //Set material
+                        foreach (Material mat in colours)
+                        {
+                            if (mat.name == exit.colour.ToString())
+                            {
+                                sr.material.shader = mat.shader;
+                                sr.material.color = mat.color;
+                                break;
+                            }
+                        }
+                    }
+
+                    break;
+                }
+            }
+        }
+
+        //2. Colour other side of exit tile
+        foreach (Tile c in maze.LP.exit.children)
+        {
+            if (maze.LP.path.Contains(c) == false)
+            {
+                if(c.assigned == true && c.moveRule == true)
+                {
+                    if(c.mRule.type == Type.Tmove || c.mRule.type == Type.blank)
+                    {
+                        ParentToChild(c);
+                    } 
+                }
+                else if(c.assigned == false)
+                {
+                    ParentToChild(c);
+                }
+            }
+        }
     }
 }
 

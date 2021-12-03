@@ -894,63 +894,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 722025024}
   m_CullTransparentMesh: 1
---- !u!1 &742672837
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 742672840}
-  - component: {fileID: 742672839}
-  - component: {fileID: 742672838}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &742672838
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742672837}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cffa748b94de743c89942f7d5f51fd57, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &742672839
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742672837}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91e3b4288cd3040b6942e1531f81bcd8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  popSize: 0
---- !u!4 &742672840
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 742672837}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 686.2643, y: 454.04297, z: -2119.3218}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 10
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1273622389
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1008,7 +951,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: width
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: cycles
@@ -1016,7 +959,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: height
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9352e7e41293461285f24b6545017d7, type: 3}

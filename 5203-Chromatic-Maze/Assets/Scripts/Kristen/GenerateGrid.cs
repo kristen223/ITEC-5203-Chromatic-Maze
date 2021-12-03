@@ -60,7 +60,7 @@ public class GenerateGrid : MonoBehaviour
                 tile.name = "Tile-" + (counter + 1);
                 tile.GetComponentInChildren<Text>().text = "0";
                 tile.GetComponent<Tile>().parent = tile.GetComponent<Tile>();
-                //tile.GetComponentInChildren<Text>().text = tile.GetComponent<Tile>().rank.ToString();
+                
 
                 if (y == 1 || y == height || x == 1 || x == width)
                 {
@@ -134,6 +134,11 @@ public class GenerateGrid : MonoBehaviour
         }
 
         maze = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
+
+        foreach(Tile t in maze.tiles)
+        {
+            t.GetComponentInChildren<Text>().text = t.GetComponent<Tile>().rank.ToString();
+        }
     }
 
     //OUTER BORDER (not part of tree)

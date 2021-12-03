@@ -36,29 +36,29 @@ public class KruskalMaze : MonoBehaviour
 {
     public struct Maze
     {
-        public LongestPath LP;
-        public Graph tree;
-        public List<Tile> deadends; //includes the cycle ones (can be removed easily)
-        public List<Tile> rankZero;
-        public Tile[] tiles;
-        public List<Tile> tileList;
-        public int h;
-        public int w;
+        public LongestPath LP; //longest path struct that is the solution path
+        public Graph tree; //A tree with cycles
+        public List<Tile> deadends; //dead end tiles not a part of a cycle
+        public List<Tile> rankZero; //All tiles ranked 0 (dead ends and cycled tiles)
+        public Tile[] tiles; //The tile grid (from bottom left at index 0 to top right)
+        public List<Tile> tileList; //Same as "tiles" but in list form
+        public int h; //height of maze grid
+        public int w; //width of maze grid
     }
 
     public struct LongestPath
     {
-        public Tile entrance;
-        public Tile exit;
-        public int length;
-        public Tile[] path;
+        public Tile entrance; //start of path
+        public Tile exit; //end fo path
+        public int length; //length of path
+        public Tile[] path; //the tiles of the path starting at the entrance tile
     }
 
     public struct Graph
     {
         public int numEdges;
         public int numVertices;
-        public Wall[] edges; //this gets changed from an array to a list and back a lot (not sure if there's an advantage to the array or if this should always be a list)
+        public Wall[] edges; //All edges of graph that have a wall
     }
 
     public static Graph CreateGraph(Wall[] walls, int v)

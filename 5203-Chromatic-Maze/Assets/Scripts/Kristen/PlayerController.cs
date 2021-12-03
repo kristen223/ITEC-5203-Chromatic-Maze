@@ -262,7 +262,7 @@ public class PlayerController : MonoBehaviour
         /* UPDATES TO DO (maybe)
          * 
          * The target colour can be warm, cool, and all so make sure rules with those are okay
-         * 
+         * Add pink and teal considerations
          * 
          */
 
