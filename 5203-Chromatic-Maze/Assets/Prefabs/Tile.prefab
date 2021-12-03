@@ -569,7 +569,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 4ced1b2ac426b424dbd0ae0a593503e3, type: 2}
+  - {fileID: 2100000, guid: e391e7abe31e6480b952084c2e18075e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -613,10 +613,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10698d821a0064ca8b6a009050b22a1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tilepfab: {fileID: 0}
   moveRule: 0
-  colour: 0
-  ruleType: 0
+  index: -1
+  colour: 8
+  assigned: 0
+  failedToAssign: 0
+  ruleType: 1
   jumpN: 0
   jumpS: 0
   jumpE: 0
