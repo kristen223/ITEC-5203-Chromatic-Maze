@@ -39,7 +39,9 @@ public class KruskalMaze : MonoBehaviour
         public LongestPath LP;
         public Graph tree;
         public List<Tile> deadends; //includes the cycle ones (can be removed easily)
+        public List<Tile> rankZero;
         public Tile[] tiles;
+        public List<Tile> tileList;
         public int h;
         public int w;
     }
@@ -155,6 +157,7 @@ public class KruskalMaze : MonoBehaviour
         maze.tree.numVertices = graph.numVertices;
         maze.LP = LP;
         maze.tiles = subset;
+        maze.tileList = subset.ToList();
         maze.h = GenerateGrid.hght;
         maze.w = GenerateGrid.wdth;
 
@@ -237,7 +240,7 @@ public class KruskalMaze : MonoBehaviour
         }
     }
 
-    //When combingin two subsets, this updates the child-parent relationships so everything pionts to one root node properly
+    //When combining two subsets, this updates the child-parent relationships so everything pionts to one root node properly
     public static void SwitchRoot(List<Tile> fromOtoRoot, Tile o, Tile d, Tile[] tiles)
     {
         fromOtoRoot.Add(o);
@@ -378,6 +381,7 @@ public class KruskalMaze : MonoBehaviour
     {
         Maze maze = new Maze();
         Graph graph = new Graph();
+        maze.rankZero = leafs;
 
         if (cycles == 0){
             maze.deadends = leafs;

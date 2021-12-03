@@ -6,16 +6,18 @@ using UnityEngine;
 public class Tile : MonoBehaviour
 {
     //The Vertex
-    public GameObject tilepfab;
+    //public GameObject tilepfab;
 
     //one will be null
     public MovementRule mRule;
     public ColourRule cRule;
     public bool moveRule;
+    public int index;
 
     //these should be set to the same thing
     public Colour colour;
     public bool assigned;
+    public bool failedToAssign;
 
     public Type ruleType;
     public bool jumpN;
@@ -25,7 +27,9 @@ public class Tile : MonoBehaviour
     public bool jumpTwoN;
     public bool jumpTwoS;
     public bool jumpTwoE;
-    public bool jumpTwoW; 
+    public bool jumpTwoW;
+
+    public Dictionary<Colour, bool> canBe;
 
     public Tile parent;
     public List<Tile> children; //may change to list later
@@ -36,6 +40,7 @@ public class Tile : MonoBehaviour
     private void Awake()
     {
         assigned = false;
+        failedToAssign = false;
         jumpN = false;
         jumpS = false;
         jumpE = false;
@@ -45,6 +50,17 @@ public class Tile : MonoBehaviour
         jumpTwoE = false;
         jumpTwoW = false;
         moveRule = false;
+
+        canBe = new Dictionary<Colour, bool>()
+        {
+            {Colour.Red, true},
+            {Colour.Orange, true},
+            {Colour.Yellow, true},
+            {Colour.Green, true},
+            {Colour.Blue, true},
+            {Colour.Purple, true},
+        };
+
         passedChecker = 0;
         rank = 0;
     }

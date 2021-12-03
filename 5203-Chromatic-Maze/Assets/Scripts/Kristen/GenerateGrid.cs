@@ -58,7 +58,6 @@ public class GenerateGrid : MonoBehaviour
 
                 GameObject tile = Instantiate(tilePrefab, new Vector3((x * 20) - 20f, (y * 20) - 10f, 0), Quaternion.Euler(0, 0, 0));
                 tile.name = "Tile-" + (counter + 1);
-                //tile.GetComponent<Tile>().rank = 0;
                 tile.GetComponentInChildren<Text>().text = "0";
                 tile.GetComponent<Tile>().parent = tile.GetComponent<Tile>();
                 //tile.GetComponentInChildren<Text>().text = tile.GetComponent<Tile>().rank.ToString();
@@ -107,10 +106,10 @@ public class GenerateGrid : MonoBehaviour
                 }
 
                 //TEMPORARY - DELETE LATER
-                SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
-                Material mat = (Material)colours[Random.Range(0, colours.Length)];
-                sr.material.shader = mat.shader;
-                sr.material.color = mat.color;
+                //SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+                //Material mat = (Material)colours[Random.Range(0, colours.Length)];
+                //sr.material.shader = mat.shader;
+                //sr.material.color = mat.color;
 
                 tiles[counter] = tile;
 
