@@ -8,7 +8,7 @@ public class FinalRules : MonoBehaviour
     public static void finalRules(Dictionary<int, Type> c, List<MovementRule> movementRuleSets, List<ColourRule> colourRuleSets) //get the indexes (keys) of this hashtable
     {
 
-        int[] finalIdxs = new int[7];
+        int[] finalIdxs = new int[8];
         int r = 0;
         foreach (int i in c.Keys)
         {
