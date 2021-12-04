@@ -39,7 +39,7 @@ public class ColourAssigner : MonoBehaviour
         public KruskalMaze.Maze maze;
         public Dictionary<int, int> used; //rule index and amount of times rule was used
         public int checkers; //number of checkers
-        public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles
+        public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles (not added to onPathViolations because it doesn't wreck the path)
 
         //Violatiosn that make maze less traversable
         public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
