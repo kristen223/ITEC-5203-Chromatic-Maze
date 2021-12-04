@@ -6,32 +6,10 @@ using UnityEngine;
 
 public class ColourAssigner : MonoBehaviour
 {
-    /*for each tile in the grid
-     *      check which directions you can move (N S E W) within 1, 2 and 3 space 
-     *      Based on the above, get list of possible rules to place down
-     *      pick a random rule, except some rules will have a higher likelihood of being selected (generally and based on previously placed rules)
-     *      if includeC rule exits, you can place down colour c2 anywhere if the rule colour has already been placed
-     *      
-     *      if its a dead end, either place a teleport colour or anythign else (doesn't matter)
-     *          If teleport, tile doesn't count as a dead-end and won't cause a game over if no more undo's left
-     *          
-     *      everytime a colour is placed, check to see if any false inclusion.exclusion rule booleans need to be updated
-     *      
-     *      We only need to make sure they can step forward (including looped areas) not backwards
-     */
-
-
-    /* We could traverse along solution path first, placing colours, then go from each dead-end to the solution path, then from each dead-end-turned-cycle to the solution path
-     * Or could traverse from root node to every child (until child rank == 0) < extra condition needed because of cycles
-     */
-
-    // When you place a colour, set the rule type, moveRule bool, colour int, and rule of the tile
-    // When placing jump colour, check if that tile's jump bools are true
-
     public static KruskalMaze.Maze maze;
-    public static List<MovementRule> mRules; //movement rules
+    public static List<MovementRule> RoundOneRules; //Tmove and blank rules only
+    public static List<MovementRule> mRules; //movement rules (Tmoves and blanks removed from this list part way through process)
     public static List<ColourRule> cRules; //colour rules
-    //private static List<KeyValuePair<int, Type>> ruleTypes; //each rule index and its type
 
     //Lists of current rule types, their indexes, and amloutn fo times each rules is used (list indexes will match up)
     private static List<int> identifiers; //the indexes
@@ -39,11 +17,12 @@ public class ColourAssigner : MonoBehaviour
     public static Dictionary<int, int> used; //rule index and amount of times used
     private static int unassigned;
     private static int pathUnassigned;
+    private static int extraTB;
+    private static bool exitAssigned;
 
     public static List<int> includeRules; //list of indexes of CheckPathInc rules of cRules list
     public static List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
-
 
     //DELETE LATER
     static MovementRule TmoveS = new MovementRule();
@@ -55,28 +34,35 @@ public class ColourAssigner : MonoBehaviour
     static MovementRule warm = new MovementRule();
     static ColourRule excludeBR = new ColourRule();
 
-
     public struct ColouredMaze
     {
         public KruskalMaze.Maze maze;
-        public Dictionary<int, int> used;
+        public Dictionary<int, int> used; //rule index and amount of times rule was used
         public int checkers; //number of checkers
-        public int onPathViolations; //number of tiles that violate rules on solution path
-        public  int offPathViolations; //number of tiles that violate rules off solution path
+        public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles
+
+        //Violatiosn that make maze less traversable
+        public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
+        public int offPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles off solution path (not including CyclesAdded count)
+
+        //Violatiosn that make maze more traversable
+        public int CyclesAdded; //number of times a Tmove or blank rule was assigned improperly, causing more cycles to be added. This number IS NOT the extra number of cycles added
     }
 
     // Start is called before the first frame update
     void Start()
-    {        
+    {
         maze = GenerateGrid.maze;
         cRules = new List<ColourRule>();
         mRules = new List<MovementRule>();
+        RoundOneRules = new List<MovementRule>();
         identifiers = new List<int>();
         ruleTypes = new List<Type>();
         used = new Dictionary<int, int>();
         pathUnassigned = 0;
         unassigned = 0;
-
+        extraTB = 0;
+        exitAssigned = true;
 
         colours = new List<Material>
         {
@@ -98,7 +84,7 @@ public class ColourAssigner : MonoBehaviour
         TmoveS.src = Colour.Green;
         TmoveS.target = Colour.All;
         TmoveS.type = Type.Tmove;
-        
+
         teleportB.index = 3;
         teleportB.direction = Direction.All;
         teleportB.distance = -1;
@@ -152,12 +138,6 @@ public class ColourAssigner : MonoBehaviour
         //Round3();
 
         ColouredMaze cmaze = ColourMaze();
-
-        foreach(KeyValuePair<int, int> i in cmaze.used)
-        {
-            Debug.Log(i.Key + " " + i.Value);
-        }
-        
     }
 
     static public ColouredMaze ColourMaze()
@@ -173,77 +153,44 @@ public class ColourAssigner : MonoBehaviour
             used = used,
             checkers = Shinro.checkerCount,
             onPathViolations = pathUnassigned,
-            offPathViolations = unassigned
+            offPathViolations = unassigned,
+            CyclesAdded = extraTB,
+            properExit = exitAssigned
         };
 
         return cmaze;
     }
 
 
-//TEMPORARY, needs to be in Rules
-//delete this and change bac to Rules.GetMRule
-public static MovementRule GetMRule(int index)
+    //TEMPORARY, needs to be in Rules
+    //delete this and change bac to Rules.GetMRule
+    public static MovementRule GetMRule(int index)
     {
-        MovementRule r = blank;
-        bool changed = false;
-        switch (index)
+
+        foreach(MovementRule rule in mRules)
         {
-            case 0:
-                r = TmoveS;
-                changed = true;
-                break;
-            case 1:
-                r = blank;
-                changed = true;
-                break;
-            case 2:
-                r = teleportR;
-                changed = true;
-                break;
-            case 3:
-                r = teleportB;
-                changed = true;
-                break;
-            case 9:
-                r = jumpOne;
-                changed = true;
-                break;
-            case 12:
-                r = coldTemp;
-                changed = true;
-                break;
-            case 13:
-                r = warm;
-                changed = true;
-                break;
+            if(rule.index == index)
+            {
+                return rule;
+            }
         }
 
-        if(changed == false)
-        {
-            Debug.Log("ERROR: returned blank by mistake");
-        }
-        
-        return r; //will never happen
-
+        Debug.Log("ERROR: RETURNED WRONG RULE");
+        return mRules[0]; //this should never happen, not sure what to put here
     }
 
     public static ColourRule GetCRule(int index)
     {
-        ColourRule r = excludeBR;
-        bool changed = false;
-        switch (index)
+        foreach (ColourRule rule in cRules)
         {
-            case 24:
-                r = excludeBR;
-                changed = true;
-                break;
+            if (rule.index == index)
+            {
+                return rule;
+            }
         }
 
-        if (changed == false)
-        {
-            Debug.LogError("ERROR: returned excludeBR by mistake");
-        }
-        return r; //will never happen
+        Debug.Log("ERROR: RETURNED WRONG RULE");
+        return cRules[0]; //this should never happen
     }
 
 
@@ -295,6 +242,11 @@ public static MovementRule GetMRule(int index)
             identifiers.Add(rule.index);
             ruleTypes.Add(rule.type);
             used.Add(rule.index, 0);
+
+            if(rule.type == Type.Tmove || rule.type == Type.blank)
+            {
+                RoundOneRules.Add(rule);
+            }
         }
     }
 
@@ -320,6 +272,8 @@ public static MovementRule GetMRule(int index)
             }
         }
 
+        List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+
         if (rule.type == Type.warm) //|| r.type == Type.teleport) *******I'm not setting the parnet/children of Teleport tiles meaning if one is placed anywhere but a deadend, it'll alter the paths
         {
             t.parent.canBe[Colour.Green] = false;
@@ -335,113 +289,13 @@ public static MovementRule GetMRule(int index)
             }
 
             //Set the can be bools of tiles on other side of walls
-            String tileNumS = t.name.Substring(t.name.IndexOf("-") + 1, t.name.Length - t.name.IndexOf("-") - 1);
-            int tileNum = int.Parse(tileNumS) - 1; //tile index
-
-            if (tileNum + 1 != maze.w * maze.h) //not top right tile
+            for (int i = 0; i < wallNeighbours.Count; i++)
             {
-                bool child = false;
-                Tile east = maze.tiles[tileNum + 1];
-                if (t.border == false || east.border == false) //east tile exists
-                {
-                    if (east != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children){
-                            if (c == east){
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            east.canBe[Colour.Red] = false;
-                            east.canBe[Colour.Orange] = false;
-                            east.canBe[Colour.Yellow] = false;
-                            east.canBe[Colour.Pink] = false;
-                        }
-                    }
-                }
+                wallNeighbours[i].canBe[Colour.Red] = false;
+                wallNeighbours[i].canBe[Colour.Orange] = false;
+                wallNeighbours[i].canBe[Colour.Yellow] = false;
+                wallNeighbours[i].canBe[Colour.Pink] = false;
             }
-
-            if (tileNum != 0) //not bottom left tile
-            {
-                bool child = false;
-                Tile west = maze.tiles[tileNum - 1];
-                if (t.border == false || west.border == false)
-                { //west tile exists
-                    {
-                        if (west != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                        {
-                            foreach (Tile c in t.children){
-                                if (c == west){
-                                    child = true;
-                                    break;
-                                }
-                            }
-                            if (child == false)
-                            {
-                                west.canBe[Colour.Red] = false;
-                                west.canBe[Colour.Orange] = false;
-                                west.canBe[Colour.Yellow] = false;
-                                west.canBe[Colour.Pink] = false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (tileNum + maze.w < maze.w * maze.h) //north tile exists
-            {
-                bool child = false;
-                Tile north = maze.tiles[tileNum + maze.w];
-                if (north.assigned == true)
-                {
-                    if (north != t.parent) //if northward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == north)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            north.canBe[Colour.Red] = false;
-                            north.canBe[Colour.Orange] = false;
-                            north.canBe[Colour.Yellow] = false;
-                            north.canBe[Colour.Pink] = false;
-                        }
-                    }
-                }
-            }
-            if (tileNum - maze.w >= 0) //south tile exists
-            {
-                bool child = false;
-                Tile south = maze.tiles[tileNum - maze.w];
-                if (south.assigned == true)
-                {
-                    if (south != t.parent) //if southward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children){
-                            if (c == south){
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            south.canBe[Colour.Red] = false;
-                            south.canBe[Colour.Orange] = false;
-                            south.canBe[Colour.Yellow] = false;
-                            south.canBe[Colour.Pink] = false;
-                        }
-                    }
-                }
-            }
-
-
         }
         else if (rule.type == Type.cool)
         {
@@ -458,140 +312,14 @@ public static MovementRule GetMRule(int index)
             }
 
             //Set the can be bools of tiles on other side of walls
-            String tileNumS = t.name.Substring(t.name.IndexOf("-") + 1, t.name.Length - t.name.IndexOf("-") - 1);
-            int tileNum = int.Parse(tileNumS) - 1; //tile index
-
-            if (tileNum + 1 != maze.w * maze.h) //not top right tile
+            for (int i = 0; i < wallNeighbours.Count; i++)
             {
-                bool child = false;
-                Tile east = maze.tiles[tileNum + 1];
-                if (t.border == false || east.border == false) //east tile exists
-                {
-                    if (east != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == east)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            east.canBe[Colour.Blue] = false;
-                            east.canBe[Colour.Green] = false;
-                            east.canBe[Colour.Purple] = false;
-                            east.canBe[Colour.Teal] = false;
-                        }
-                    }
-                }
-            }
-
-            if (tileNum != 0) //not bottom left tile
-            {
-                bool child = false;
-                Tile west = maze.tiles[tileNum - 1];
-                if (t.border == false || west.border == false)
-                { //west tile exists
-                    {
-                        if (west != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                        {
-                            foreach (Tile c in t.children)
-                            {
-                                if (c == west)
-                                {
-                                    child = true;
-                                    break;
-                                }
-                            }
-                            if (child == false)
-                            {
-                                west.canBe[Colour.Blue] = false;
-                                west.canBe[Colour.Green] = false;
-                                west.canBe[Colour.Purple] = false;
-                                west.canBe[Colour.Teal] = false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (tileNum + maze.w < maze.w * maze.h) //north tile exists
-            {
-                bool child = false;
-                Tile north = maze.tiles[tileNum + maze.w];
-                if (north.assigned == true)
-                {
-                    if (north != t.parent) //if northward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == north)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            north.canBe[Colour.Blue] = false;
-                            north.canBe[Colour.Green] = false;
-                            north.canBe[Colour.Purple] = false;
-                            north.canBe[Colour.Teal] = false;
-                        }
-                    }
-                }
-            }
-            if (tileNum - maze.w >= 0) //south tile exists
-            {
-                bool child = false;
-                Tile south = maze.tiles[tileNum - maze.w];
-                if (south.assigned == true)
-                {
-                    if (south != t.parent) //if southward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == south)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            south.canBe[Colour.Blue] = false;
-                            south.canBe[Colour.Green] = false;
-                            south.canBe[Colour.Purple] = false;
-                            south.canBe[Colour.Teal] = false;
-                        }
-                    }
-                }
+                wallNeighbours[i].canBe[Colour.Blue] = false;
+                wallNeighbours[i].canBe[Colour.Green] = false;
+                wallNeighbours[i].canBe[Colour.Purple] = false;
+                wallNeighbours[i].canBe[Colour.Teal] = false;
             }
         }
-
-        /*if (rule.type == Type.teleport)
-        {
-            Colour targ = rule.target;
-            String s = "canBe" + targ;
-            if ((bool)t.parent.GetType().GetField(s).GetValue(t.parent) && t.parent.assigned == false) //attempt to set parent to target colour
-            {
-                AssignByColour(t.parent, rule.target); //worse fitness if the above if statement isn't true
-            }
-            foreach (Tile child in t.children) //attempt to set children to target colour
-            {
-                if ((bool)child.GetType().GetField(s).GetValue(child) && child.assigned == false)
-                {
-                    AssignByColour(child, rule.target);
-                }
-                else
-                {
-                    //update something for fitness function but not as much as the above
-                }
-            }
-            return;
-        }*/
     }
 
     private static void AssignByCRule(Tile t, ColourRule rule)
@@ -616,107 +344,14 @@ public static MovementRule GetMRule(int index)
             }
         }
 
+        List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+
         if (rule.type == Type.include) //may not need these after updating Round 2 method
         {
             //Set the can be bools of tiles on other side of walls
-            String tileNumS = t.name.Substring(t.name.IndexOf("-") + 1, t.name.Length - t.name.IndexOf("-") - 1);
-            int tileNum = int.Parse(tileNumS) - 1; //tile index
-
-            if (tileNum + 1 != maze.w * maze.h) //not top right tile
+            for (int i = 0; i < wallNeighbours.Count; i++)
             {
-                bool child = false;
-                Tile east = maze.tiles[tileNum + 1];
-                if (t.border == false || east.border == false) //east tile exists
-                {
-                    if (east != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == east)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            east.canBe[rule.target] = false;
-                        }
-                    }
-                }
-            }
-
-            if (tileNum != 0) //not bottom left tile
-            {
-                bool child = false;
-                Tile west = maze.tiles[tileNum - 1];
-                if (t.border == false || west.border == false)
-                { //west tile exists
-                    {
-                        if (west != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                        {
-                            foreach (Tile c in t.children)
-                            {
-                                if (c == west)
-                                {
-                                    child = true;
-                                    break;
-                                }
-                            }
-                            if (child == false)
-                            {
-                                west.canBe[rule.target] = false;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (tileNum + maze.w < maze.w * maze.h) //north tile exists
-            {
-                bool child = false;
-                Tile north = maze.tiles[tileNum + maze.w];
-                if (north.assigned == true)
-                {
-                    if (north != t.parent) //if northward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == north)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            north.canBe[rule.target] = false;
-                        }
-                    }
-                }
-            }
-            if (tileNum - maze.w >= 0) //south tile exists
-            {
-                bool child = false;
-                Tile south = maze.tiles[tileNum - maze.w];
-                if (south.assigned == true)
-                {
-                    if (south != t.parent) //if southward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == south)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            south.canBe[rule.target] = false;
-                        }
-                    }
-                }
+                wallNeighbours[i].canBe[rule.target] = false;
             }
 
             //Set the parent and children as the ruel of the target colour
@@ -731,7 +366,6 @@ public static MovementRule GetMRule(int index)
                     AssignByColour(c, rule.target);
                 }
             }
-
         }
         else if (rule.type == Type.exclude)
         {
@@ -742,136 +376,9 @@ public static MovementRule GetMRule(int index)
             }
 
             //Set the can be bools of tiles on other side of walls
-            String tileNumS = t.name.Substring(t.name.IndexOf("-") + 1, t.name.Length - t.name.IndexOf("-") - 1);
-            int tileNum = int.Parse(tileNumS) - 1; //tile index
-
-            if (tileNum + 1 != maze.w * maze.h) //not top right tile
+            for (int i = 0; i < wallNeighbours.Count; i++)
             {
-                bool child = false;
-                Tile east = maze.tiles[tileNum + 1];
-                if (t.border == false || east.border == false) //east tile exists
-                {
-                    if (east != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == east)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            east.canBe[Colour.Red] = false;
-                            east.canBe[Colour.Orange] = false;
-                            east.canBe[Colour.Yellow] = false;
-                            east.canBe[Colour.Green] = false;
-                            east.canBe[Colour.Blue] = false;
-                            east.canBe[Colour.Purple] = false;
-                            east.canBe[Colour.Pink] = false;
-                            east.canBe[Colour.Teal] = false;
-                            east.canBe[rule.target] = true;
-                        }
-                    }
-                }
-            }
-
-            if (tileNum != 0) //not bottom left tile
-            {
-                bool child = false;
-                Tile west = maze.tiles[tileNum - 1];
-                if (t.border == false || west.border == false)
-                { //west tile exists
-                    {
-                        if (west != t.parent) //if eastward tile is assigned and not child/parent, add to list
-                        {
-                            foreach (Tile c in t.children)
-                            {
-                                if (c == west)
-                                {
-                                    child = true;
-                                    break;
-                                }
-                            }
-                            if (child == false)
-                            {
-                                west.canBe[Colour.Red] = false;
-                                west.canBe[Colour.Orange] = false;
-                                west.canBe[Colour.Yellow] = false;
-                                west.canBe[Colour.Green] = false;
-                                west.canBe[Colour.Blue] = false;
-                                west.canBe[Colour.Purple] = false;
-                                west.canBe[Colour.Pink] = false;
-                                west.canBe[Colour.Teal] = false;
-                                west.canBe[rule.target] = true;
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (tileNum + maze.w < maze.w * maze.h) //north tile exists
-            {
-                bool child = false;
-                Tile north = maze.tiles[tileNum + maze.w];
-                if (north.assigned == true)
-                {
-                    if (north != t.parent) //if northward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == north)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            north.canBe[Colour.Red] = false;
-                            north.canBe[Colour.Orange] = false;
-                            north.canBe[Colour.Yellow] = false;
-                            north.canBe[Colour.Green] = false;
-                            north.canBe[Colour.Blue] = false;
-                            north.canBe[Colour.Purple] = false;
-                            north.canBe[Colour.Pink] = false;
-                            north.canBe[Colour.Teal] = false;
-                            north.canBe[rule.target] = true;
-                        }
-                    }
-                }
-            }
-            if (tileNum - maze.w >= 0) //south tile exists
-            {
-                bool child = false;
-                Tile south = maze.tiles[tileNum - maze.w];
-                if (south.assigned == true)
-                {
-                    if (south != t.parent) //if southward tile is assigned and not child/parent, add to list
-                    {
-                        foreach (Tile c in t.children)
-                        {
-                            if (c == south)
-                            {
-                                child = true;
-                                break;
-                            }
-                        }
-                        if (child == false)
-                        {
-                            south.canBe[Colour.Red] = false;
-                            south.canBe[Colour.Orange] = false;
-                            south.canBe[Colour.Yellow] = false;
-                            south.canBe[Colour.Green] = false;
-                            south.canBe[Colour.Blue] = false;
-                            south.canBe[Colour.Purple] = false;
-                            south.canBe[Colour.Pink] = false;
-                            south.canBe[Colour.Teal] = false;
-                            south.canBe[rule.target] = true;
-                        }
-                    }
-                }
+                AssignByColour(wallNeighbours[i], rule.target);
             }
         }
     }
@@ -942,28 +449,44 @@ public static MovementRule GetMRule(int index)
 
         //Gets a random rule with colour c set as its source and set that rule to t
         //DON'T GET A RANDOM, based on the index, try to pick some rules types over others (avoid teleport and jumps, and ones that specify a target colour)
-
-        int rand = UnityEngine.Random.Range(0, indexes.Count); //Used to get index of a random rule that has c as its source colour
-        bool assigned = false;
-
-        foreach (MovementRule rule in mRules) //see if random rule is a mRule
+        if(indexes.Count > 0)
         {
-            if (rule.index == indexes[rand]) //this gave an index out of bounds error once
-            {
-                AssignByMRule(t, rule); //assign rule to t
-                assigned = true;
-            }
-        }
+            int rand = UnityEngine.Random.Range(0, indexes.Count); //Used to get index of a random rule that has c as its source colour
+            bool assigned = false;
 
-        if(assigned == false) //if random rule wasn't an mRule, find the cRule
-        {
-            foreach (ColourRule rule in cRules)
+            foreach (MovementRule rule in mRules) //see if random rule is a mRule
             {
-                if (rule.index == rand)
+                if (rule.index == indexes[rand])
                 {
-                    AssignByCRule(t, rule); //assign rule to t
+                    AssignByMRule(t, rule); //assign rule to t
+                    assigned = true;
                 }
             }
+
+            if (assigned == false) //if random rule wasn't an mRule, find the cRule
+            {
+                foreach (ColourRule rule in cRules)
+                {
+                    if (rule.index == rand)
+                    {
+                        AssignByCRule(t, rule); //assign rule to t
+                    }
+                }
+            }
+        }
+        else
+        {
+            //This means the only rules with the colour is a Tmove and blank rule which we can't assign
+            //Therefore, colour not possible to put down
+            foreach (MovementRule rule in RoundOneRules)
+            {
+                if (rule.src == c)
+                {
+                    extraTB++;
+                    Debug.Log(t.name + " was assigned a Tmove or blank move incorrectly");
+                    AssignByMRule(t, rule);
+                }
+            } 
         }
     }
 
@@ -972,7 +495,7 @@ public static MovementRule GetMRule(int index)
      */
     private static void RoundOne()
     {
-        foreach(MovementRule rule in mRules)
+        foreach (MovementRule rule in mRules)
         {
             if (rule.type == Type.Tmove)
             {
@@ -1081,26 +604,6 @@ public static MovementRule GetMRule(int index)
                 i--;
             }
         }
-
-
-        //foreach(MovementRule r in mRules)
-        //{
-        //    Debug.Log("index " + r.index);
-        //    Debug.Log("type " + r.type);
-        //    Debug.Log("source " + r.src);
-        //    Debug.Log("target " + r.target);
-        //}
-
-        //foreach(int i in identifiers)
-        //{
-        //    Debug.Log("index " + i);
-        //}
-        //foreach (Type t in ruleTypes)
-        //{
-        //    Debug.Log("type " + t);
-        //}
-
-
     }
 
     /* Round 2
@@ -1344,6 +847,9 @@ public static MovementRule GetMRule(int index)
                         warm = false;
                         break;
                     }
+                }
+                if(warm == true)
+                {
                     foreach (Tile w in walls)
                     {
                         if (w.colour == Colour.Red || w.colour == Colour.Orange || w.colour == Colour.Yellow || w.colour == Colour.Pink)
@@ -1354,9 +860,11 @@ public static MovementRule GetMRule(int index)
                     }
                 }
 
-                if(warm == true && tile.canBe[m.src] == true) //all adjacent tiles are a warm colour
+                if (warm == true && tile.canBe[m.src] == true) //all adjacent tiles are a warm colour
                 {
                     check = true;
+                    //Debug.Log("Assigned warm to " + tile.name + " Adjacent walls: " + walls.Count + "Neighbours: " + adjacent.Count);
+
                     AssignByMRule(tile, m);
                 }
             }
@@ -1371,15 +879,18 @@ public static MovementRule GetMRule(int index)
                         break;
                     }
                 }
-                foreach (Tile w in walls)
+                if(cool == true)
                 {
-                    if (w.colour == Colour.Blue || w.colour == Colour.Green || w.colour == Colour.Purple || w.colour == Colour.Teal)
+                    foreach (Tile w in walls)
                     {
-                        cool = false;
-                        break;
+                        if (w.colour == Colour.Blue || w.colour == Colour.Green || w.colour == Colour.Purple || w.colour == Colour.Teal)
+                        {
+                            cool = false;
+                            break;
+                        }
                     }
                 }
-
+                
                 if (cool == true && tile.canBe[m.src] == true)
                 {
                     check = true;
@@ -1434,15 +945,18 @@ public static MovementRule GetMRule(int index)
                             break;
                         }
                     }
-                    foreach (Tile w in walls)
+                    if(canPlace == true)
                     {
-                        if (w.colour != c.target)
+                        foreach (Tile w in walls)
                         {
-                            canPlace = false;
-                            break;
+                            if (w.colour != c.target)
+                            {
+                                canPlace = false;
+                                break;
+                            }
                         }
                     }
-
+                   
                     if (canPlace == true && tile.canBe[c.src] == true)
                     {
                         check = true;
@@ -1467,15 +981,18 @@ public static MovementRule GetMRule(int index)
                             break;
                         }
                     }
-                    foreach (Tile w in walls)
+                    if(canPlace == true)
                     {
-                        if (w.colour == c.target)
+                        foreach (Tile w in walls)
                         {
-                            canPlace = false;
-                            break;
+                            if (w.colour == c.target)
+                            {
+                                canPlace = false;
+                                break;
+                            }
                         }
                     }
-
+                    
                     if (canPlace == true && tile.canBe[c.src] == true)
                     {
                         check = true;
@@ -1490,19 +1007,18 @@ public static MovementRule GetMRule(int index)
 
     }
 
-    private static List<Tile> getAdjacentWallTiles(Tile tile)
+    private static List<Tile> getAdjacentWallTiles(Tile tile) //returns assigned adjacent tiles on other side of wall
     {
 
         List<Tile> wallNeighbours = new List<Tile>();
-        String tileNumS = tile.name.Substring(tile.name.IndexOf("-") + 1, tile.name.Length - tile.name.IndexOf("-") - 1);
-        int tileNum = int.Parse(tileNumS) - 1; //tile index
-        
+        int tileNum = Array.IndexOf(maze.tiles, tile); //tile index
 
-        if(tileNum + 1 != maze.w * maze.h) //not top right tile
+
+        if (tileNum + 1 != maze.w * maze.h) //not top right tile
         {
             bool child = false;
             Tile east = maze.tiles[tileNum + 1];
-            if (tile.border == false || east.border == false) //east tile exists
+            if ((tileNum + 1) % maze.w != 0) //east tile exists
             {
                 if (east.assigned == true)
                 {
@@ -1529,7 +1045,7 @@ public static MovementRule GetMRule(int index)
         {
             bool child = false;
             Tile west = maze.tiles[tileNum - 1];
-            if (tile.border == false || west.border == false) //west tile exists
+            if (tileNum % maze.w != 0) //west tile exists
             {
                 if (west.assigned == true)
                 {
@@ -1608,12 +1124,12 @@ public static MovementRule GetMRule(int index)
      * - Colour the tiles that are only reachable by going past exit
      * - try not to colour them with a teleport colour
      */
-
     private static void Round3()
     {
         //1. Ensure exit tile is coloured
         if (maze.LP.exit.assigned == false)
         {
+            Debug.Log("Exit tile assigned via Round 3");
             Tile exit = maze.LP.exit;
             foreach (Tile c in exit.children)
             {
@@ -1655,25 +1171,25 @@ public static MovementRule GetMRule(int index)
                     {
                         if (others.Count > 0)
                         {
-                            AssignByColour(exit, others[0]);
-                            //exit.colour = others[0];
-                        }
-                        else
-                        {
-                            AssignByColour(exit, teleports[0]);
-                            //exit.colour = teleports[0];
+                            foreach(Colour colour in others)
+                            {
+                                if(exit.canBe[colour] == true)
+                                {
+                                    AssignByColour(exit, others[0]);
+                                }
+                            }
                         }
 
-                        //Set material
-                        //foreach (Material mat in colours)
-                        //{
-                        //    if (mat.name == exit.colour.ToString())
-                        //    {
-                        //        sr.material.shader = mat.shader;
-                        //        sr.material.color = mat.color;
-                        //        break;
-                        //    }
-                        //}
+                        if(exit.assigned == false)
+                        {
+                            foreach (Colour colour in teleports)
+                            {
+                                if (exit.canBe[colour] == true)
+                                {
+                                    AssignByColour(exit, teleports[0]);
+                                }
+                            }
+                        }
                     }
                     else if (col == Colour.Warm)
                     {
@@ -1682,10 +1198,12 @@ public static MovementRule GetMRule(int index)
                         {
                             if (cc == Colour.Red || cc == Colour.Orange || cc == Colour.Yellow || cc == Colour.Pink)
                             {
-                                AssignByColour(exit, cc);
-                                //exit.colour = cc;
-                                coloured = true;
-                                break;
+                                if (exit.canBe[cc] == true)
+                                {
+                                    AssignByColour(exit, cc);
+                                    coloured = true;
+                                    break;
+                                }
                             }
                         }
                         if (coloured == false)
@@ -1694,24 +1212,15 @@ public static MovementRule GetMRule(int index)
                             {
                                 if (cc == Colour.Red || cc == Colour.Orange || cc == Colour.Yellow || cc == Colour.Pink)
                                 {
-                                    AssignByColour(exit, cc);
-                                    //exit.colour = cc;
-                                    coloured = true;
-                                    break;
+                                    if (exit.canBe[cc] == true)
+                                    {
+                                        AssignByColour(exit, cc);
+                                        coloured = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-
-                        //Set material
-                        //foreach (Material mat in colours)
-                        //{
-                        //    if (mat.name == exit.colour.ToString())
-                        //    {
-                        //        sr.material.shader = mat.shader;
-                        //        sr.material.color = mat.color;
-                        //        break;
-                        //    }
-                        //}
                     }
                     else if (col == Colour.Cool)
                     {
@@ -1720,10 +1229,12 @@ public static MovementRule GetMRule(int index)
                         {
                             if (cc == Colour.Blue || cc == Colour.Green || cc == Colour.Purple || cc == Colour.Teal)
                             {
-                                AssignByColour(exit, cc);
-                               // exit.colour = cc;
-                                coloured = true;
-                                break;
+                                if (exit.canBe[cc] == true)
+                                {
+                                    AssignByColour(exit, cc);
+                                    coloured = true;
+                                    break;
+                                }
                             }
                         }
                         if (coloured == false)
@@ -1732,41 +1243,31 @@ public static MovementRule GetMRule(int index)
                             {
                                 if (cc == Colour.Blue || cc == Colour.Green || cc == Colour.Purple || cc == Colour.Teal)
                                 {
-                                    AssignByColour(exit, cc);
-                                    //exit.colour = cc;
-                                    coloured = true;
-                                    break;
+                                    if (exit.canBe[cc] == true)
+                                    {
+                                        AssignByColour(exit, cc);
+                                        coloured = true;
+                                        break;
+                                    }
                                 }
                             }
                         }
-
-                        //Set material
-                        //foreach (Material mat in colours)
-                        //{
-                        //    if (mat.name == exit.colour.ToString())
-                        //    {
-                        //        sr.material.shader = mat.shader;
-                        //        sr.material.color = mat.color;
-                        //        break;
-                        //    }
-                        //}
                     }
                     else //target is specific colour
                     {
-                        AssignByColour(exit, col);
-                        //exit.colour = col; //no rule assigned but doesn't need one
-                        //Set material
-                        //foreach (Material mat in colours)
-                        //{
-                        //    if (mat.name == exit.colour.ToString())
-                        //    {
-                        //        sr.material.shader = mat.shader;
-                        //        sr.material.color = mat.color;
-                        //        break;
-                        //    }
-                        //}
+                        //Even if target can't be this colour due to a diff. adjacent tile,
+                        //I'm still setting it to this to make the solution path traversable
+                        if (exit.canBe[col] == true)
+                        {
+                            AssignByColour(exit, col);
+                        }
+                        else
+                        {
+                            Debug.Log("Failed to assigned exit tile properly");
+                            exitAssigned = false; //not adding to any unassigned count because path is still traversable as normal so it shouldnt hinder fitness in that way
+                            AssignByColour(exit, col);
+                        }  
                     }
-
                     break;
                 }
             }
@@ -1791,166 +1292,105 @@ public static MovementRule GetMRule(int index)
             }
         }
     }
+
+
+    private static List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
+    {
+
+        List<Tile> wallNeighbours = new List<Tile>();
+        int tileNum = Array.IndexOf(maze.tiles, tile); //tile index
+
+        if (tileNum + 1 != maze.w * maze.h) //not top right tile
+        {
+            bool child = false;
+            Tile east = maze.tiles[tileNum + 1];
+            if ((tileNum + 1) % maze.w != 0) //east tile exists
+            {
+                if (east != tile.parent) //if eastward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == east)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(east);
+                    }
+                }
+            }
+        }
+
+        if (tileNum != 0) //not bottom left tile
+        {
+            bool child = false;
+            Tile west = maze.tiles[tileNum - 1];
+            if (tileNum % maze.w != 0) //west tile exists
+            {
+                if (west != tile.parent) //if westward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == west)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(west);
+                    }
+                }
+            }
+        }
+
+        if (tileNum + maze.w < maze.w * maze.h) //north tile exists
+        {
+            bool child = false;
+            Tile north = maze.tiles[tileNum + maze.w];
+
+            if (north != tile.parent) //if northward tile is assigned and not child/parent, add to list
+            {
+                foreach (Tile c in tile.children)
+                {
+                    if (c == north)
+                    {
+                        child = true;
+                        break;
+                    }
+                }
+                if (child == false)
+                {
+                    wallNeighbours.Add(north);
+                }
+            }    
+        }
+        if (tileNum - maze.w >= 0) //south tile exists
+        {
+            bool child = false;
+            Tile south = maze.tiles[tileNum - maze.w];
+
+            if (south != tile.parent) //if southward tile is assigned and not child/parent, add to list
+            {
+                foreach (Tile c in tile.children)
+                {
+                    if (c == south)
+                    {
+                        child = true;
+                        break;
+                    }
+                }
+                if (child == false)
+                {
+                    wallNeighbours.Add(south);
+                }
+            }
+        }
+
+        return wallNeighbours;
+    }
 }
-
-//avoid rules with target = teleport rule source
-
-/* Corridor or corner piece
- * Order of Priority:
- *  - Include
- *  - warm/cool
- *  - jumps (if you can stay on sp)
- *  - block/exclude
- */
-
-/* T-piece (that don't work with active Tmove rules)
-* Order of Priority:
-*  - Exclude
-*  - block
-*  - warm/cool
-*  - Include
-*  - jumps
-*/
-
-
-
-/* Priority of rule assignments:
-     * 1. include and exclude
-     * 2. warm and cool
-     * 3. rest
-     * This is written under the assumption one colour can have multiple rules
-     */
-//private static void AssignRulestoColours(List<MovementRule> mList, List<ColourRule> cList)
-//{
-//    List<Colour> warmColours = new List<Colour>();
-//    List<Colour> coolColours = new List<Colour>();
-//    warmColours.Add(Colour.Red);
-//    warmColours.Add(Colour.Orange);
-//    warmColours.Add(Colour.Yellow);
-//    coolColours.Add(Colour.Green);
-//    coolColours.Add(Colour.Blue);
-//    coolColours.Add(Colour.Purple);
-
-//    foreach (ColourRule c in cList)
-//    {
-//        if (c.type == Type.include || c.type == Type.exclude)
-//        {
-//            if (warmColours.Contains(c.src))
-//            {
-//                warmColours.Remove(c.src); //will always exist
-//            }
-//            else
-//            {
-//                coolColours.Remove(c.src);
-//            }
-//        }
-//    }
-//    for (int i = 0; i < cList.Count; i++)
-//    {
-//        ColourRule c = cList[i];
-
-//        if (c.type == Type.warm) //assign the source colour to a warm colour still in the list (if any)
-//        {
-//            if (warmColours.Count > 0)
-//            {
-//                c.src = warmColours[0];
-//                warmColours.RemoveAt(0);
-//                cList[i] = c;
-//            }
-//            else
-//            {
-//                List<Colour> extra = new List<Colour>();
-//                extra.Add(Colour.Red);
-//                extra.Add(Colour.Orange);
-//                extra.Add(Colour.Yellow);
-//                c.src = extra[UnityEngine.Random.Range(0, 3)]; //asign random warm colour
-//                cList[i] = c;
-//            }
-//        }
-//        if (c.type == Type.cool) //assign the source colour to a warm colour still in the list (if any)
-//        {
-//            if (coolColours.Count > 0)
-//            {
-//                c.src = coolColours[0];
-//                coolColours.RemoveAt(0);
-//                cList[i] = c;
-//            }
-//            else
-//            {
-//                List<Colour> extra = new List<Colour>();
-//                extra.Add(Colour.Green);
-//                extra.Add(Colour.Blue);
-//                extra.Add(Colour.Purple);
-//                c.src = extra[UnityEngine.Random.Range(0, 3)]; //asign random warm colour
-//                cList[i] = c;
-//            }
-//        }
-//    }
-
-//    for (int i = 0; i < mList.Count; i++)
-//    {
-//        MovementRule m = mList[i];
-//        if (coolColours.Count > 0)
-//        {
-//            m.src = coolColours[0];
-//            coolColours.RemoveAt(0);
-//            mList[i] = m;
-//        }
-//        else if (warmColours.Count > 0)
-//        {
-//            m.src = warmColours[0];
-//            warmColours.RemoveAt(0);
-//            mList[i] = m;
-//        }
-//        else //all colours used at least once
-//        {
-//            List<Colour> extra = new List<Colour>();
-//            extra.Add(Colour.Red);
-//            extra.Add(Colour.Orange);
-//            extra.Add(Colour.Yellow);
-//            extra.Add(Colour.Green);
-//            extra.Add(Colour.Blue);
-//            extra.Add(Colour.Purple);
-//            m.src = extra[UnityEngine.Random.Range(0, 6)]; //assign random colour
-//            mList[i] = m;
-//        }
-//    }
-
-//    for (int i = 0; i < cList.Count; i++)
-//    {
-//        ColourRule c = cList[i];
-//        if (c.type != Type.include && c.type != Type.exclude && c.type != Type.cool && c.type != Type.warm)
-//        {
-//            if (coolColours.Count > 0)
-//            {
-//                c.src = coolColours[0];
-//                coolColours.RemoveAt(0);
-//                cList[i] = c;
-//            }
-//            else if (warmColours.Count > 0)
-//            {
-//                c.src = warmColours[0];
-//                warmColours.RemoveAt(0);
-//                cList[i] = c;
-//            }
-//            else //all colours used at least once
-//            {
-//                List<Colour> extra = new List<Colour>
-//                {
-//                    Colour.Red,
-//                    Colour.Orange,
-//                    Colour.Yellow,
-//                    Colour.Green,
-//                    Colour.Blue,
-//                    Colour.Purple
-//                };
-//                c.src = extra[UnityEngine.Random.Range(0, 6)];
-//                cList[i] = c;
-//            }
-//        }
-//    }
-
-//    RoundOne();
-//    RoundTwo();
-//}
-
