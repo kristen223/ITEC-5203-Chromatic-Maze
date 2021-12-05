@@ -41,7 +41,7 @@ public class ColourAssigner : MonoBehaviour
         public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles (not added to onPathViolations because it doesn't wreck the path)
         public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
         public int offPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles off solution path (not including CyclesAdded count)
-    }
+     }
 
     // Start is called before the first frame update
     void Start()
@@ -629,7 +629,7 @@ public class ColourAssigner : MonoBehaviour
 
         while (root == false) //not root node
         {
-            if (tile.assigned == false)
+            if (tile.assigned == false && tile.failedToAssign == false)
             {
                 bool check = false;
 
@@ -730,7 +730,8 @@ public class ColourAssigner : MonoBehaviour
                 
             }
 
-            if(tile.parent != tile){
+            if(tile.parent != tile)
+            {
                 lastTile = tile;
                 tile = tile.parent;
             }
@@ -755,7 +756,7 @@ public class ColourAssigner : MonoBehaviour
 
         //player must be able to traverse to parent and every child of tile
 
-        if(tile.assigned == false)
+        if(tile.assigned == false && tile.failedToAssign == false)
         {
             bool check = false;
 

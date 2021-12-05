@@ -21,11 +21,11 @@ public class Shinro : MonoBehaviour
         NumClues.SetClues(tiles);
     }
 
-    public void PlaceCheckers(Tile startPoint, int length, int count)
+    public void PlaceCheckers(Tile previous, int length, int count)
     {
         for (int i = 0; i < length-1; i++)
         {
-            Tile current = startPoint.parent;
+            Tile current = previous.parent;
 
             if(i == length - count - 1) //if the number of checkers left to place is equal to the number of tiles left in path traversal
             {//must add checkers to rest of path
@@ -35,8 +35,8 @@ public class Shinro : MonoBehaviour
                 chance = 10;
             }
             else
-            {
-                if (Random.Range(1, 101) <= chance)
+            {   //don't place checker after jump or teleport
+                if (Random.Range(1, 101) <= chance && previous.ruleType != Type.jump1 && previous.ruleType != Type.jump2 && previous.ruleType != Type.teleport)
                 {
                     current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                     current.tag = "checker";
@@ -45,7 +45,7 @@ public class Shinro : MonoBehaviour
                 }
                 else //no checker added
                 {
-                    chance += 10;
+                    chance += 15;
                 }
 
                 if (count == 0)
@@ -53,7 +53,7 @@ public class Shinro : MonoBehaviour
                     break;
                 }
             }
-            startPoint = startPoint.parent;
+            previous = previous.parent;
         }
     }
 

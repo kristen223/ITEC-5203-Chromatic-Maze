@@ -10,7 +10,7 @@ public class PlayerController : MonoBehaviour
     public KruskalMaze.Maze maze;
     private Tile[] tiles;
     private Tile player;
-    private Stack<Tile> previous;
+    public Stack<Tile> previous;
     private List<Tile> solutionP;
 
     //game object to represent player (liek the checker) (you can remove the checker really)
@@ -86,15 +86,6 @@ public class PlayerController : MonoBehaviour
             endMessage.text = "Winner!";
         }
 
-        //Game Over - reached dead end, no undo's left, and is not a teleport tile
-        //**Add condition: if player.ruleType != 2 or 3 or 4 (teleport, jump, jump2)
-        //if (bCount == 0 && maze.deadends.Contains(player) && previous.Peek() == player.parent && player.ruleType != Type.teleport && player.ruleType != Type.jump1 && player.ruleType != Type.jump2)
-        //{
-        //    GameOver();
-        //}
-
-        //make surenot surrounded by walls
-
         if(bCount==0) //assuming teleport target colour exists
         {
             switch (player.ruleType)
@@ -149,32 +140,49 @@ public class PlayerController : MonoBehaviour
                     break;
 
                 case Type.warm:
+                    bool okayW = false;
                     if(player.parent != previous.Peek() && (player.parent.colour == Colour.Red || player.parent.colour == Colour.Orange || player.parent.colour == Colour.Yellow || player.parent.colour == Colour.Pink))
                     {
                         break;
                     }
                     foreach(Tile c in player.children)
                     {
-                        if(c != previous.Peek() && (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || player.parent.colour == Colour.Pink))
+                        if(c != previous.Peek() && (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || c.colour == Colour.Pink))
                         {
+                            okayW = true;
+                            Debug.Log("child is fine");
                             break;
                         }
                     }
-                    GameOver();
+                    if(okayW == false)
+                    {
+                        Debug.Log("hmm");
+                        GameOver();
+                        break;
+                    }
                     break;
                 case Type.cool:
+                    bool okayC = false;
                     if (player.parent != previous.Peek() && (player.parent.colour == Colour.Blue || player.parent.colour == Colour.Green || player.parent.colour == Colour.Purple || player.parent.colour == Colour.Teal))
                     {
                         break;
                     }
                     foreach (Tile c in player.children)
                     {
-                        if (c != previous.Peek() && (c.colour == Colour.Blue || c.colour == Colour.Green || c.colour == Colour.Purple || player.parent.colour == Colour.Teal))
+                        if (c != previous.Peek() && (c.colour == Colour.Blue || c.colour == Colour.Green || c.colour == Colour.Purple || c.colour == Colour.Teal))
                         {
+                            okayC = true;
+                            Debug.Log("cool child is fine");
                             break;
                         }
+                        Debug.Log("cool child not fine");
                     }
-                    GameOver();
+                    if (okayC == false)
+                    {
+                        Debug.Log("huh");
+                        GameOver();
+                        break;
+                    }
                     break;
                 case Type.include:
                     Colour targ;
@@ -190,14 +198,20 @@ public class PlayerController : MonoBehaviour
                     {
                         break;
                     }
+                    bool okayI = false;
                     foreach (Tile c in player.children)
                     {
                         if (c != previous.Peek() && c.colour == targ)
                         {
+                            okayI = true;
                             break;
                         }
                     }
-                    GameOver();
+                    if(okayI == false)
+                    {
+                        GameOver();
+                        break;
+                    }
                     break;
 
                 case Type.exclude:
@@ -210,18 +224,24 @@ public class PlayerController : MonoBehaviour
                     {
                         targEx = player.cRule.target;
                     }
-                    if (player.parent != previous.Peek() && player.parent.colour != targEx)
+                    if (player.parent != previous.Peek() && player.parent.colour != targEx && player.parent.assigned == true)
                     {
                         break;
                     }
+                    bool okayE = false;
                     foreach (Tile c in player.children)
                     {
-                        if (c != previous.Peek() && c.colour != targEx)
+                        if (c != previous.Peek() && c.colour != targEx && c.assigned == true)
                         {
+                            okayE = true;
                             break;
                         }
                     }
-                    GameOver();
+                    if(okayE == false)
+                    {
+                        GameOver();
+                        break;
+                    }
                     break;
 
                 case Type.Tmove:
@@ -229,14 +249,20 @@ public class PlayerController : MonoBehaviour
                     {
                         break;
                     }
+                    bool okayT = false;
                     foreach (Tile c in player.children)
                     {
                         if (c != previous.Peek() && c.colour != Colour.Black)
                         {
+                            okayT = true;
                             break;
                         }
                     }
-                    GameOver();
+                    if(okayT == false)
+                    {
+                        GameOver();
+                        break;
+                    }
                     break;
 
                 case Type.blank:
@@ -244,14 +270,20 @@ public class PlayerController : MonoBehaviour
                     {
                         break;
                     }
+                    bool okayB = false;
                     foreach (Tile c in player.children)
                     {
                         if (c != previous.Peek() && c.colour != Colour.Black)
                         {
+                            okayB = true;
                             break;
                         }
                     }
-                    GameOver();
+                    if (okayB == false)
+                    {
+                        GameOver();
+                        break;
+                    }
                     break;
             }
         }
