@@ -58,7 +58,7 @@ public class GenerateGrid : MonoBehaviour
 
                 GameObject tile = Instantiate(tilePrefab, new Vector3((x * 20) - 20f, (y * 20) - 10f, 0), Quaternion.Euler(0, 0, 0));
                 tile.name = "Tile-" + (counter + 1);
-                tile.GetComponentInChildren<Text>().text = "0";
+                //tile.GetComponentInChildren<Text>().text = "0";
                 tile.GetComponent<Tile>().parent = tile.GetComponent<Tile>();
                 
 
@@ -135,7 +135,7 @@ public class GenerateGrid : MonoBehaviour
 
         maze = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
 
-        foreach(Tile t in maze.tiles)
+        foreach(Tile t in maze.LP.path)
         {
             t.GetComponentInChildren<Text>().text = t.GetComponent<Tile>().rank.ToString();
         }
@@ -222,6 +222,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + 1].GetComponent<Tile>();
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
+                wall.GetComponent<SpriteRenderer>().enabled = false;
 
                 edges.Add(wall.GetComponent<Wall>());
 
@@ -249,6 +250,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + width].GetComponent<Tile>(); //changed
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
+                wall.GetComponent<SpriteRenderer>().enabled = false;
 
                 edges.Add(wall.GetComponent<Wall>());
 

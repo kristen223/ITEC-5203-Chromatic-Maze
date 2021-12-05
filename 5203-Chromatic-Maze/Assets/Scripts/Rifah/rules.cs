@@ -6,9 +6,9 @@ using UnityEngine;
 
 
 //ADDED ENUMS AND UPDATED TWO STRUCTS
-public enum Type {Tmove, blank, teleport, jump1, jump2, warm, cool,include, exclude, block, checkPathInc, checkPathExc };
+public enum Type {Tmove, blank, teleport, jump1, jump2, warm, cool,include, exclude, wall, checkPathInc, checkPathExc };
 public enum Direction {North, South, East, West, All};
-public enum Colour {Red, Orange, Yellow, Green, Blue,Pink,Teal, Purple, Warm, Cool, All}; //colour of tapped tile
+public enum Colour {Red, Orange, Yellow, Green, Blue, Pink, Teal, Purple, Warm, Cool, All, Black}; //colour of tapped tile
 
 public struct MovementRule
 {

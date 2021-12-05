@@ -17,7 +17,6 @@ public class ColourAssigner : MonoBehaviour
     public static Dictionary<int, int> used; //rule index and amount of times used
     private static int unassigned;
     private static int pathUnassigned;
-    private static int extraTB;
     private static bool exitAssigned;
 
     public static List<int> includeRules; //list of indexes of CheckPathInc rules of cRules list
@@ -40,13 +39,8 @@ public class ColourAssigner : MonoBehaviour
         public Dictionary<int, int> used; //rule index and amount of times rule was used
         public int checkers; //number of checkers
         public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles (not added to onPathViolations because it doesn't wreck the path)
-
-        //Violatiosn that make maze less traversable
         public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
         public int offPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles off solution path (not including CyclesAdded count)
-
-        //Violatiosn that make maze more traversable
-        public int CyclesAdded; //number of times a Tmove or blank rule was assigned improperly, causing more cycles to be added. This number IS NOT the extra number of cycles added
     }
 
     // Start is called before the first frame update
@@ -61,7 +55,6 @@ public class ColourAssigner : MonoBehaviour
         used = new Dictionary<int, int>();
         pathUnassigned = 0;
         unassigned = 0;
-        extraTB = 0;
         exitAssigned = true;
 
         colours = new List<Material>
@@ -89,7 +82,7 @@ public class ColourAssigner : MonoBehaviour
         teleportB.direction = Direction.All;
         teleportB.distance = -1;
         teleportB.src = Colour.Red;
-        teleportB.target = Colour.Blue;
+        teleportB.target = Colour.Purple;
         teleportB.type = Type.teleport;
 
         teleportR.index = 2;
@@ -135,7 +128,7 @@ public class ColourAssigner : MonoBehaviour
         Test();
         //RoundOne(); //Tmove and blank rules will be removed from mRules after this point
         //RoundTwo();
-        //Round3();
+        //RoundThree();
 
         ColouredMaze cmaze = ColourMaze();
     }
@@ -145,7 +138,7 @@ public class ColourAssigner : MonoBehaviour
         //Other script need to call SetRules first
         RoundOne(); //Tmove and blank rules will be removed from mRules after this point
         RoundTwo();
-        Round3();
+        //RoundThree();
 
         ColouredMaze cmaze = new ColouredMaze()
         {
@@ -154,7 +147,6 @@ public class ColourAssigner : MonoBehaviour
             checkers = Shinro.checkerCount,
             onPathViolations = pathUnassigned,
             offPathViolations = unassigned,
-            CyclesAdded = extraTB,
             properExit = exitAssigned
         };
 
@@ -248,6 +240,8 @@ public class ColourAssigner : MonoBehaviour
                 RoundOneRules.Add(rule);
             }
         }
+
+        InstructionsText.SetInstructions(mRules, cRules);
     }
 
     private static void AssignByMRule(Tile t, MovementRule rule)
@@ -327,7 +321,7 @@ public class ColourAssigner : MonoBehaviour
         t.assigned = true;
         t.cRule = rule;
         t.ruleType = rule.type;
-        t.moveRule = true;
+        t.moveRule = false;
         t.colour = rule.src;
         t.index = rule.index;
         used[rule.index]++;
@@ -375,7 +369,7 @@ public class ColourAssigner : MonoBehaviour
                 c.canBe[rule.target] = false;
             }
 
-            //Set the can be bools of tiles on other side of walls
+            //Assign exclude target colour to all tiels on other side of walls
             for (int i = 0; i < wallNeighbours.Count; i++)
             {
                 AssignByColour(wallNeighbours[i], rule.target);
@@ -482,9 +476,23 @@ public class ColourAssigner : MonoBehaviour
             {
                 if (rule.src == c)
                 {
-                    extraTB++;
-                    Debug.Log(t.name + " was assigned a Tmove or blank move incorrectly");
-                    AssignByMRule(t, rule);
+                    t.failedToAssign = true;
+                    t.ruleType = Type.wall;
+                    t.colour = Colour.Black;
+                    SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+                    Material black = (Material)Resources.Load("Black");
+                    sr.material.shader = black.shader;
+                    sr.material.color = black.color;
+                    Debug.Log("Failed to assigned " + t.name);
+
+                    if (maze.LP.path.Contains(t) == true)
+                    {
+                        pathUnassigned++;
+                    }
+                    else
+                    {
+                        unassigned++;
+                    }
                 }
             } 
         }
@@ -616,8 +624,10 @@ public class ColourAssigner : MonoBehaviour
     {
         Tile tile = maze.LP.entrance;
         Tile lastTile = maze.LP.exit; //this will be set to the previously visited tile
+        List<Tile> subtrees = new List<Tile>();
+        bool root = false;
 
-        while (tile.parent != tile) //not root node
+        while (root == false) //not root node
         {
             if (tile.assigned == false)
             {
@@ -688,6 +698,12 @@ public class ColourAssigner : MonoBehaviour
                 if(!check)
                 {
                     tile.failedToAssign = true;
+                    tile.ruleType = Type.wall;
+                    tile.colour = Colour.Black;
+                    SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+                    Material black = (Material)Resources.Load("Black");
+                    sr.material.shader = black.shader;
+                    sr.material.color = black.color;
                     Debug.Log("Failed to assigned " + tile.name);
 
                     if(maze.LP.path.Contains(tile) == true)
@@ -708,13 +724,24 @@ public class ColourAssigner : MonoBehaviour
             {
                 if (c != lastTile)
                 {
-                    ParentToChild(c);
+                    subtrees.Add(c);
+                    //ParentToChild(c);
                 }
                 
             }
 
-            lastTile = tile;
-            tile = tile.parent;
+            if(tile.parent != tile){
+                lastTile = tile;
+                tile = tile.parent;
+            }
+            else{
+                root = true;
+            }
+        }
+
+        foreach(Tile t in subtrees)
+        {
+            ParentToChild(t);
         }
     }
 
@@ -793,7 +820,14 @@ public class ColourAssigner : MonoBehaviour
             if (!check)
             {
                 tile.failedToAssign = true;
+                tile.colour = Colour.Black;
+                tile.ruleType = Type.wall;
+                SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+                Material black = (Material)Resources.Load("Black");
+                sr.material.shader = black.shader;
+                sr.material.color = black.color;
                 Debug.Log("Failed to assigned " + tile.name);
+
                 if (maze.LP.path.Contains(tile) == true)
                 {
                     pathUnassigned++;
@@ -1118,13 +1152,113 @@ public class ColourAssigner : MonoBehaviour
         return wallNeighbours;
     }
 
+    private static List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
+    {
+
+        List<Tile> wallNeighbours = new List<Tile>();
+        int tileNum = Array.IndexOf(maze.tiles, tile); //tile index
+
+        if (tileNum + 1 != maze.w * maze.h) //not top right tile
+        {
+            bool child = false;
+            Tile east = maze.tiles[tileNum + 1];
+            if ((tileNum + 1) % maze.w != 0) //east tile exists
+            {
+                if (east != tile.parent) //if eastward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == east)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(east);
+                    }
+                }
+            }
+        }
+
+        if (tileNum != 0) //not bottom left tile
+        {
+            bool child = false;
+            Tile west = maze.tiles[tileNum - 1];
+            if (tileNum % maze.w != 0) //west tile exists
+            {
+                if (west != tile.parent) //if westward tile is assigned and not child/parent, add to list
+                {
+                    foreach (Tile c in tile.children)
+                    {
+                        if (c == west)
+                        {
+                            child = true;
+                            break;
+                        }
+                    }
+                    if (child == false)
+                    {
+                        wallNeighbours.Add(west);
+                    }
+                }
+            }
+        }
+
+        if (tileNum + maze.w < maze.w * maze.h) //north tile exists
+        {
+            bool child = false;
+            Tile north = maze.tiles[tileNum + maze.w];
+
+            if (north != tile.parent) //if northward tile is assigned and not child/parent, add to list
+            {
+                foreach (Tile c in tile.children)
+                {
+                    if (c == north)
+                    {
+                        child = true;
+                        break;
+                    }
+                }
+                if (child == false)
+                {
+                    wallNeighbours.Add(north);
+                }
+            }
+        }
+        if (tileNum - maze.w >= 0) //south tile exists
+        {
+            bool child = false;
+            Tile south = maze.tiles[tileNum - maze.w];
+
+            if (south != tile.parent) //if southward tile is assigned and not child/parent, add to list
+            {
+                foreach (Tile c in tile.children)
+                {
+                    if (c == south)
+                    {
+                        child = true;
+                        break;
+                    }
+                }
+                if (child == false)
+                {
+                    wallNeighbours.Add(south);
+                }
+            }
+        }
+
+        return wallNeighbours;
+    }
+
 
     /* Round 3
      * - Ensure the exit tile is coloured
      * - Colour the tiles that are only reachable by going past exit
      * - try not to colour them with a teleport colour
      */
-    private static void Round3()
+    private static void RoundThree()
     {
         //1. Ensure exit tile is coloured
         if (maze.LP.exit.assigned == false)
@@ -1265,7 +1399,11 @@ public class ColourAssigner : MonoBehaviour
                         {
                             Debug.Log("Failed to assigned exit tile properly");
                             exitAssigned = false; //not adding to any unassigned count because path is still traversable as normal so it shouldnt hinder fitness in that way
-                            AssignByColour(exit, col);
+                            AssignByColour(exit, col); //try to assign colour anyway
+                            if(exit.assigned == false)
+                            {
+                                exit.colour = col; //last resort, give it a colour so the SP is fully traversable
+                            }
                         }  
                     }
                     break;
@@ -1291,106 +1429,5 @@ public class ColourAssigner : MonoBehaviour
                 }
             }
         }
-    }
-
-
-    private static List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
-    {
-
-        List<Tile> wallNeighbours = new List<Tile>();
-        int tileNum = Array.IndexOf(maze.tiles, tile); //tile index
-
-        if (tileNum + 1 != maze.w * maze.h) //not top right tile
-        {
-            bool child = false;
-            Tile east = maze.tiles[tileNum + 1];
-            if ((tileNum + 1) % maze.w != 0) //east tile exists
-            {
-                if (east != tile.parent) //if eastward tile is assigned and not child/parent, add to list
-                {
-                    foreach (Tile c in tile.children)
-                    {
-                        if (c == east)
-                        {
-                            child = true;
-                            break;
-                        }
-                    }
-                    if (child == false)
-                    {
-                        wallNeighbours.Add(east);
-                    }
-                }
-            }
-        }
-
-        if (tileNum != 0) //not bottom left tile
-        {
-            bool child = false;
-            Tile west = maze.tiles[tileNum - 1];
-            if (tileNum % maze.w != 0) //west tile exists
-            {
-                if (west != tile.parent) //if westward tile is assigned and not child/parent, add to list
-                {
-                    foreach (Tile c in tile.children)
-                    {
-                        if (c == west)
-                        {
-                            child = true;
-                            break;
-                        }
-                    }
-                    if (child == false)
-                    {
-                        wallNeighbours.Add(west);
-                    }
-                }
-            }
-        }
-
-        if (tileNum + maze.w < maze.w * maze.h) //north tile exists
-        {
-            bool child = false;
-            Tile north = maze.tiles[tileNum + maze.w];
-
-            if (north != tile.parent) //if northward tile is assigned and not child/parent, add to list
-            {
-                foreach (Tile c in tile.children)
-                {
-                    if (c == north)
-                    {
-                        child = true;
-                        break;
-                    }
-                }
-                if (child == false)
-                {
-                    wallNeighbours.Add(north);
-                }
-            }    
-        }
-        if (tileNum - maze.w >= 0) //south tile exists
-        {
-            bool child = false;
-            Tile south = maze.tiles[tileNum - maze.w];
-
-            if (south != tile.parent) //if southward tile is assigned and not child/parent, add to list
-            {
-                foreach (Tile c in tile.children)
-                {
-                    if (c == south)
-                    {
-                        child = true;
-                        break;
-                    }
-                }
-                if (child == false)
-                {
-                    wallNeighbours.Add(south);
-                }
-            }
-        }
-
-        return wallNeighbours;
     }
 }

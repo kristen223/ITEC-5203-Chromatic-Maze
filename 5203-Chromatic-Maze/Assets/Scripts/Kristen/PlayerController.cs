@@ -71,6 +71,12 @@ public class PlayerController : MonoBehaviour
         tiles = GenerateGrid.vertices;
     }
 
+    private void GameOver()
+    {
+        gameOver.SetActive(true);
+        endMessage.text = "Out of Moves - Game Over";
+    }
+
     void Update()
     {
         //Won
@@ -82,17 +88,178 @@ public class PlayerController : MonoBehaviour
 
         //Game Over - reached dead end, no undo's left, and is not a teleport tile
         //**Add condition: if player.ruleType != 2 or 3 or 4 (teleport, jump, jump2)
-        if (bCount == 0 && maze.deadends.Contains(player))
+        //if (bCount == 0 && maze.deadends.Contains(player) && previous.Peek() == player.parent && player.ruleType != Type.teleport && player.ruleType != Type.jump1 && player.ruleType != Type.jump2)
+        //{
+        //    GameOver();
+        //}
+
+        //make surenot surrounded by walls
+
+        if(bCount==0) //assuming teleport target colour exists
         {
-            gameOver.SetActive(true);
-            endMessage.text = "Out of Moves - Game Over";
+            switch (player.ruleType)
+            {
+                case Type.jump1:
+                    if(player.jumpN == true) //using two if statements because the tile doesn't exist unless this is true
+                    {
+                        if(maze.tiles[Array.IndexOf(maze.tiles, player) + maze.w * 2].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpS == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) - maze.w * 2].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpE == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) + 2].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpW == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) - 2].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    GameOver(); //can't jump anywhere
+                    break;
+
+                case Type.jump2:
+                    if (player.jumpTwoN == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) + maze.w * 3].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpTwoS == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) - maze.w * 3].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpTwoE == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) + 3].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    if (player.jumpTwoW == true){
+                        if (maze.tiles[Array.IndexOf(maze.tiles, player) - 3].assigned == true){
+                            break; //possible to move
+                        }
+                    }
+                    GameOver(); //can't jump anywhere
+                    break;
+
+                case Type.warm:
+                    if(player.parent != previous.Peek() && (player.parent.colour == Colour.Red || player.parent.colour == Colour.Orange || player.parent.colour == Colour.Yellow || player.parent.colour == Colour.Pink))
+                    {
+                        break;
+                    }
+                    foreach(Tile c in player.children)
+                    {
+                        if(c != previous.Peek() && (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || player.parent.colour == Colour.Pink))
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+                case Type.cool:
+                    if (player.parent != previous.Peek() && (player.parent.colour == Colour.Blue || player.parent.colour == Colour.Green || player.parent.colour == Colour.Purple || player.parent.colour == Colour.Teal))
+                    {
+                        break;
+                    }
+                    foreach (Tile c in player.children)
+                    {
+                        if (c != previous.Peek() && (c.colour == Colour.Blue || c.colour == Colour.Green || c.colour == Colour.Purple || player.parent.colour == Colour.Teal))
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+                case Type.include:
+                    Colour targ;
+                    if(player.moveRule == true)
+                    {
+                        targ = player.mRule.target;
+                    }
+                    else
+                    {
+                        targ = player.cRule.target;
+                    }
+                    if (player.parent != previous.Peek() && player.parent.colour == targ)
+                    {
+                        break;
+                    }
+                    foreach (Tile c in player.children)
+                    {
+                        if (c != previous.Peek() && c.colour == targ)
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+
+                case Type.exclude:
+                    Colour targEx;
+                    if (player.moveRule == true)
+                    {
+                        targEx = player.mRule.target;
+                    }
+                    else
+                    {
+                        targEx = player.cRule.target;
+                    }
+                    if (player.parent != previous.Peek() && player.parent.colour != targEx)
+                    {
+                        break;
+                    }
+                    foreach (Tile c in player.children)
+                    {
+                        if (c != previous.Peek() && c.colour != targEx)
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+
+                case Type.Tmove:
+                    if (player.parent != previous.Peek() && player.parent.colour != Colour.Black)
+                    {
+                        break;
+                    }
+                    foreach (Tile c in player.children)
+                    {
+                        if (c != previous.Peek() && c.colour != Colour.Black)
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+
+                case Type.blank:
+                    if (player.parent != previous.Peek() && player.parent.colour != Colour.Black)
+                    {
+                        break;
+                    }
+                    foreach (Tile c in player.children)
+                    {
+                        if (c != previous.Peek() && c.colour != Colour.Black)
+                        {
+                            break;
+                        }
+                    }
+                    GameOver();
+                    break;
+            }
         }
 
         //Game Over - Out of Moves and no undo's
         if(sCount == 0 && bCount == 0 && player != maze.LP.exit)
         {
-            gameOver.SetActive(true);
-            endMessage.text = "Out of Moves - Game Over";
+            GameOver();
         }
 
         //Desktop Input
@@ -143,102 +310,102 @@ public class PlayerController : MonoBehaviour
                 previous.Pop(); //remove player from path
 
                 //Go through previous list and check if include/exclude bools still apply
-                bool pExclude = false;
-                foreach (int exc in ColourAssigner.excludeRules) //Check if player was on exclude source colour
-                {
-                    if (player.colour == ColourAssigner.cRules[exc].src)
-                    {
-                        pExclude = true; //we potentially want to change this rule's bool back to false
-                        break;
-                    }
-                }
+                //bool pExclude = false;
+                //foreach (int exc in ColourAssigner.excludeRules) //Check if player was on exclude source colour
+                //{
+                //    if (player.colour == ColourAssigner.cRules[exc].src)
+                //    {
+                //        pExclude = true; //we potentially want to change this rule's bool back to false
+                //        break;
+                //    }
+                //}
 
-                Colour colExc = player.colour;
-                bool excSrcExists = false;
-                if (pExclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
-                {
-                    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
-                    {
-                        if (ColourAssigner.cRules[exc].src == colExc)
-                        {
-                            foreach (Tile t in previous)
-                            {
-                                if (t.colour == colExc)
-                                {
-                                    //the boolean can stay true
-                                    excSrcExists = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (excSrcExists == true)
-                        {
-                            break;
-                        }
-                    }
-                }
+                //Colour colExc = player.colour;
+                //bool excSrcExists = false;
+                //if (pExclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
+                //{
+                //    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
+                //    {
+                //        if (ColourAssigner.cRules[exc].src == colExc)
+                //        {
+                //            foreach (Tile t in previous)
+                //            {
+                //                if (t.colour == colExc)
+                //                {
+                //                    //the boolean can stay true
+                //                    excSrcExists = true;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        if (excSrcExists == true)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //}
 
-                if (excSrcExists == false)
-                {
-                    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
-                    {
-                        if (ColourAssigner.cRules[exc].src == colExc)
-                        {
-                            ColourRule c = ColourAssigner.cRules[exc];
-                            c.inclusion = false;
-                            ColourAssigner.cRules[exc] = c;
-                        }
-                    }
-                }
+                //if (excSrcExists == false)
+                //{
+                //    foreach (int exc in ColourAssigner.excludeRules) //Check inclusion bools and update
+                //    {
+                //        if (ColourAssigner.cRules[exc].src == colExc)
+                //        {
+                //            ColourRule c = ColourAssigner.cRules[exc];
+                //            c.inclusion = false;
+                //            ColourAssigner.cRules[exc] = c;
+                //        }
+                //    }
+                //}
 
 
-                bool pInclude = false;
-                foreach (int inc in ColourAssigner.includeRules) //Check if player was on exclude source colour
-                {
-                    if (player.colour == ColourAssigner.cRules[inc].src)
-                    {
-                        pInclude = true; //we potentially want to change this rule's bool back to false
-                        break;
-                    }
-                }
+                //bool pInclude = false;
+                //foreach (int inc in ColourAssigner.includeRules) //Check if player was on exclude source colour
+                //{
+                //    if (player.colour == ColourAssigner.cRules[inc].src)
+                //    {
+                //        pInclude = true; //we potentially want to change this rule's bool back to false
+                //        break;
+                //    }
+                //}
 
-                Colour colInc = player.colour;
-                bool incSrcExists = false;
-                if (pInclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
-                {
-                    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
-                    {
-                        if (ColourAssigner.cRules[inc].src == colInc)
-                        {
-                            foreach (Tile t in previous)
-                            {
-                                if (t.colour == colInc)
-                                {
-                                    //the boolean can stay true
-                                    incSrcExists = true;
-                                    break;
-                                }
-                            }
-                        }
-                        if (incSrcExists == true)
-                        {
-                            break;
-                        }
-                    }
-                }
+                //Colour colInc = player.colour;
+                //bool incSrcExists = false;
+                //if (pInclude == true) //if player was an exclude colour, check if that colour exists somewhere else on the player's path
+                //{
+                //    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
+                //    {
+                //        if (ColourAssigner.cRules[inc].src == colInc)
+                //        {
+                //            foreach (Tile t in previous)
+                //            {
+                //                if (t.colour == colInc)
+                //                {
+                //                    //the boolean can stay true
+                //                    incSrcExists = true;
+                //                    break;
+                //                }
+                //            }
+                //        }
+                //        if (incSrcExists == true)
+                //        {
+                //            break;
+                //        }
+                //    }
+                //}
 
-                if (incSrcExists == false)
-                {
-                    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
-                    {
-                        if (ColourAssigner.cRules[inc].src == colInc)
-                        {
-                            ColourRule c = ColourAssigner.cRules[inc];
-                            c.inclusion = false;
-                            ColourAssigner.cRules[inc] = c;
-                        }
-                    }
-                }
+                //if (incSrcExists == false)
+                //{
+                //    foreach (int inc in ColourAssigner.includeRules) //Check inclusion bools and update
+                //    {
+                //        if (ColourAssigner.cRules[inc].src == colInc)
+                //        {
+                //            ColourRule c = ColourAssigner.cRules[inc];
+                //            c.inclusion = false;
+                //            ColourAssigner.cRules[inc] = c;
+                //        }
+                //    }
+                //}
 
 
                 //update current position and path
@@ -246,9 +413,9 @@ public class PlayerController : MonoBehaviour
                 player = tapped;
                 player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true; //comment out this line
                 SpriteRenderer sr = player.gameObject.GetComponent<SpriteRenderer>();
-                float r = sr.material.color.r - .20f;
-                float b = sr.material.color.b - .20f;
-                float g = sr.material.color.g - .20f;
+                float r = sr.material.color.r + .3f;
+                float b = sr.material.color.b + .3f;
+                float g = sr.material.color.g + .3f;
                 sr.material.color = new Color(r, g, b, 1);
 
                 //update step count
@@ -258,73 +425,68 @@ public class PlayerController : MonoBehaviour
         }
 
 
-
-        /* UPDATES TO DO (maybe)
-         * 
-         * The target colour can be warm, cool, and all so make sure rules with those are okay
-         * Add pink and teal considerations
-         * 
-         */
-
         //Start here
-        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped)) //check that player can move and is not backtracking
+        if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && tapped.failedToAssign == false) //check that player can move and is not backtracking
         {
             MovementRule mr = player.mRule;
             ColourRule cr = player.cRule;
-            if (tapped.moveRule == true) //player is on a movement rule
+            if (player.moveRule == true) //player is on a movement rule
             {
                 int pindex = Array.IndexOf(tiles, player); //index of player
                 int tindex = Array.IndexOf(tiles, tapped);
                 switch (mr.type)
                 {
                     case Type.Tmove:
-
-                        if (mr.direction == Direction.North) //Can't move North
+                        if (tapped == player.parent || player.children.Contains(tapped))
                         {
-                            int n = pindex + maze.w;
-                            if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
-                            {
-                                Move(tapped);
-                            }
+                            Move(tapped);
                         }
-                        else if (mr.direction == Direction.South) //Can't move South
-                        {
-                            int s = pindex - maze.w;
-                            if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        else if (mr.direction == Direction.East) //Can't move East
-                        {
-                            int e = pindex + 1;
-                            if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
-                            {
-                                if (tapped == player.parent || player.children.Contains(tapped))
-                                {
-                                    Move(tapped);
-                                }
-                            }
-                            else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
-                        else if (mr.direction == Direction.West)//Can't move West
-                        {
-                            int w = pindex - 1;
-                            if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
-                            {
-                                if (tapped == player.parent || player.children.Contains(tapped))
-                                {
-                                    Move(tapped);
-                                }
-                            }
-                            else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
-                            {
-                                Move(tapped);
-                            }
-                        }
+                        //if (mr.direction == Direction.North) //Can't move North
+                        //{
+                        //    int n = pindex + maze.w;
+                        //    if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
+                        //    {
+                        //        Move(tapped);
+                        //    }
+                        //}
+                        //else if (mr.direction == Direction.South) //Can't move South
+                        //{
+                        //    int s = pindex - maze.w;
+                        //    if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
+                        //    {
+                        //        Move(tapped);
+                        //    }
+                        //}
+                        //else if (mr.direction == Direction.East) //Can't move East
+                        //{
+                        //    int e = pindex + 1;
+                        //    if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
+                        //    {
+                        //        if (tapped == player.parent || player.children.Contains(tapped))
+                        //        {
+                        //            Move(tapped);
+                        //        }
+                        //    }
+                        //    else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
+                        //    {
+                        //        Move(tapped);
+                        //    }
+                        //}
+                        //else if (mr.direction == Direction.West)//Can't move West
+                        //{
+                        //    int w = pindex - 1;
+                        //    if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
+                        //    {
+                        //        if (tapped == player.parent || player.children.Contains(tapped))
+                        //        {
+                        //            Move(tapped);
+                        //        }
+                        //    }
+                        //    else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
+                        //    {
+                        //        Move(tapped);
+                        //    }
+                        //}
                         break;
 
                     case Type.blank:
@@ -412,14 +574,14 @@ public class PlayerController : MonoBehaviour
                         break;
 
                     case Type.warm:
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && tapped.colour == Colour.Warm) //adjacent warm colour
+                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == Colour.Red || tapped.colour == Colour.Orange || tapped.colour == Colour.Yellow || tapped.colour == Colour.Pink)) //adjacent warm colour
                         {
                             Move(tapped);
                         }
                         break;
 
                     case Type.cool:
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && tapped.colour == Colour.Cool) //adjacent cool colour
+                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == Colour.Blue || tapped.colour == Colour.Green || tapped.colour == Colour.Purple || tapped.colour == Colour.Teal)) //adjacent cool colour
                         {
                             Move(tapped);
                         }
@@ -439,13 +601,6 @@ public class PlayerController : MonoBehaviour
 
                     case Type.exclude:
                         if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjacent tile except tile with target colour
-                        {
-                            Move(tapped);
-                        }
-                        break;
-
-                    case Type.block:
-                        if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjecent colour except rule source colour
                         {
                             Move(tapped);
                         }
@@ -472,7 +627,6 @@ public class PlayerController : MonoBehaviour
 
         //    previous.Push(player);
 
-
         //    //update current position
         //    SpriteRenderer sr = player.gameObject.GetComponent<SpriteRenderer>();
         //    float r = sr.material.color.r + .20f;
@@ -494,36 +648,36 @@ public class PlayerController : MonoBehaviour
     private void Move(Tile tapped)
     {
         //Check inclusion bools and update
-        foreach (int inc in ColourAssigner.includeRules) //for every include rule
-        {
-            if (tapped.colour == ColourAssigner.cRules[inc].src)
-            {
-                ColourRule c = ColourAssigner.cRules[inc];
-                c.inclusion = true;
-                ColourAssigner.cRules[inc] = c;
-            }
-            if (tapped.colour == ColourAssigner.cRules[inc].target && ColourAssigner.cRules[inc].inclusion == false) //if source has not been visited yet
-            {
-                message.text = "Cannot move onto " + ColourAssigner.cRules[inc].target + ", you have not passed " + ColourAssigner.cRules[inc].src + " yet!";
-                return;
-            }
-        }
+        //foreach (int inc in ColourAssigner.includeRules) //for every include rule
+        //{
+        //    if (tapped.colour == ColourAssigner.cRules[inc].src)
+        //    {
+        //        ColourRule c = ColourAssigner.cRules[inc];
+        //        c.inclusion = true;
+        //        ColourAssigner.cRules[inc] = c;
+        //    }
+        //    if (tapped.colour == ColourAssigner.cRules[inc].target && ColourAssigner.cRules[inc].inclusion == false) //if source has not been visited yet
+        //    {
+        //        message.text = "Cannot move onto " + ColourAssigner.cRules[inc].target + ", you have not passed " + ColourAssigner.cRules[inc].src + " yet!";
+        //        return;
+        //    }
+        //}
 
-        //Check exclusion bools and update
-        foreach (int exc in ColourAssigner.excludeRules)
-        {
-            if (tapped.colour == ColourAssigner.cRules[exc].src)
-            {
-                ColourRule c = ColourAssigner.cRules[exc];
-                c.inclusion = true;
-                ColourAssigner.cRules[exc] = c;
-            }
-            if (tapped.colour == ColourAssigner.cRules[exc].target && ColourAssigner.cRules[exc].inclusion == true)
-            {
-                message.text = "Cannot move onto " + ColourAssigner.cRules[exc].target.ToString().ToLower() + ", you have already passed " + ColourAssigner.cRules[exc].src.ToString().ToLower() + "!";
-                return;
-            }
-        }
+        ////Check exclusion bools and update
+        //foreach (int exc in ColourAssigner.excludeRules)
+        //{
+        //    if (tapped.colour == ColourAssigner.cRules[exc].src)
+        //    {
+        //        ColourRule c = ColourAssigner.cRules[exc];
+        //        c.inclusion = true;
+        //        ColourAssigner.cRules[exc] = c;
+        //    }
+        //    if (tapped.colour == ColourAssigner.cRules[exc].target && ColourAssigner.cRules[exc].inclusion == true)
+        //    {
+        //        message.text = "Cannot move onto " + ColourAssigner.cRules[exc].target.ToString().ToLower() + ", you have already passed " + ColourAssigner.cRules[exc].src.ToString().ToLower() + "!";
+        //        return;
+        //    }
+        //}
 
         //check if checker is on tile
         if (tapped.tag == "checker")
@@ -533,6 +687,11 @@ public class PlayerController : MonoBehaviour
         }
 
         previous.Push(player);
+        SpriteRenderer sr = player.gameObject.GetComponent<SpriteRenderer>();
+        float r = sr.material.color.r - .3f;
+        float b = sr.material.color.b - .3f;
+        float g = sr.material.color.g - .3f;
+        sr.material.color = new Color(r, g, b, 1);
 
         //update current position
         player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = false; //comment out this line
