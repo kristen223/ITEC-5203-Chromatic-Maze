@@ -66,7 +66,7 @@ public class FinalRules : MonoBehaviour
         //}
         ColourAssigner.SetRules(mr, cr);
 
-
+        //ColouredMaze c = ColourAssigner.ColourMaze();
 
     }
 }

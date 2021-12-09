@@ -52,54 +52,7 @@ public struct RuleTypes //chromosomes (total 10 types of rules)
 public class Rules : MonoBehaviour
 {
      public static int index=0;
-    //I UPDATED/ADDED CHECK PATH RULES AND EXCLUDE/INCLUDE RULES
-    //public static MovementRule Tmove;
-   /* public static MovementRule TmoveN;
-    public static MovementRule TmoveS;
-    public static MovementRule TmoveE;
-    public static MovementRule TmoveW;
-    public static MovementRule blank;
-    public static MovementRule teleport;
-    /*public static MovementRule teleportB;
-    public static MovementRule teleportP;
-    public static MovementRule teleportG;
-    public static MovementRule teleportR;
-    public static MovementRule teleportO;
-    public static MovementRule teleportY;
     
-    public static MovementRule jumpOne;
-    public static MovementRule jumpTwo;
-    public static MovementRule warmTemp;
-    public static MovementRule coldTemp;
-    public static ColourRule include;
-    /*public static ColourRule includeRB;
-    public static ColourRule includeOG;
-    public static ColourRule includeYP;
-    public static ColourRule includeGR;
-    public static ColourRule includeBY;
-    public static ColourRule includePR;
-    public static ColourRule exclude;
-    /* public static ColourRule excludeRP;
-     public static ColourRule excludeOB;
-     public static ColourRule excludeYG;
-     public static ColourRule excludeGY;
-     public static ColourRule excludeBR;
-     public static ColourRule excludePO;
-    public static ColourRule block;
-    public static ColourRule blockR;
-    public static ColourRule blockO;
-    public static ColourRule blockY;
-    public static ColourRule blockG;
-    public static ColourRule blockB;
-    public static ColourRule blockP;
-    public static ColourRule checkPathInclude;
-    public static ColourRule checkPathIncludeYG;
-    public static ColourRule checkPathIncludeOP;
-    public static ColourRule checkPathIncludeBR;
-    public static ColourRule checkPathExclude;
-    /*public static ColourRule checkPathExcludeGO;
-    public static ColourRule checkPathExcludePB;
-    public static ColourRule checkPathExcludeRY;*/
 
     public static List<MovementRule> movementRuleSets = new List<MovementRule>();
     public static List<ColourRule> colourRuleSets = new List<ColourRule>();
@@ -132,18 +85,8 @@ public class Rules : MonoBehaviour
         movementRuleSets.Add(n);
         return n;
     }
-    //public ColourRule createCRule(Colour target, Colour src, Type type)
-    //{
-    //    ColourRule c=new ColourRule();
-    //    c.index = index++;
-    //    c.target = target;
-    //    c.src = src;
-    //    c.type = type;
-
-    //    colourRuleSets.Add(c);
-    //    return c;
-    //}
-    public void createCRule(Colour target, Colour src, Type type)//no need for the colour params
+  
+    public void createCRule( Type type)//no need for the colour params
     {
         List<Colour> col = new List<Colour>();
         col.Add(Colour.Blue);
@@ -185,8 +128,8 @@ public class Rules : MonoBehaviour
         MovementRule warmTemp = createMRule(Direction.All, 1, Colour.Warm, Colour.All, Type.warm); //SRC not specified here. should be specified?
         MovementRule coldTemp = createMRule(Direction.All, 1, Colour.Cool, Colour.All, Type.cool);
         MovementRule teleport = createMRule(Direction.All, 0, Colour.All, Colour.All, Type.teleport); //make multiple of these here or in assign colors?
-        createCRule(Colour.All, Colour.All, Type.include);
-        createCRule(Colour.All, Colour.All, Type.exclude);
+        createCRule(Type.include);
+        createCRule(Type.exclude);
         
 
 
@@ -389,7 +332,9 @@ public class Rules : MonoBehaviour
             }
             ChrsDict.Add(chr);
         }
-        Fitness1.fitnessOne(ChrsDict, pop, movementRuleSets,colourRuleSets);
+        Fitness1.fitnessOne(ChrsDict, movementRuleSets,colourRuleSets);
+
+
 
        // fitnessOne(ChrsDict,pop);
 
