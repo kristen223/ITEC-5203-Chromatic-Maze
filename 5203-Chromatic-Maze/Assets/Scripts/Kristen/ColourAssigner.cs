@@ -71,87 +71,86 @@ public class ColourAssigner : MonoBehaviour
 
 
         //DELETE LATER
-        TmoveS.index = 0;
-        TmoveS.direction = Direction.South;
-        TmoveS.distance = 1;
-        TmoveS.src = Colour.Green;
-        TmoveS.target = Colour.All;
-        TmoveS.type = Type.Tmove;
+        //TmoveS.index = 0;
+        //TmoveS.direction = Direction.South;
+        //TmoveS.distance = 1;
+        //TmoveS.src = Colour.Green;
+        //TmoveS.target = Colour.All;
+        //TmoveS.type = Type.Tmove;
 
-        teleportB.index = 3;
-        teleportB.direction = Direction.All;
-        teleportB.distance = -1;
-        teleportB.src = Colour.Red;
-        teleportB.target = Colour.Purple;
-        teleportB.type = Type.teleport;
+        //teleportB.index = 3;
+        //teleportB.direction = Direction.All;
+        //teleportB.distance = -1;
+        //teleportB.src = Colour.Red;
+        //teleportB.target = Colour.Purple;
+        //teleportB.type = Type.teleport;
 
-        teleportR.index = 2;
-        teleportR.direction = Direction.All;
-        teleportR.distance = -1;
-        teleportR.src = Colour.Teal;
-        teleportR.target = Colour.Pink;
-        teleportR.type = Type.teleport;
+        //teleportR.index = 2;
+        //teleportR.direction = Direction.All;
+        //teleportR.distance = -1;
+        //teleportR.src = Colour.Teal;
+        //teleportR.target = Colour.Pink;
+        //teleportR.type = Type.teleport;
 
-        jumpOne.index = 9;
-        jumpOne.direction = Direction.All;
-        jumpOne.distance = 2;
-        jumpOne.src = Colour.Orange;
-        jumpOne.target = Colour.All;
-        jumpOne.type = Type.jump1;
+        //jumpOne.index = 9;
+        //jumpOne.direction = Direction.All;
+        //jumpOne.distance = 2;
+        //jumpOne.src = Colour.Orange;
+        //jumpOne.target = Colour.All;
+        //jumpOne.type = Type.jump1;
 
-        blank.index = 1;
-        blank.direction = Direction.All;
-        blank.distance = 1;
-        blank.src = Colour.Yellow;
-        blank.target = Colour.All;
-        blank.type = Type.blank;
+        //blank.index = 1;
+        //blank.direction = Direction.All;
+        //blank.distance = 1;
+        //blank.src = Colour.Yellow;
+        //blank.target = Colour.All;
+        //blank.type = Type.blank;
 
-        coldTemp.index = 12;
-        coldTemp.direction = Direction.All;
-        coldTemp.distance = 1;
-        coldTemp.src = Colour.Purple;
-        coldTemp.target = Colour.Cool;
-        coldTemp.type = Type.cool;
+        //coldTemp.index = 12;
+        //coldTemp.direction = Direction.All;
+        //coldTemp.distance = 1;
+        //coldTemp.src = Colour.Purple;
+        //coldTemp.target = Colour.Cool;
+        //coldTemp.type = Type.cool;
 
-        excludeBR.index = 24;
-        excludeBR.src = Colour.Blue;
-        excludeBR.target = Colour.Green;
-        excludeBR.type = Type.exclude;
+        //excludeBR.index = 24;
+        //excludeBR.src = Colour.Blue;
+        //excludeBR.target = Colour.Green;
+        //excludeBR.type = Type.exclude;
 
-        warm.index = 13;
-        warm.direction = Direction.All;
-        warm.distance = 1;
-        warm.src = Colour.Pink;
-        warm.target = Colour.Warm;
-        warm.type = Type.warm;
+        //warm.index = 13;
+        //warm.direction = Direction.All;
+        //warm.distance = 1;
+        //warm.src = Colour.Pink;
+        //warm.target = Colour.Warm;
+        //warm.type = Type.warm;
 
-        Test(); //sets the rules
+        //Test(); //sets the rules
 
-        ColouredMaze cmaze = ColourMaze();
-        TraverseMaze.SolutionPaths paths = TraverseMaze.GetPathsFromEntrance(cmaze);  
+        //ColouredMaze cmaze = ColourMaze();
     }
 
     //TEMPORARY
-    private void Test()
-    {
+    //private void Test()
+    //{
 
-        List<MovementRule> m = new List<MovementRule>()
-        {
-            {TmoveS},
-            {teleportB},
-            {teleportR},
-            {jumpOne},
-            {blank},
-            {coldTemp},
-            {warm},
-        };
-        List<ColourRule> c = new List<ColourRule>()
-        {
-            {excludeBR }
-        };
+    //    List<MovementRule> m = new List<MovementRule>()
+    //    {
+    //        {TmoveS},
+    //        {teleportB},
+    //        {teleportR},
+    //        {jumpOne},
+    //        {blank},
+    //        {coldTemp},
+    //        {warm},
+    //    };
+    //    List<ColourRule> c = new List<ColourRule>()
+    //    {
+    //        {excludeBR }
+    //    };
 
-        SetRules(m, c);
-    }
+    //    SetRules(m, c);
+    //}
 
     public static ColouredMaze ColourMaze()
     {
