@@ -1225,7 +1225,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: width
-      value: 10
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: cycles
@@ -1233,7 +1233,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5649320747763615668, guid: c9352e7e41293461285f24b6545017d7, type: 3}
       propertyPath: height
-      value: 10
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c9352e7e41293461285f24b6545017d7, type: 3}
@@ -1412,6 +1412,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1671999583}
   - component: {fileID: 1671999582}
+  - component: {fileID: 1671999584}
   m_Layer: 0
   m_Name: ColourAssigner
   m_TagString: Untagged
@@ -1445,6 +1446,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1671999584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1671999581}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cffc643b5b523471790e7d0db41e87b0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1825216139
 GameObject:
   m_ObjectHideFlags: 0

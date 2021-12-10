@@ -125,17 +125,37 @@ public class ColourAssigner : MonoBehaviour
         warm.target = Colour.Warm;
         warm.type = Type.warm;
 
-        Test();
-        //RoundOne(); //Tmove and blank rules will be removed from mRules after this point
-        //RoundTwo();
-        //RoundThree();
+        Test(); //sets the rules
 
         ColouredMaze cmaze = ColourMaze();
+        TraverseMaze.SolutionPaths paths = TraverseMaze.GetPathsFromEntrance(cmaze);  
+    }
+
+    //TEMPORARY
+    private void Test()
+    {
+
+        List<MovementRule> m = new List<MovementRule>()
+        {
+            {TmoveS},
+            {teleportB},
+            {teleportR},
+            {jumpOne},
+            {blank},
+            {coldTemp},
+            {warm},
+        };
+        List<ColourRule> c = new List<ColourRule>()
+        {
+            {excludeBR }
+        };
+
+        SetRules(m, c);
     }
 
     static public ColouredMaze ColourMaze()
     {
-        //Other script need to call SetRules first
+        //Other script needs to call SetRules first
         RoundOne(); //Tmove and blank rules will be removed from mRules after this point
         RoundTwo();
         //RoundThree();
@@ -153,9 +173,6 @@ public class ColourAssigner : MonoBehaviour
         return cmaze;
     }
 
-
-    //TEMPORARY, needs to be in Rules
-    //delete this and change bac to Rules.GetMRule
     public static MovementRule GetMRule(int index)
     {
 
@@ -183,28 +200,6 @@ public class ColourAssigner : MonoBehaviour
 
         Debug.Log("ERROR: RETURNED WRONG RULE");
         return cRules[0]; //this should never happen
-    }
-
-
-    private void Test()
-    {
-        
-        List<MovementRule> m = new List<MovementRule>()
-        {
-            {TmoveS},
-            {teleportB},
-            {teleportR},
-            {jumpOne},
-            {blank},
-            {coldTemp},
-            {warm},
-        };
-        List<ColourRule> c = new List<ColourRule>()
-        {
-            {excludeBR }
-        };
-
-        SetRules(m, c);
     }
 
     //not in start because other script needs to finish first

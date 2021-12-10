@@ -473,52 +473,6 @@ public class PlayerController : MonoBehaviour
                         {
                             Move(tapped);
                         }
-                        //if (mr.direction == Direction.North) //Can't move North
-                        //{
-                        //    int n = pindex + maze.w;
-                        //    if (tindex != n && (tapped == player.parent || player.children.Contains(tapped))) //Can move here
-                        //    {
-                        //        Move(tapped);
-                        //    }
-                        //}
-                        //else if (mr.direction == Direction.South) //Can't move South
-                        //{
-                        //    int s = pindex - maze.w;
-                        //    if (tindex != s && (tapped == player.parent || player.children.Contains(tapped)))
-                        //    {
-                        //        Move(tapped);
-                        //    }
-                        //}
-                        //else if (mr.direction == Direction.East) //Can't move East
-                        //{
-                        //    int e = pindex + 1;
-                        //    if (e + 1 % maze.w == 0) //east tile does not exist so can move ot any parent/child
-                        //    {
-                        //        if (tapped == player.parent || player.children.Contains(tapped))
-                        //        {
-                        //            Move(tapped);
-                        //        }
-                        //    }
-                        //    else if (tindex != e && (tapped == player.parent || player.children.Contains(tapped)))
-                        //    {
-                        //        Move(tapped);
-                        //    }
-                        //}
-                        //else if (mr.direction == Direction.West)//Can't move West
-                        //{
-                        //    int w = pindex - 1;
-                        //    if (w % maze.w == 0) //west tile does not exist so can move ot any parent/child
-                        //    {
-                        //        if (tapped == player.parent || player.children.Contains(tapped))
-                        //        {
-                        //            Move(tapped);
-                        //        }
-                        //    }
-                        //    else if (tindex != w && (tapped == player.parent || player.children.Contains(tapped)))
-                        //    {
-                        //        Move(tapped);
-                        //    }
-                        //}
                         break;
 
                     case Type.blank:
