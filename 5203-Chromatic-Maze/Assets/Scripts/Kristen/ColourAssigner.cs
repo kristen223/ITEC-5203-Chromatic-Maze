@@ -153,7 +153,7 @@ public class ColourAssigner : MonoBehaviour
         SetRules(m, c);
     }
 
-    static public ColouredMaze ColourMaze()
+    public static ColouredMaze ColourMaze()
     {
         //Other script needs to call SetRules first
         RoundOne(); //Tmove and blank rules will be removed from mRules after this point
@@ -237,6 +237,8 @@ public class ColourAssigner : MonoBehaviour
         }
 
         InstructionsText.SetInstructions(mRules, cRules);
+  
+        Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
     }
 
     private static void AssignByMRule(Tile t, MovementRule rule)

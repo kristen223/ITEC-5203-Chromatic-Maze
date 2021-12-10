@@ -212,7 +212,6 @@ public class Fitness1 : MonoBehaviour
 
 
         
-        //FinalRules.finalRules(cList[finalCIdx], m, c); //passing the fit chromosome
 
 
     }

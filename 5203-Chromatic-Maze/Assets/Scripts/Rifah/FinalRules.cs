@@ -34,39 +34,10 @@ public class FinalRules : MonoBehaviour
         }
 
 
-        //foreach (Type t in c.Values)
-        //{
-
-        //    if (t.Equals("Tmove") | t.Equals("blank") | t.Equals("teleport") | t.Equals("jump1") | t.Equals("jump2") | t.Equals("warm") | t.Equals("cool")) 
-        //    {
-        //        mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[c.Keys])));
-        //    }
-        //    else
-        //    {
-
-        //    }
-
-        //}
-
-
-
-        //for (int i = 0; i < finalIdxs.Length; i++)
-        //{
-        //    if (finalIdxs[i] <= 15) //first 15 were movement rules , will be changed ENUMS
-        //    {
-        //        mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[i])));
-        //    }
-        //    else
-        //    {
-        //        cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[i])));
-        //    }
-
-
-
-        //}
+      
         ColourAssigner.SetRules(mr, cr);
 
-        //ColouredMaze c = ColourAssigner.ColourMaze();
+        
 
     }
 }
