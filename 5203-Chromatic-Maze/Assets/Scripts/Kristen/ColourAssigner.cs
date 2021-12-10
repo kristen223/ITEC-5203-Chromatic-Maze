@@ -3,9 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ColourAssigner : MonoBehaviour
 {
+    public static TraverseMaze.SolutionPaths paths;
+
     public static KruskalMaze.Maze maze;
     public static List<MovementRule> RoundOneRules; //Tmove and blank rules only
     public static List<MovementRule> mRules; //movement rules (Tmoves and blanks removed from this list part way through process)
@@ -22,6 +25,8 @@ public class ColourAssigner : MonoBehaviour
     public static List<int> includeRules; //list of indexes of CheckPathInc rules of cRules list
     public static List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
+
+    private static Text cText;
 
     //DELETE LATER
     static MovementRule TmoveS = new MovementRule();
@@ -46,6 +51,7 @@ public class ColourAssigner : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        paths = new TraverseMaze.SolutionPaths();
         maze = GenerateGrid.maze;
         cRules = new List<ColourRule>();
         mRules = new List<MovementRule>();
@@ -56,6 +62,7 @@ public class ColourAssigner : MonoBehaviour
         pathUnassigned = 0;
         unassigned = 0;
         exitAssigned = true;
+        cText = GameObject.Find("CCount").GetComponent<Text>();
 
         colours = new List<Material>
         {
@@ -71,86 +78,86 @@ public class ColourAssigner : MonoBehaviour
 
 
         //DELETE LATER
-        //TmoveS.index = 0;
-        //TmoveS.direction = Direction.South;
-        //TmoveS.distance = 1;
-        //TmoveS.src = Colour.Green;
-        //TmoveS.target = Colour.All;
-        //TmoveS.type = Type.Tmove;
+        TmoveS.index = 0;
+        TmoveS.direction = Direction.South;
+        TmoveS.distance = 1;
+        TmoveS.src = Colour.Green;
+        TmoveS.target = Colour.All;
+        TmoveS.type = Type.Tmove;
 
-        //teleportB.index = 3;
-        //teleportB.direction = Direction.All;
-        //teleportB.distance = -1;
-        //teleportB.src = Colour.Red;
-        //teleportB.target = Colour.Purple;
-        //teleportB.type = Type.teleport;
+        teleportB.index = 3;
+        teleportB.direction = Direction.All;
+        teleportB.distance = -1;
+        teleportB.src = Colour.Red;
+        teleportB.target = Colour.Purple;
+        teleportB.type = Type.teleport;
 
-        //teleportR.index = 2;
-        //teleportR.direction = Direction.All;
-        //teleportR.distance = -1;
-        //teleportR.src = Colour.Teal;
-        //teleportR.target = Colour.Pink;
-        //teleportR.type = Type.teleport;
+        teleportR.index = 2;
+        teleportR.direction = Direction.All;
+        teleportR.distance = -1;
+        teleportR.src = Colour.Teal;
+        teleportR.target = Colour.Pink;
+        teleportR.type = Type.teleport;
 
-        //jumpOne.index = 9;
-        //jumpOne.direction = Direction.All;
-        //jumpOne.distance = 2;
-        //jumpOne.src = Colour.Orange;
-        //jumpOne.target = Colour.All;
-        //jumpOne.type = Type.jump1;
+        jumpOne.index = 9;
+        jumpOne.direction = Direction.All;
+        jumpOne.distance = 2;
+        jumpOne.src = Colour.Orange;
+        jumpOne.target = Colour.All;
+        jumpOne.type = Type.jump1;
 
-        //blank.index = 1;
-        //blank.direction = Direction.All;
-        //blank.distance = 1;
-        //blank.src = Colour.Yellow;
-        //blank.target = Colour.All;
-        //blank.type = Type.blank;
+        blank.index = 1;
+        blank.direction = Direction.All;
+        blank.distance = 1;
+        blank.src = Colour.Yellow;
+        blank.target = Colour.All;
+        blank.type = Type.blank;
 
-        //coldTemp.index = 12;
-        //coldTemp.direction = Direction.All;
-        //coldTemp.distance = 1;
-        //coldTemp.src = Colour.Purple;
-        //coldTemp.target = Colour.Cool;
-        //coldTemp.type = Type.cool;
+        coldTemp.index = 12;
+        coldTemp.direction = Direction.All;
+        coldTemp.distance = 1;
+        coldTemp.src = Colour.Purple;
+        coldTemp.target = Colour.Cool;
+        coldTemp.type = Type.cool;
 
-        //excludeBR.index = 24;
-        //excludeBR.src = Colour.Blue;
-        //excludeBR.target = Colour.Green;
-        //excludeBR.type = Type.exclude;
+        excludeBR.index = 24;
+        excludeBR.src = Colour.Blue;
+        excludeBR.target = Colour.Green;
+        excludeBR.type = Type.exclude;
 
-        //warm.index = 13;
-        //warm.direction = Direction.All;
-        //warm.distance = 1;
-        //warm.src = Colour.Pink;
-        //warm.target = Colour.Warm;
-        //warm.type = Type.warm;
+        warm.index = 13;
+        warm.direction = Direction.All;
+        warm.distance = 1;
+        warm.src = Colour.Pink;
+        warm.target = Colour.Warm;
+        warm.type = Type.warm;
 
-        //Test(); //sets the rules
+        Test(); //sets the rules
 
-        //ColouredMaze cmaze = ColourMaze();
+        ColouredMaze cmaze = ColourMaze();
     }
 
     //TEMPORARY
-    //private void Test()
-    //{
+    private void Test()
+    {
 
-    //    List<MovementRule> m = new List<MovementRule>()
-    //    {
-    //        {TmoveS},
-    //        {teleportB},
-    //        {teleportR},
-    //        {jumpOne},
-    //        {blank},
-    //        {coldTemp},
-    //        {warm},
-    //    };
-    //    List<ColourRule> c = new List<ColourRule>()
-    //    {
-    //        {excludeBR }
-    //    };
+        List<MovementRule> m = new List<MovementRule>()
+        {
+            {TmoveS},
+            {teleportB},
+            {teleportR},
+            {jumpOne},
+            {blank},
+            {coldTemp},
+            {warm},
+        };
+        List<ColourRule> c = new List<ColourRule>()
+        {
+            {excludeBR }
+        };
 
-    //    SetRules(m, c);
-    //}
+        SetRules(m, c);
+    }
 
     public static ColouredMaze ColourMaze()
     {
@@ -163,12 +170,21 @@ public class ColourAssigner : MonoBehaviour
         {
             maze = maze,
             used = used,
-            checkers = Shinro.checkerCount,
             onPathViolations = pathUnassigned,
             offPathViolations = unassigned,
             properExit = exitAssigned
         };
 
+        paths = TraverseMaze.GetPathsFromEntrance(cmaze);
+
+        if(paths.longest > 0) //if solution paths exist
+        {
+            Shinro.PlaceCheckers(paths.longestPath, cmaze, Shinro.percentL);
+            Shinro.PlaceCheckers(paths.shortestPath, cmaze, Shinro.percentS);
+            NumClues.SetClues(maze.tiles);
+            cmaze.checkers = NumClues.checkerCount;
+            cText.text = "0/" + NumClues.checkerCount.ToString();
+        }
         return cmaze;
     }
 
@@ -237,7 +253,7 @@ public class ColourAssigner : MonoBehaviour
 
         InstructionsText.SetInstructions(mRules, cRules);
   
-        Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
+       // Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
     }
 
     private static void AssignByMRule(Tile t, MovementRule rule)

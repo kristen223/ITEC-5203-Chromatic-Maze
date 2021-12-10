@@ -37,7 +37,6 @@ public class PlayerController : MonoBehaviour
 
         cText = GameObject.Find("CCount").GetComponent<Text>();
         cCount = 0;
-        cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
 
         sText = GameObject.Find("SCount").GetComponent<Text>();
         sCount = maze.LP.length - 1; //no extra steps
@@ -337,7 +336,7 @@ public class PlayerController : MonoBehaviour
                         cCount--;
                     }
                     
-                    cText.text = cCount.ToString() + "/" + Shinro.checkerCount.ToString();
+                    cText.text = cCount.ToString() + "/" + NumClues.checkerCount.ToString();
                 }
                 previous.Pop(); //remove player from path
 
@@ -669,7 +668,7 @@ public class PlayerController : MonoBehaviour
         if (tapped.tag == "checker")
         {
             cCount++;
-            cText.text = cCount + "/" + Shinro.checkerCount;
+            cText.text = cCount + "/" + NumClues.checkerCount;
         }
 
         previous.Push(player);

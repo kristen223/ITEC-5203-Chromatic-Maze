@@ -8,9 +8,13 @@ public class NumClues : MonoBehaviour
     
     [HideInInspector] private static int width;
     [HideInInspector] private static int height;
+    [HideInInspector] public static int checkerCount;
 
+    private void Start()
+    {
+        checkerCount = 0;
+    }
 
-    
     public static void SetClues(Tile[] tiles)
     {
         width = GenerateGrid.wdth;
@@ -25,6 +29,7 @@ public class NumClues : MonoBehaviour
                 if (tiles[j+(i*width)].tag == "checker")
                 {
                     checkers++;
+                    checkerCount++;
                 }
             }
             GameObject.Find("TopWall-" + (j+1)).GetComponentInChildren<Text>().text = checkers.ToString();
