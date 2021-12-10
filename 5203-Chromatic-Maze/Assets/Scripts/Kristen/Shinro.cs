@@ -4,43 +4,60 @@ using UnityEngine;
 
 public class Shinro : MonoBehaviour
 {
-    [HideInInspector] public Tile[] tiles;
-    public static KruskalMaze.Maze maze;
-    private Tile[] solutionPath;
-    private  int chance; //likelihood checker is placed (percentage)
-    public static int checkerCount;
 
-    void Awake()
+    public float percentOfLongest;
+    public float percentOfShortest;
+    public static float percentL;
+    public static float percentS;
+    private static int chance; //likelihood checker is placed (percentage)
+      
+    void Start()
     {
-        tiles = GenerateGrid.vertices;
-        maze = GenerateGrid.maze;
         chance = 10;
+        percentL = percentOfLongest;
+        if (percentL <= 0)
+        {
+            percentL = .3f; //30% of longest path
+        }
 
-        checkerCount = Mathf.RoundToInt((maze.LP.length - 1) * .3f);
-        PlaceCheckers(maze.LP.entrance, maze.LP.length, checkerCount);
-        NumClues.SetClues(tiles);
+        percentS = percentOfShortest;
+        if (percentS <= 0)
+        {
+            percentS = .3f; //30% of longest path
+        }
+
     }
 
-    public void PlaceCheckers(Tile previous, int length, int count)
+    public static void PlaceCheckers(List<Tile> path, ColourAssigner.ColouredMaze cmaze, float percent)
     {
-        for (int i = 0; i < length-1; i++)
+        int length = path.Count;
+        int checkerCount = Mathf.RoundToInt((length - 1) * percent);
+        Tile previous = path[0]; //skip the entrance by making it previous
+
+        for (int i = 0; i < path.Count-1; i++)
         {
             Tile current = previous.parent;
 
-            if(i == length - count - 1) //if the number of checkers left to place is equal to the number of tiles left in path traversal
+            if(i == length - checkerCount - 1) //if the number of checkers left to place is equal to the number of tiles left in path traversal
             {//must add checkers to rest of path
-                current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                current.tag = "checker";
-                count--;
+                if(current.tag != "checker") //may already be placed here
+                {
+                    current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    current.tag = "checker";
+                }
+                checkerCount--; //want to subtract count regardless
                 chance = 10;
             }
             else
             {   //don't place checker after jump or teleport
                 if (Random.Range(1, 101) <= chance && previous.ruleType != Type.jump1 && previous.ruleType != Type.jump2 && previous.ruleType != Type.teleport)
                 {
-                    current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
-                    current.tag = "checker";
-                    count--;
+                    if (current.tag != "checker")
+                    {
+                        current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                        current.tag = "checker";
+                    }
+                    checkerCount--;
                     chance = 10;
                 }
                 else //no checker added
@@ -48,7 +65,7 @@ public class Shinro : MonoBehaviour
                     chance += 15;
                 }
 
-                if (count == 0)
+                if (checkerCount == 0)
                 {
                     break;
                 }
@@ -56,37 +73,4 @@ public class Shinro : MonoBehaviour
             previous = previous.parent;
         }
     }
-
-    //Old way of placing checkers that places tehm randomly
-
-    //public Tile[] GetPath(Tile startPoint, int length)
-    //{
-    //    Tile[] pathh = new Tile[length];
-
-    //    for (int i = 0; i < length; i++)
-    //    {
-    //        pathh[i] = startPoint;
-    //        startPoint = startPoint.parent;
-    //    }
-
-    //    return pathh;
-    //}
-
-    //public void PlaceCheckers(Tile[] path)
-    //{
-    //    int count = Mathf.RoundToInt((path.Length - 2)*.3f); //place checkers on 30% of path length minus entrance and exit
-
-    //    //place a checker on a random tile on the solution path that IS NOT the entrance or exit
-    //    for (int i = 0; i < count; i++)
-    //    {
-    //        int rand = Random.Range(1, path.Length - 1);
-    //        path[rand].transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
-    //        path[rand].tag = "checker";
-    //    }
-    //}
 }
-
-//In Shinro puzzles, the size is similar but there's way more checkers placed whic amkes it less trivial
-
-//go along path, each time you don't place a checker, the likelihood of you placing a checker on teh next tile increases
-//likelihood lowers when you place a checker

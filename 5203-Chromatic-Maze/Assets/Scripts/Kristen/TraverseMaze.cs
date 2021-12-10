@@ -11,8 +11,10 @@ public class TraverseMaze : MonoBehaviour
     public struct SolutionPaths
     {
         public List<List<Tile>> allPaths; //all possible solution paths
-        public int shortestPath; //length of shortest path (0 if no paths)
-        public int longestPath; //length of longest path (0 if no paths)
+        public int shortest; //length of shortest path (0 if no paths)
+        public int longest; //length of longest path (0 if no paths)
+        public List<Tile> shortestPath; //shortest path
+        public List<Tile> longestPath; //shortest path
     }
 
     // Start is called before the first frame update
@@ -20,35 +22,36 @@ public class TraverseMaze : MonoBehaviour
     {
         sPaths = new SolutionPaths();
         sPaths.allPaths = new List<List<Tile>>();
-        sPaths.shortestPath = 0;
-        sPaths.longestPath = 0;
+        sPaths.shortest = 0;
+        sPaths.longest = 0;
+        sPaths.shortestPath = new List<Tile>();
+        sPaths.longestPath = new List<Tile>();
     }
 
     private static void GetShortestPath()
     {
-        int shortest = sPaths.allPaths[0].Count;
+        sPaths.shortestPath = sPaths.allPaths[0];
         foreach (List<Tile> path in sPaths.allPaths)
         {
-            if (path.Count < shortest)
+            if (path.Count < sPaths.shortestPath.Count)
             {
-                shortest = path.Count;
+                sPaths.shortestPath = path;
             }
         }
-
-        sPaths.shortestPath = shortest;
+        sPaths.shortest = sPaths.shortestPath.Count;
     }
 
     private static void GetLongestPath()
     {
-        int longest = sPaths.allPaths[0].Count;
+        sPaths.longestPath = sPaths.allPaths[0];
         foreach (List<Tile> path in sPaths.allPaths)
         {
-            if (path.Count > longest)
+            if (path.Count > sPaths.longestPath.Count)
             {
-                longest = path.Count;
+                sPaths.longestPath = path;
             }
         }
-        sPaths.longestPath = longest;
+        sPaths.longest = sPaths.longestPath.Count;
     }
 
     public static SolutionPaths GetPathsFromEntrance(ColourAssigner.ColouredMaze cmaze)
@@ -61,7 +64,21 @@ public class TraverseMaze : MonoBehaviour
             GetShortestPath();
             GetLongestPath();
         }
-        
+
+        String debugs = "Shortest path: ";
+        foreach (Tile t in sPaths.shortestPath)
+        {
+            debugs += t.name + ", ";
+        }
+        Debug.Log(debugs);
+
+        String debug = "Longest path: ";
+        foreach (Tile t in sPaths.longestPath)
+        {
+            debug += t.name + ", ";
+        }
+        Debug.Log(debug);
+
         return sPaths;
         //returns the final found path a lot (like it replaces all others)
     }
@@ -69,6 +86,11 @@ public class TraverseMaze : MonoBehaviour
     //Gets list of paths from given tile to exit
     public static void GetPaths(Tile start, Tile end, List<Tile> path, ColourAssigner.ColouredMaze cmaze)
     {
+        if(end.ruleType == Type.wall)
+        {
+            return;
+        }
+
         List<KeyValuePair<List<Tile>, Tile>> starts = new List<KeyValuePair<List<Tile>, Tile>>(); //branching off tile and path at that point
         Tile current = start;
         bool valid = true;
