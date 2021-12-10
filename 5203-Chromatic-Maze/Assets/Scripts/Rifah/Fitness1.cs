@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class Fitness1 : MonoBehaviour
@@ -163,6 +164,11 @@ public class Fitness1 : MonoBehaviour
 
         }
 
+        //reverse the sorted dictionary:
+        foreach (var item in fitVals.OrderByDescending(key => key.Key))
+        {
+            print(item);
+        }
 
 
 
@@ -190,11 +196,11 @@ public class Fitness1 : MonoBehaviour
 
         //int fittest = (int)ranks[index: 0]; //the first value in the sorted arraylist is the best fit
         //print(fittest);
-       
+
         int chosensize = (int)System.Math.Ceiling(fitVals.Count * 0.2); //20% of the best fits
-        Dictionary<int, int> chosenChr = new Dictionary<int, int>();
+        Dictionary<int, int> chosenChr = new Dictionary<int, int>(); //sort descending order, crossover to build new 80% or 100%, passs to f1 again
         int count = 0;
-        foreach(KeyValuePair<int,int> pairs in fitVals)
+        foreach(KeyValuePair<int,int> pairs in fitVals.OrderByDescending(key => key.Key)) //descending order sorted
         {
             if (count <= chosensize)
             {
@@ -203,6 +209,14 @@ public class Fitness1 : MonoBehaviour
             }
             
         }
+
+        //CROSSOVER
+        Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
+        newSetOfChrs=Crossover.crossover(chosenChr);
+
+
+
+        //got to this after crossover
         foreach(int v in chosenChr.Values) //passing the top 20% chromosomes
         {
             FinalRules.finalRules(cList[v], m, c);
@@ -215,6 +229,6 @@ public class Fitness1 : MonoBehaviour
 
 
     }
-
+  
 
 }

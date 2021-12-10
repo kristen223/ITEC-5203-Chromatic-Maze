@@ -27,5 +27,7 @@ public class Fitness2 : MonoBehaviour
     public static void fitness2(ColourAssigner.ColouredMaze colouredMaze)
     {
         TraverseMaze.SolutionPaths paths = TraverseMaze.GetPathsFromEntrance(colouredMaze); //a new struct I made, gives u the length of the longest and shortest path and # of paths
+
+
     }
 }
