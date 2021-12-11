@@ -268,50 +268,13 @@ public class Fitness1 : MonoBehaviour
 
 
         //FinalRules.finalRules(cList, m, c);
-        getFinalRules(chosenChr,cList,m,c);
+       
+        MazeCreation.getFinalRules(chosenChr, cList, m, c);
 
-        //PASS THIS CHOSENCHR TO SETRULES? OR PASS THE EXACT RULES.
 
 
 
     }
-    public static void getFinalRules(Dictionary<int,int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
-    {
-        ArrayList chromosomes = new ArrayList();
-        
-
-        //List<int> ChosenRulesIdx = new List<int>(chosenChr.Count); 
-        foreach (KeyValuePair<int,int> k in chosenChr)
-        {
-            List<MovementRule> mr = new List<MovementRule>();
-            List<ColourRule> cr = new List<ColourRule>();
-            if (clist.ContainsKey(k.Key)){
-                foreach(Dictionary<int, Type> d in clist.Values)
-                {
-                   foreach(KeyValuePair<int,Type> kvp in d)
-                    {
-                        if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                        {
-                            cr.Add(GetCRule(kvp.Key, c));
-                        }
-                        else
-                        {
-                            mr.Add(GetMRule(kvp.Key, m));
-                        }
-                        // ChosenRulesIdx.Add(kvp.Key);
-
-
-                    }
-                }
-                
-            }
-            chromosomes.Add(mr);
-            chromosomes.Add(cr);
-            
-        }
-        MazeCreation.mazeC(chromosomes);
-
-    }
-  
+   
 
 }

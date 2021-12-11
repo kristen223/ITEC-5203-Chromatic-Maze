@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class FinalRules : MonoBehaviour
 {
+    //NOT USING THIS CLASS, DISREGARD IT.
     // Start is called before the first frame update
+    public static ArrayList chromosomes = new ArrayList();
     public static void finalRules(Dictionary<int, Type> c, List<MovementRule> movementRuleSets, List<ColourRule> colourRuleSets) //get the indexes (keys) of this hashtable
     {
+        
 
         int[] finalIdxs = new int[8];
         int r = 0;
@@ -18,6 +21,8 @@ public class FinalRules : MonoBehaviour
             r++;
             Debug.Log(r);
         }
+
+        chromosomes.Add(finalIdxs);
         //Debug.Log();
         //all the final indexes are set in finalIdxs
 
@@ -41,7 +46,7 @@ public class FinalRules : MonoBehaviour
 
         Debug.Log("calling set rules");
 
-        ColourAssigner.SetRules(mr, cr);
+       // ColourAssigner.SetRules(mr, cr);
 
         
 
