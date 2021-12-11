@@ -4,17 +4,26 @@ using UnityEngine;
 
 public class FinalRules : MonoBehaviour
 {
+    //NOT USING THIS CLASS, DISREGARD IT.
     // Start is called before the first frame update
+    public static ArrayList chromosomes = new ArrayList();
     public static void finalRules(Dictionary<int, Type> c, List<MovementRule> movementRuleSets, List<ColourRule> colourRuleSets) //get the indexes (keys) of this hashtable
     {
+        
 
         int[] finalIdxs = new int[8];
         int r = 0;
+        Debug.Log(c.Keys.Count);
         foreach (int i in c.Keys)
         {
+            Debug.Log(r);
             finalIdxs[r] = (int)i;
             r++;
+            Debug.Log(r);
         }
+
+        chromosomes.Add(finalIdxs);
+        //Debug.Log();
         //all the final indexes are set in finalIdxs
 
         List<MovementRule> mr = new List<MovementRule>();
@@ -25,17 +34,19 @@ public class FinalRules : MonoBehaviour
         {
             if (kvp.Value.Equals("Tmove") | kvp.Value.Equals("blank") | kvp.Value.Equals("teleport") | kvp.Value.Equals("jump1") | kvp.Value.Equals("jump2") | kvp.Value.Equals("warm") | kvp.Value.Equals("cool"))
             {
-                mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[kvp.Key])));
+                mr.Add(movementRuleSets.Find(x => x.index.Equals(kvp.Key)));
+                Debug.Log("mr added is" + kvp.Key);
             }
             else
             {
-                cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[kvp.Key])));
+                cr.Add(colourRuleSets.Find(y => y.index.Equals(kvp.Key)));
             }
         }
 
 
-      
-        ColourAssigner.SetRules(mr, cr);
+        Debug.Log("calling set rules");
+
+       // ColourAssigner.SetRules(mr, cr);
 
         
 

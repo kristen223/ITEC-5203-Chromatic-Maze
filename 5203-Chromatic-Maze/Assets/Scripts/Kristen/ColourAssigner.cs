@@ -97,6 +97,7 @@ public class ColourAssigner : MonoBehaviour
         };
     }
 
+
     public ColouredMaze ColourMaze()
     {
         //Other script needs to call SetRules first
@@ -158,6 +159,8 @@ public class ColourAssigner : MonoBehaviour
     {
         mRules = mr;
         cRules = cr;
+        Debug.Log(mr.Count);
+        Debug.Log(cr.Count);
 
         //Get list of CheckPath rule indexes
         foreach (ColourRule rule in cRules)
@@ -440,7 +443,7 @@ public class ColourAssigner : MonoBehaviour
                         unassigned++;
                     }
                 }
-            } 
+            }
         }
     }
 
@@ -465,7 +468,7 @@ public class ColourAssigner : MonoBehaviour
                         int adjOne = Array.IndexOf(maze.tiles, t.children[0]);
                         int adjTwo = Array.IndexOf(maze.tiles, t.children[1]);
                         int adjThree = Array.IndexOf(maze.tiles, t.parent);
-   
+
                         int[] neighbours = new int[3]{adjOne, adjTwo, adjThree};
 
                         for (int i = 0; i <3; i++)
@@ -546,7 +549,7 @@ public class ColourAssigner : MonoBehaviour
             if (mRules[i].type == Type.Tmove || mRules[i].type == Type.blank)
             {
                 mRules.Remove(mRules[i]);
-                i--; 
+                i--;
             }
         }
         for (int i = 0; i < ruleTypes.Count; i++)
@@ -562,8 +565,8 @@ public class ColourAssigner : MonoBehaviour
 
     /* Round 2
      * Traverse the maze from entrance to exit, colouring the solution path
-     * Going backwards on the solution path isn't gaurenteed to help ensure successful coloru assignment 
-     * 
+     * Going backwards on the solution path isn't gaurenteed to help ensure successful coloru assignment
+     *
      * Go from entrace to exit following up the parents. For each child go down their child list until you hit a dead end, you you pass through cycle back to SP
      */
     private void RoundTwo()
@@ -623,7 +626,7 @@ public class ColourAssigner : MonoBehaviour
                             if (tile.canBe[r.src] == true)
                             {
                                 check = true;
-                                
+
                                 AssignByMRule(tile, r);
                             }
 
@@ -673,7 +676,7 @@ public class ColourAssigner : MonoBehaviour
                     subtrees.Add(c);
                     //ParentToChild(c);
                 }
-                
+
             }
 
             if(tile.parent != tile)
@@ -694,7 +697,7 @@ public class ColourAssigner : MonoBehaviour
 
     /* Unlike the solution path, the rest of the maze must be traversable both ways
      * I had to split into two because we can assign from root to leafs
-     * 
+     *
      * This traverses down children until tile of rank 0 is becomes previosu tile
      */
     private void ParentToChild(Tile tile)
@@ -762,7 +765,7 @@ public class ColourAssigner : MonoBehaviour
                             AssignByCRule(tile, r);
                         }
                     }
-                }  
+                }
             }
             if (!check)
             {
@@ -786,7 +789,7 @@ public class ColourAssigner : MonoBehaviour
             }
         }
 
-       
+
         if (tile.rank != 0)
         {
             foreach (Tile c in tile.children)
@@ -795,7 +798,7 @@ public class ColourAssigner : MonoBehaviour
                 {
                     if(c.mRule.type == Type.Tmove || c.mRule.type == Type.blank)
                     {
-                        ParentToChild(c); 
+                        ParentToChild(c);
                     }
                 }
                 else if (c.assigned == false) //condition so you don't infinitely go between two cycled tiles
@@ -871,7 +874,7 @@ public class ColourAssigner : MonoBehaviour
                         }
                     }
                 }
-                
+
                 if (cool == true && tile.canBe[m.src] == true)
                 {
                     check = true;
@@ -908,7 +911,7 @@ public class ColourAssigner : MonoBehaviour
                     AssignByMRule(tile, m);
                     break;
                 }
-            } 
+            }
         }
         if (!check) //then try to assign exclude or block
         {
@@ -937,7 +940,7 @@ public class ColourAssigner : MonoBehaviour
                             }
                         }
                     }
-                   
+
                     if (canPlace == true && tile.canBe[c.src] == true)
                     {
                         check = true;
@@ -973,7 +976,7 @@ public class ColourAssigner : MonoBehaviour
                             }
                         }
                     }
-                    
+
                     if (canPlace == true && tile.canBe[c.src] == true)
                     {
                         check = true;
@@ -1021,7 +1024,7 @@ public class ColourAssigner : MonoBehaviour
                 }
             }
         }
-        
+
         if(tileNum != 0) //not bottom left tile
         {
             bool child = false;
@@ -1048,7 +1051,7 @@ public class ColourAssigner : MonoBehaviour
                 }
             }
         }
-        
+
         if (tileNum + maze.w < maze.w * maze.h) //north tile exists
         {
             bool child = false;
@@ -1351,7 +1354,7 @@ public class ColourAssigner : MonoBehaviour
                             {
                                 exit.colour = col; //last resort, give it a colour so the SP is fully traversable
                             }
-                        }  
+                        }
                     }
                     break;
                 }
@@ -1368,7 +1371,7 @@ public class ColourAssigner : MonoBehaviour
                     if(c.mRule.type == Type.Tmove || c.mRule.type == Type.blank)
                     {
                         ParentToChild(c);
-                    } 
+                    }
                 }
                 else if(c.assigned == false)
                 {
