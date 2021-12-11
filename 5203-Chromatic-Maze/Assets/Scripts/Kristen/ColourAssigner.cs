@@ -132,9 +132,9 @@ public class ColourAssigner : MonoBehaviour
         warm.target = Colour.Warm;
         warm.type = Type.warm;
 
-        Test(); //sets the rules
+      //  Test(); //sets the rules
 
-        ColouredMaze cmaze = ColourMaze();
+        //ColouredMaze cmaze = ColourMaze();
     }
 
     //TEMPORARY
@@ -222,6 +222,8 @@ public class ColourAssigner : MonoBehaviour
     {
         mRules = mr;
         cRules = cr;
+        Debug.Log(mr.Count);
+        Debug.Log(cr.Count);
 
         //Get list of CheckPath rule indexes
         foreach (ColourRule rule in cRules)
@@ -252,8 +254,9 @@ public class ColourAssigner : MonoBehaviour
         }
 
         InstructionsText.SetInstructions(mRules, cRules);
+        
   
-       // Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
+        Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
     }
 
     private static void AssignByMRule(Tile t, MovementRule rule)

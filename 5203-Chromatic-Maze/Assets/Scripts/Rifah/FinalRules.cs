@@ -15,6 +15,7 @@ public class FinalRules : MonoBehaviour
             finalIdxs[r] = (int)i;
             r++;
         }
+        //Debug.Log();
         //all the final indexes are set in finalIdxs
 
         List<MovementRule> mr = new List<MovementRule>();
@@ -25,16 +26,18 @@ public class FinalRules : MonoBehaviour
         {
             if (kvp.Value.Equals("Tmove") | kvp.Value.Equals("blank") | kvp.Value.Equals("teleport") | kvp.Value.Equals("jump1") | kvp.Value.Equals("jump2") | kvp.Value.Equals("warm") | kvp.Value.Equals("cool"))
             {
-                mr.Add(movementRuleSets.Find(x => x.index.Equals(finalIdxs[kvp.Key])));
+                mr.Add(movementRuleSets.Find(x => x.index.Equals(kvp.Key)));
+                Debug.Log("mr added is" + kvp.Key);
             }
             else
             {
-                cr.Add(colourRuleSets.Find(y => y.index.Equals(finalIdxs[kvp.Key])));
+                cr.Add(colourRuleSets.Find(y => y.index.Equals(kvp.Key)));
             }
         }
 
 
-      
+        Debug.Log("calling set rules");
+
         ColourAssigner.SetRules(mr, cr);
 
         
