@@ -68,22 +68,130 @@ public class Rules : MonoBehaviour
 
     }
 
-  
+
     //I UPDATED ALL OF THE RULE DEFINITIONS TO USE THE ENUMS
     //I ADDED MORE DEFINTIONS SO THE NUMBER OF UNIQUE INDEXES HAS CHANGED
     //I ADDED THE COLOUR RULES TO THE COLOUR RULE LIST
 
-    public MovementRule createMRule(Direction dir, int dis, Colour target,Colour src, Type type)
+    public void createMRule(Type type)
     {
-        MovementRule n = new MovementRule(); 
-        n.index = index++;
-        n.direction = dir;
-        n.distance = dis;
-        n.target = target;
-        n.src = src;
-        n.type = type;
-        movementRuleSets.Add(n);
-        return n;
+        List<Colour> clrs = new List<Colour>();
+        clrs.Add(Colour.Blue);
+        clrs.Add(Colour.Red);
+        clrs.Add(Colour.Yellow);
+        clrs.Add(Colour.Teal);
+        clrs.Add(Colour.Orange);
+        clrs.Add(Colour.Green);
+        clrs.Add(Colour.Pink);
+        clrs.Add(Colour.Purple);
+
+        List<Direction> dir = new List<Direction>();
+        dir.Add(Direction.East);
+        dir.Add(Direction.North);
+        dir.Add(Direction.West);
+        dir.Add(Direction.South);
+
+        if (type == Type.Tmove)
+        {
+            foreach(Colour c in clrs)
+            {
+                foreach(Direction d in dir)
+                {
+                    MovementRule r = new MovementRule();
+                    r.index = index++;
+                    r.src = c;
+                    r.target = Colour.All;
+                    r.direction = d;
+                    
+                    r.type = type;
+                    movementRuleSets.Add(r);
+                }
+            }
+        }
+
+        if (type == Type.warm)
+        {
+            foreach (Colour i in clrs)
+            {
+                MovementRule r = new MovementRule();
+                r.index = index++;
+                r.src = i;
+                r.target = Colour.Warm;
+                r.type = type;
+                movementRuleSets.Add(r);
+            }
+        }
+        if (type == Type.cool)
+        {
+            foreach (Colour i in clrs)
+            {
+                MovementRule r = new MovementRule();
+                r.index = index++;
+                r.src = i;
+                r.target = Colour.Cool;
+                r.type = type;
+                movementRuleSets.Add(r);
+            }
+        }
+        if (type == Type.blank)
+        {
+            foreach (Colour i in clrs)
+            {
+                MovementRule r = new MovementRule();
+                r.index = index++;
+                r.src = i;
+                r.target = Colour.All;
+                
+                r.type = type;
+                movementRuleSets.Add(r);
+                
+            }
+        }
+        if (type == Type.jump1 || type==Type.jump2)
+        {
+            foreach(Colour c in clrs)
+            {
+                MovementRule r = new MovementRule();
+                r.index = index++;
+                r.src = c;
+                r.target = Colour.All;
+                if (type == Type.jump1)
+                {
+                    r.distance = 2;
+                }
+                else
+                {
+                    r.distance = 3;
+                }
+                r.type = type;
+                movementRuleSets.Add(r);
+            }
+        }
+        else
+        {
+            foreach (Colour s in clrs)
+            {
+                foreach (Colour t in clrs)
+                {
+                    if (s != t)
+                    {
+                        MovementRule n = new MovementRule();
+                        n.index = index++;
+                        
+                        n.target = t;
+                        n.src = s;
+                        n.type = type;
+                        movementRuleSets.Add(n);
+
+                    }
+
+                }
+
+            }
+
+
+
+        }
     }
   
     public void createCRule( Type type)//no need for the colour params
@@ -98,43 +206,48 @@ public class Rules : MonoBehaviour
         col.Add(Colour.Pink);
         col.Add(Colour.Purple);
 
+        
         foreach (Colour i in col)
         {
-            foreach(Colour j in col)//skip the first index
+            foreach (Colour j in col)//skip the first index
             {
                 if (j != i)
                 {
                     ColourRule r = new ColourRule();
-                    r.index = index++;
-                    r.src = i;
-                    r.target = j;
-                    r.type = type;
-                    colourRuleSets.Add(r);
+                        r.index = index++;
+                        r.src = i;
+                        r.target = j;
+                        r.type = type;
+                        colourRuleSets.Add(r);
+
+
+                    }
+
                 }
-                
+
             }
 
-        }   
+        }
+    
+         
 
 
-    }
+    
 
     public void defineRules()
     {
 
-        MovementRule TmoveS = createMRule( Direction.South, 1, Colour.All,Colour.All, Type.Tmove);
-        MovementRule TmoveN = createMRule(Direction.North, 1, Colour.All, Colour.All, Type.Tmove);
-        MovementRule TmoveW = createMRule(Direction.West, 1, Colour.All, Colour.All, Type.Tmove);
-        MovementRule TmoveE = createMRule(Direction.East, 1, Colour.All, Colour.All, Type.Tmove);
-        MovementRule blank = createMRule(Direction.All, 1, Colour.All, Colour.All, Type.blank);
-        MovementRule jumpOne = createMRule(Direction.All,2, Colour.All,Colour.All, Type.jump1);
-        MovementRule jumpTwo = createMRule(Direction.All, 3, Colour.All, Colour.All, Type.jump2);
-        MovementRule warmTemp = createMRule(Direction.All, 1, Colour.Warm, Colour.All, Type.warm); //SRC not specified here. should be specified?
-        MovementRule coldTemp = createMRule(Direction.All, 1, Colour.Cool, Colour.All, Type.cool);
-        MovementRule teleport = createMRule(Direction.All, 0, Colour.All, Colour.All, Type.teleport); //make multiple of these here or in assign colors?
+       createMRule(  Type.Tmove);
+       
+       createMRule(Type.blank);
+       createMRule( Type.jump1);
+       createMRule(Type.jump2);
+       createMRule( Type.warm); 
+       createMRule(Type.cool);
+       createMRule(Type.teleport); 
       
-        createCRule(Type.include);
-        createCRule(Type.exclude);
+       createCRule(Type.include);
+       createCRule(Type.exclude);
         
 
 
@@ -172,7 +285,7 @@ public class Rules : MonoBehaviour
         }
         Debug.Log("all rules : "+allList.Count);
         Dictionary<int, Dictionary<int,Type>> ChrsDict = new Dictionary<int, Dictionary<int,Type>>(pop); //dictionary of chr-idx and chr
-        Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
+        //Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
         //Hashtable chr = new Hashtable();
 
 
@@ -182,21 +295,29 @@ public class Rules : MonoBehaviour
             //List<ArrayList> chr = new List<ArrayList>(7);
 
 
-            List<int> usedIdx = new List<int>();
-
-            for (int j = 0; j < 8; j++)   //filling up each chromosome with rule types
+            //List<int> usedIdx = new List<int>();
+            Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
+            //for (int j = 0; j < 8; j++)   //filling up each chromosome with rule types
+            int count = 0;
+            while(count<8)
             {
                 int idx = randNum.Next(0, allList.Count);
-                usedIdx.Add(idx); //avoiding duplicate rules in a chromosome
-                Debug.Log(idx);
-                if (!usedIdx.Contains(idx))
+                //avoiding duplicate rules in a chromosome
+                
+                //if (!usedIdx.Contains(idx))
+                if(!chr.ContainsKey(idx))
                 {
+                    
                     chr.Add(idx, allList[idx]); //adding the rule index and rule type to the chromosome
-                    Debug.Log("idx is " + idx + "type is " + allList[idx]);                            // chr[j]=allList[idx];
+                    //Debug.Log("idx is " + idx + "type is " + allList[idx]);                            // chr[j]=allList[idx];
+                    count++;
                 }
+                
             }
+            Debug.Log(chr.Count);
+           
             ChrsDict.Add(i,chr); // num of chromosomes = pop size
-            Debug.Log("chr types adding: "+chr.Values.ToString());
+            //Debug.Log("chr types adding: "+chr.Values.ToString());
         }
         //foreach(var item in ChrsDict)
         //{

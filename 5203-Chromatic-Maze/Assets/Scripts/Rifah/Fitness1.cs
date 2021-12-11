@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class Fitness1 : MonoBehaviour
 {
+   
+
+
     public static MovementRule GetMRule(int idx, List<MovementRule> m)
     {
         foreach(MovementRule x in m)
@@ -40,34 +43,41 @@ public class Fitness1 : MonoBehaviour
     public static void fitnessOne(Dictionary<int, Dictionary<int,Type>> cList,  List<MovementRule> m, List<ColourRule> c)
     {
         Debug.Log("fitness1");
-        Debug.Log("clist: " + cList.Values.ToString());
+        Debug.Log("clist: " + cList.Count);
+        Debug.Log("clist keys: " + cList.Keys.Count);
+        Debug.Log("clist val: " + cList.Values.Count);
         //SortedDict fitvals << rule-index, fit >>:
-        SortedDictionary<int,int> fitVals = new SortedDictionary<int, int>(); //automatically sort by key  => fit 
-        for (int i = 0; i < cList.Count; i++)//clist contains all chromosomes so checking for each chromosome
-        {
-            Debug.Log("size of clist: "+cList.Count);
+        SortedDictionary<int,int> fitVals = new SortedDictionary<int, int>(); //automatically sort by key  => fit
+        
+       // foreach (var item in cList)//clist contains all chromosomes so checking for each chromosome
+        //{
+          
+            int chrCount = 0;
             
-            int fit = 0;
-            //Debug.Log(sizeof(Type));
+           
 
             List<Type> uniqueTypes = new List<Type>(); //new unique list
 
-            foreach (Dictionary<int, Type> d in cList.Values) //inside each chromosome loop
+            foreach (Dictionary<int, Type> d in cList.Values) //inside each chromosome (rules)
             {
-                Debug.Log("chr: " + d.Keys);
+                int fit = 0;
                 // PART 1 : CHECKING VARAITION IN TYPES
-                Debug.Log("length of chr: "+d.Count);
-                ICollection valueColl = d.Values; //types
-                foreach (Type v in valueColl) //looping in types (chr.value)
+
+                // ICollection valueColl = d.Values; //types
+                Debug.Log("-------START of a single chr------------");
+                //Debug.Log("this should be length 8 but it is : " + d.Count);
+                foreach (Type v in d.Values) //looping in types (chr.value)
                 {
-                    Debug.Log("hello");
+
+                    Debug.Log("uniquetypes starts");
                     if (!uniqueTypes.Contains(v)) //types are added if they dont already exist in the list
                     {
                         uniqueTypes.Add(v);
-                        Debug.Log("adding this to uniqetypes "+v);
+                        Debug.Log("adding this to uniqetypes " + v);
                     }
                 }
-                if (uniqueTypes.Count == 8) //length is 7 if all types are unique, from line 515, then highest fitness is 8.
+                Debug.Log("uniquetypes length is : " + uniqueTypes.Count);
+                if (uniqueTypes.Count == 8) //length is 8 if all types are unique
                 {
                     fit = 8;
 
@@ -78,7 +88,7 @@ public class Fitness1 : MonoBehaviour
 
                 }
 
-               
+
 
                 //PART 2 : CHECKING BADNESS WITH TMOVES,INC,EXC : "mutliple Tmoves aren't that bad, but multiple include/excludes are bad"
                 int tmove = 0;
@@ -86,14 +96,14 @@ public class Fitness1 : MonoBehaviour
                 int exc = 0;
 
 
-                foreach (Type t in valueColl)
+                foreach (Type t in d.Values)
                 {
-                    if (t== Type.Tmove)
+                    if (t == Type.Tmove)
                     {
                         tmove++;
 
                     }
-                
+
                     if (t == Type.include)
                     {
                         inc++;
@@ -133,45 +143,37 @@ public class Fitness1 : MonoBehaviour
                 //PART 3 : CHECKING BADNESS WITH COLORS : "target color of teleport should not be src color of include/exclude"
                 //ICollection ruleIdxs = d.Keys;
 
-                if (d.Values.Contains(Type.teleport))
+
+                foreach (KeyValuePair<int, Type> kvc in d)
                 {
-                    if (d.Values.Contains(Type.exclude) || d.Values.Contains(Type.include))
+                    if (kvc.Value == Type.teleport) //teleport so its a movement rule
                     {
-                        foreach (KeyValuePair<int, Type> kvc in d)
+                        MovementRule r1 = GetMRule(kvc.Key, m);
+                        foreach (KeyValuePair<int, Type> kvb in d)
                         {
-                            if (kvc.Value == Type.teleport) //teleport so its a movement rule
+                            if (kvb.Value == Type.include || kvb.Value == Type.exclude)
                             {
-                                MovementRule r1 = GetMRule(kvc.Key,m);
-                                foreach (KeyValuePair<int, Type> kvb in d)
+                                ColourRule r2 = GetCRule(kvb.Key, c);
+                                if (r1.target == r2.src)
                                 {
-                                    if (kvb.Value == Type.include || kvb.Value == Type.exclude)
-                                    {
-                                        ColourRule r2 = GetCRule(kvb.Key,c);
-                                        if (r1.target == r2.src)
-                                        {
-                                            fit = fit - 5;
-                                        }
-                                    }
+                                    fit = fit - 5;
                                 }
                             }
                         }
                     }
+
+
                 }
-
-
-                         
-                        
-                   
 
                 //PART 4 : WARM/COOL BALANCE
                 int wrm = 0;
                 int cld = 0;
 
-                foreach(KeyValuePair<int, Type> p in d)
+                foreach (KeyValuePair<int, Type> p in d)
                 {
-                    if (p.Value == Type.include || p.Value==Type.exclude)
+                    if (p.Value == Type.include || p.Value == Type.exclude)
                     {
-                        ColourRule r = GetCRule(p.Key,c);
+                        ColourRule r = GetCRule(p.Key, c);
                         if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
                         {
                             wrm++;
@@ -184,7 +186,7 @@ public class Fitness1 : MonoBehaviour
                     }
                     else
                     {
-                        MovementRule r = GetMRule(p.Key,m);
+                        MovementRule r = GetMRule(p.Key, m);
                         if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
                         {
                             wrm++;
@@ -207,50 +209,27 @@ public class Fitness1 : MonoBehaviour
                 }
                 //existence of warm/cold rules, then check the exc/incl 's src colors to not be the same warm/cold
 
-                //FINAL STEP : ADDING THE FITNESS VALUE TO THE HASHTABLE ALONG WITH INDEX
+                //FINAL STEP : ADDING THE FITNESS VALUE TO THE dict ALONG WITH INDEX
 
+
+
+
+                Debug.Log("-------END of a single chr------------");
+                Debug.Log("fitness of " + chrCount + "is " + fit);
+                fitVals.Add(chrCount, fit);
+                chrCount++;
                
             }
-            fitVals.Add(i, fit);
-            print("fitness of" + i + "is" + fit);
 
 
-        }
-        Debug.Log("printing fitvals");
-        foreach(var item in fitVals)
-        {
-            Debug.Log(item);
-        }
-
-        Debug.Log("done");
+        
+       
 
 
 
 
 
-        //Debug.Log("fitvals" + fitVals.Count);
-        ////printing the ranks here:
-        //print(fitVals.Values.ToString());
-        //ArrayList ranks = new ArrayList(fitVals.Values); //changed "allfitvals" to "ranks"
-        //foreach (int v in fitVals.Values)
-        //{
-        //    ranks.Add(v);
-        //}
-        //print(fitVals.Keys.ToString());
-        //ranks.Sort();
-        //ranks.Reverse(); //greatest value is the most fit. 
-        //print("The fitness values of the chromosomes ranked are:");
-        //// print(allfitvals[2]);
-        //foreach (int x in ranks)
-        //{
-        //    Debug.Log("fitness values coming:");
-        //    print("fitness value: " + x);//ranks
-
-        //}
-
-
-        //int fittest = (int)ranks[index: 0]; //the first value in the sorted arraylist is the best fit
-        //print(fittest);
+       
 
         int chosensize = (int)System.Math.Ceiling(fitVals.Count * 0.2); //20% of the best fits
         Dictionary<int, int> chosenChr = new Dictionary<int, int>(); //sort descending order, crossover to build new 80% or 100%, passs to f1 again
@@ -267,15 +246,17 @@ public class Fitness1 : MonoBehaviour
         Debug.Log("printing chosen chromosomes");
         foreach(var item in chosenChr)
         {
-            Debug.Log(item);
+            Debug.Log("chosen fitness are : "+item.Value);
         }
         Debug.Log("done");
-        
+
 
 
         //CROSSOVER
-        // Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
-        // newSetOfChrs=Crossover.crossover(chosenChr);
+        //Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
+        //newSetOfChrs=Crossover.crossover(chosenChr);
+
+        Crossover.crossover(chosenChr);
 
 
 
@@ -286,12 +267,49 @@ public class Fitness1 : MonoBehaviour
           }*/
 
 
-        FinalRules.finalRules(cList[0], m, c);
-    
+        //FinalRules.finalRules(cList, m, c);
+        getFinalRules(chosenChr,cList,m,c);
+
+        //PASS THIS CHOSENCHR TO SETRULES? OR PASS THE EXACT RULES.
 
 
+
+    }
+    public static void getFinalRules(Dictionary<int,int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
+    {
+        ArrayList chromosomes = new ArrayList();
         
 
+        //List<int> ChosenRulesIdx = new List<int>(chosenChr.Count); 
+        foreach (KeyValuePair<int,int> k in chosenChr)
+        {
+            List<MovementRule> mr = new List<MovementRule>();
+            List<ColourRule> cr = new List<ColourRule>();
+            if (clist.ContainsKey(k.Key)){
+                foreach(Dictionary<int, Type> d in clist.Values)
+                {
+                   foreach(KeyValuePair<int,Type> kvp in d)
+                    {
+                        if (kvp.Value == Type.exclude || kvp.Value == Type.include)
+                        {
+                            cr.Add(GetCRule(kvp.Key, c));
+                        }
+                        else
+                        {
+                            mr.Add(GetMRule(kvp.Key, m));
+                        }
+                        // ChosenRulesIdx.Add(kvp.Key);
+
+
+                    }
+                }
+                
+            }
+            chromosomes.Add(mr);
+            chromosomes.Add(cr);
+            
+        }
+        MazeCreation.mazeC(chromosomes);
 
     }
   

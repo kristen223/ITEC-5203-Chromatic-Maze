@@ -10,10 +10,10 @@ public class Crossover : MonoBehaviour
     {
 
     }
-    public static Dictionary<int,int> crossover(Dictionary<int,int> chosenChr)
+    public static void crossover(Dictionary<int,int> chosenChr)
     {
         Dictionary<int, int> newChrs = new Dictionary<int, int>();
-
+        
 
         foreach(var idx in chosenChr.Values) //key=>fit, value=>idx
         {
@@ -23,6 +23,6 @@ public class Crossover : MonoBehaviour
             //change the colors.
         }
 
-        return newChrs;
+       // return newChrs;
     }
 }

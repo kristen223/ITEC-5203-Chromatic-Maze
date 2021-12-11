@@ -10,10 +10,13 @@ public class FinalRules : MonoBehaviour
 
         int[] finalIdxs = new int[8];
         int r = 0;
+        Debug.Log(c.Keys.Count);
         foreach (int i in c.Keys)
         {
+            Debug.Log(r);
             finalIdxs[r] = (int)i;
             r++;
+            Debug.Log(r);
         }
         //Debug.Log();
         //all the final indexes are set in finalIdxs
