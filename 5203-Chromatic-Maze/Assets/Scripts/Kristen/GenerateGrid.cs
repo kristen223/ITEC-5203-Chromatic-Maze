@@ -22,9 +22,8 @@ public class GenerateGrid : MonoBehaviour
 
     [HideInInspector] public List<Wall> edges;
     [HideInInspector] public int EdgeIndex = 0;
-    [HideInInspector] public GameObject[] tiles;
+    [HideInInspector] public static GameObject[] tiles;
     [HideInInspector] public static Tile[] vertices;
-    private Object[] colours; //TEMPORARY
 
     private GameObject BorderFolder;
     private GameObject EdgeFolder;
@@ -43,11 +42,6 @@ public class GenerateGrid : MonoBehaviour
 
         //Create grid of tiles (vertices)
         tiles = new GameObject[width * height];
-
-        //TEMPORARY - DELETE LATER
-        colours = new Object[7];
-        colours = Resources.LoadAll("Materials", typeof(Material));
-
 
         //This creates all of the coloured tiles
         int counter = 0;
@@ -105,12 +99,6 @@ public class GenerateGrid : MonoBehaviour
                     tile.GetComponent<Tile>().jumpTwoW = true;
                 }
 
-                //TEMPORARY - DELETE LATER
-                //SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
-                //Material mat = (Material)colours[Random.Range(0, colours.Length)];
-                //sr.material.shader = mat.shader;
-                //sr.material.color = mat.color;
-
                 tiles[counter] = tile;
 
                 tile.transform.SetParent(TileFolder.transform);
@@ -134,11 +122,6 @@ public class GenerateGrid : MonoBehaviour
         }
 
         maze = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
-
-        foreach(Tile t in maze.LP.path)
-        {
-            t.GetComponentInChildren<Text>().text = t.GetComponent<Tile>().rank.ToString();
-        }
     }
 
     //OUTER BORDER (not part of tree)

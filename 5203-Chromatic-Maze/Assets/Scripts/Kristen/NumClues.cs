@@ -8,17 +8,13 @@ public class NumClues : MonoBehaviour
     
     [HideInInspector] private static int width;
     [HideInInspector] private static int height;
-    [HideInInspector] public static int checkerCount;
 
-    private void Start()
-    {
-        checkerCount = 0;
-    }
 
-    public static void SetClues(Tile[] tiles)
+    public static int SetClues(Tile[] tiles)
     {
         width = GenerateGrid.wdth;
         height = GenerateGrid.hght;
+        int checkerCount = 0;
 
         //Checking columns
         for (int j = 0; j < width; j++) // j = column number
@@ -49,6 +45,8 @@ public class NumClues : MonoBehaviour
             }
             GameObject.Find("LeftWall-" + (j+1)).GetComponentInChildren<Text>().text = checkers.ToString(); ;
         }
+
+        return checkerCount;
     }
 
 }

@@ -6,7 +6,7 @@ using UnityEngine;
 public class TraverseMaze : MonoBehaviour
 {
 
-    static SolutionPaths sPaths;
+    SolutionPaths sPaths;
 
     public struct SolutionPaths
     {
@@ -15,6 +15,7 @@ public class TraverseMaze : MonoBehaviour
         public int longest; //length of longest path (0 if no paths)
         public List<Tile> shortestPath; //shortest path
         public List<Tile> longestPath; //shortest path
+        public List<Tile> mediumPath; //a path with length that's equal or < (longest+shortest)/2 (checkers on this path)
     }
 
     // Start is called before the first frame update
@@ -26,43 +27,49 @@ public class TraverseMaze : MonoBehaviour
         sPaths.longest = 0;
         sPaths.shortestPath = new List<Tile>();
         sPaths.longestPath = new List<Tile>();
+        sPaths.mediumPath = new List<Tile>();
     }
 
-    private static void GetShortestPath()
+    private void GetThreePaths()
     {
         sPaths.shortestPath = sPaths.allPaths[0];
+        sPaths.longestPath = sPaths.allPaths[0];
         foreach (List<Tile> path in sPaths.allPaths)
         {
             if (path.Count < sPaths.shortestPath.Count)
             {
                 sPaths.shortestPath = path;
             }
-        }
-        sPaths.shortest = sPaths.shortestPath.Count;
-    }
 
-    private static void GetLongestPath()
-    {
-        sPaths.longestPath = sPaths.allPaths[0];
-        foreach (List<Tile> path in sPaths.allPaths)
-        {
             if (path.Count > sPaths.longestPath.Count)
             {
                 sPaths.longestPath = path;
             }
         }
+        sPaths.shortest = sPaths.shortestPath.Count;
         sPaths.longest = sPaths.longestPath.Count;
+
+        int average = Mathf.CeilToInt((sPaths.shortest + sPaths.longest)/2f);
+
+        sPaths.mediumPath = sPaths.shortestPath;
+        foreach (List<Tile> path in sPaths.allPaths)
+        {
+            if (path.Count <= average && path.Count > sPaths.mediumPath.Count) //find closest path <= to average
+            {
+                sPaths.mediumPath = path;
+            }
+        }
+
     }
 
-    public static SolutionPaths GetPathsFromEntrance(ColourAssigner.ColouredMaze cmaze)
+    public SolutionPaths GetPathsFromEntrance(ColourAssigner.ColouredMaze cmaze)
     {
         List<Tile> path = new List<Tile>();
         GetPaths(cmaze.maze.LP.entrance, cmaze.maze.LP.exit, path, cmaze); //updates allPaths variable
 
         if(sPaths.allPaths.Count > 0)
         {
-            GetShortestPath();
-            GetLongestPath();
+            GetThreePaths();
         }
 
         String debugs = "Shortest path: ";
@@ -71,6 +78,13 @@ public class TraverseMaze : MonoBehaviour
             debugs += t.name + ", ";
         }
         Debug.Log(debugs);
+
+        String debugsss = "Medium path: ";
+        foreach (Tile t in sPaths.mediumPath)
+        {
+            debugsss += t.name + ", ";
+        }
+        Debug.Log(debugsss);
 
         String debug = "Longest path: ";
         foreach (Tile t in sPaths.longestPath)
@@ -84,7 +98,7 @@ public class TraverseMaze : MonoBehaviour
     }
 
     //Gets list of paths from given tile to exit
-    public static void GetPaths(Tile start, Tile end, List<Tile> path, ColourAssigner.ColouredMaze cmaze)
+    public void GetPaths(Tile start, Tile end, List<Tile> path, ColourAssigner.ColouredMaze cmaze)
     {
         if(end.ruleType == Type.wall)
         {

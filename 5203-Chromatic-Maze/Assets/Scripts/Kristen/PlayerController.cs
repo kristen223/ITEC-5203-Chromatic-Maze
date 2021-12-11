@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public Stack<Tile> previous;
     private List<Tile> solutionP;
 
+    public static int checkerCount; //SET THIS ONCE YOU PICK A MAZE
+
     //game object to represent player (liek the checker) (you can remove the checker really)
     //maybe highlioght the tile somehow instead? (give it an outline, illusion like it's bumped outward? some sort of gradient from centre?)
     private int cCount;
@@ -30,6 +32,7 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        checkerCount = 0;
         maze = GenerateGrid.maze;
         solutionP = new List<Tile>(maze.LP.path);
         player = maze.LP.entrance;
@@ -336,7 +339,7 @@ public class PlayerController : MonoBehaviour
                         cCount--;
                     }
                     
-                    cText.text = cCount.ToString() + "/" + NumClues.checkerCount.ToString();
+                    cText.text = cCount.ToString() + "/" + checkerCount.ToString();
                 }
                 previous.Pop(); //remove player from path
 
@@ -668,7 +671,7 @@ public class PlayerController : MonoBehaviour
         if (tapped.tag == "checker")
         {
             cCount++;
-            cText.text = cCount + "/" + NumClues.checkerCount;
+            cText.text = cCount + "/" + checkerCount;
         }
 
         previous.Push(player);

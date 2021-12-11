@@ -5,38 +5,23 @@ using UnityEngine;
 public class Shinro : MonoBehaviour
 {
 
-    public float percentOfLongest;
-    public float percentOfShortest;
-    public static float percentL;
-    public static float percentS;
     private static int chance; //likelihood checker is placed (percentage)
       
     void Start()
     {
         chance = 10;
-        percentL = percentOfLongest;
-        if (percentL <= 0)
-        {
-            percentL = .3f; //30% of longest path
-        }
-
-        percentS = percentOfShortest;
-        if (percentS <= 0)
-        {
-            percentS = .3f; //30% of longest path
-        }
-
     }
 
     public static void PlaceCheckers(List<Tile> path, ColourAssigner.ColouredMaze cmaze, float percent)
     {
         int length = path.Count;
         int checkerCount = Mathf.RoundToInt((length - 1) * percent);
+        Debug.Log(checkerCount);
         Tile previous = path[0]; //skip the entrance by making it previous
 
         for (int i = 0; i < path.Count-1; i++)
         {
-            Tile current = previous.parent;
+            Tile current = path[i+1];
 
             if(i == length - checkerCount - 1) //if the number of checkers left to place is equal to the number of tiles left in path traversal
             {//must add checkers to rest of path
@@ -70,7 +55,7 @@ public class Shinro : MonoBehaviour
                     break;
                 }
             }
-            previous = previous.parent;
+            previous = current;
         }
     }
 }

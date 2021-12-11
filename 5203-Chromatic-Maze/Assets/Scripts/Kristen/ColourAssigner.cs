@@ -7,36 +7,26 @@ using UnityEngine.UI;
 
 public class ColourAssigner : MonoBehaviour
 {
-    public static TraverseMaze.SolutionPaths paths;
+    public TraverseMaze.SolutionPaths paths;
 
-    public static KruskalMaze.Maze maze;
-    public static List<MovementRule> RoundOneRules; //Tmove and blank rules only
-    public static List<MovementRule> mRules; //movement rules (Tmoves and blanks removed from this list part way through process)
-    public static List<ColourRule> cRules; //colour rules
+    public KruskalMaze.Maze maze;
+    public List<MovementRule> RoundOneRules; //Tmove and blank rules only
+    public List<MovementRule> mRules; //movement rules (Tmoves and blanks removed from this list part way through process)
+    public List<ColourRule> cRules; //colour rules
 
     //Lists of current rule types, their indexes, and amloutn fo times each rules is used (list indexes will match up)
-    private static List<int> identifiers; //the indexes
-    private static List<Type> ruleTypes;
-    public static Dictionary<int, int> used; //rule index and amount of times used
-    private static int unassigned;
-    private static int pathUnassigned;
-    private static bool exitAssigned;
+    private List<int> identifiers; //the indexes
+    private List<Type> ruleTypes;
+    public Dictionary<int, int> used; //rule index and amount of times used
+    private int unassigned;
+    private int pathUnassigned;
+    private bool exitAssigned;
 
-    public static List<int> includeRules; //list of indexes of CheckPathInc rules of cRules list
-    public static List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
+    public List<int> includeRules; //list of indexes of CheckPathInc rules of cRules list
+    public List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
 
     private static Text cText;
-
-    //DELETE LATER
-    static MovementRule TmoveS = new MovementRule();
-    static MovementRule teleportB = new MovementRule();
-    static MovementRule teleportR = new MovementRule();
-    static MovementRule jumpOne = new MovementRule();
-    static MovementRule blank = new MovementRule();
-    static MovementRule coldTemp = new MovementRule();
-    static MovementRule warm = new MovementRule();
-    static ColourRule excludeBR = new ColourRule();
 
     public struct ColouredMaze
     {
@@ -52,7 +42,37 @@ public class ColourAssigner : MonoBehaviour
     void Start()
     {
         paths = new TraverseMaze.SolutionPaths();
-        maze = GenerateGrid.maze;
+
+        //copy over the maze to create all new references
+        maze = new KruskalMaze.Maze();
+        maze.w = GenerateGrid.maze.w;
+        maze.h = GenerateGrid.maze.h;
+        maze.LP = GenerateGrid.maze.LP;
+        maze.tree = GenerateGrid.maze.tree;
+
+        maze.deadends = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.deadends)
+        {
+            maze.deadends.Add(t);
+        }
+        maze.rankZero = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.rankZero)
+        {
+            maze.rankZero.Add(t);
+        }
+
+        maze.tileList = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.tileList)
+        {
+            maze.tileList.Add(t);
+        }
+
+        maze.tiles = new Tile[GenerateGrid.maze.tiles.Length];
+        for(int i = 0; i < maze.tiles.Length; i++)
+        {
+            maze.tiles[i] = GenerateGrid.maze.tiles[i];
+        }
+
         cRules = new List<ColourRule>();
         mRules = new List<MovementRule>();
         RoundOneRules = new List<MovementRule>();
@@ -75,91 +95,9 @@ public class ColourAssigner : MonoBehaviour
             (Material)Resources.Load("Materials/Pink"),
             (Material)Resources.Load("Materials/Teal")
         };
-
-
-        //DELETE LATER
-        TmoveS.index = 0;
-        TmoveS.direction = Direction.South;
-        TmoveS.distance = 1;
-        TmoveS.src = Colour.Green;
-        TmoveS.target = Colour.All;
-        TmoveS.type = Type.Tmove;
-
-        teleportB.index = 3;
-        teleportB.direction = Direction.All;
-        teleportB.distance = -1;
-        teleportB.src = Colour.Red;
-        teleportB.target = Colour.Purple;
-        teleportB.type = Type.teleport;
-
-        teleportR.index = 2;
-        teleportR.direction = Direction.All;
-        teleportR.distance = -1;
-        teleportR.src = Colour.Teal;
-        teleportR.target = Colour.Pink;
-        teleportR.type = Type.teleport;
-
-        jumpOne.index = 9;
-        jumpOne.direction = Direction.All;
-        jumpOne.distance = 2;
-        jumpOne.src = Colour.Orange;
-        jumpOne.target = Colour.All;
-        jumpOne.type = Type.jump1;
-
-        blank.index = 1;
-        blank.direction = Direction.All;
-        blank.distance = 1;
-        blank.src = Colour.Yellow;
-        blank.target = Colour.All;
-        blank.type = Type.blank;
-
-        coldTemp.index = 12;
-        coldTemp.direction = Direction.All;
-        coldTemp.distance = 1;
-        coldTemp.src = Colour.Purple;
-        coldTemp.target = Colour.Cool;
-        coldTemp.type = Type.cool;
-
-        excludeBR.index = 24;
-        excludeBR.src = Colour.Blue;
-        excludeBR.target = Colour.Green;
-        excludeBR.type = Type.exclude;
-
-        warm.index = 13;
-        warm.direction = Direction.All;
-        warm.distance = 1;
-        warm.src = Colour.Pink;
-        warm.target = Colour.Warm;
-        warm.type = Type.warm;
-
-        Test(); //sets the rules
-
-        ColouredMaze cmaze = ColourMaze();
     }
 
-    //TEMPORARY
-    private void Test()
-    {
-
-        List<MovementRule> m = new List<MovementRule>()
-        {
-            {TmoveS},
-            {teleportB},
-            {teleportR},
-            {jumpOne},
-            {blank},
-            {coldTemp},
-            {warm},
-        };
-        List<ColourRule> c = new List<ColourRule>()
-        {
-            {excludeBR }
-        };
-
-        SetRules(m, c);
-    }
-
-    public static ColouredMaze ColourMaze()
+    public ColouredMaze ColourMaze()
     {
         //Other script needs to call SetRules first
         RoundOne(); //Tmove and blank rules will be removed from mRules after this point
@@ -175,20 +113,18 @@ public class ColourAssigner : MonoBehaviour
             properExit = exitAssigned
         };
 
-        paths = TraverseMaze.GetPathsFromEntrance(cmaze);
+        paths = GetComponent<TraverseMaze>().GetPathsFromEntrance(cmaze);
 
         if(paths.longest > 0) //if solution paths exist
         {
-            Shinro.PlaceCheckers(paths.longestPath, cmaze, Shinro.percentL);
-            Shinro.PlaceCheckers(paths.shortestPath, cmaze, Shinro.percentS);
-            NumClues.SetClues(maze.tiles);
-            cmaze.checkers = NumClues.checkerCount;
-            cText.text = "0/" + NumClues.checkerCount.ToString();
+            Shinro.PlaceCheckers(paths.shortestPath, cmaze, .5f);
+            Shinro.PlaceCheckers(paths.mediumPath, cmaze, .3f);
+            cmaze.checkers = NumClues.SetClues(maze.tiles);
         }
         return cmaze;
     }
 
-    public static MovementRule GetMRule(int index)
+    public MovementRule GetMRule(int index)
     {
 
         foreach(MovementRule rule in mRules)
@@ -203,7 +139,7 @@ public class ColourAssigner : MonoBehaviour
         return mRules[0]; //this should never happen, not sure what to put here
     }
 
-    public static ColourRule GetCRule(int index)
+    public ColourRule GetCRule(int index)
     {
         foreach (ColourRule rule in cRules)
         {
@@ -218,7 +154,7 @@ public class ColourAssigner : MonoBehaviour
     }
 
     //not in start because other script needs to finish first
-    public static void SetRules(List<MovementRule> mr, List<ColourRule> cr)
+    public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
         mRules = mr;
         cRules = cr;
@@ -252,11 +188,9 @@ public class ColourAssigner : MonoBehaviour
         }
 
         InstructionsText.SetInstructions(mRules, cRules);
-  
-       // Fitness2.fitness2(ColourAssigner.ColourMaze()); //Added by RIFAH
     }
 
-    private static void AssignByMRule(Tile t, MovementRule rule)
+    private void AssignByMRule(Tile t, MovementRule rule)
     {
         t.assigned = true;
         t.mRule = rule;
@@ -328,7 +262,7 @@ public class ColourAssigner : MonoBehaviour
         }
     }
 
-    private static void AssignByCRule(Tile t, ColourRule rule)
+    private void AssignByCRule(Tile t, ColourRule rule)
     {
         t.assigned = true;
         t.cRule = rule;
@@ -391,7 +325,7 @@ public class ColourAssigner : MonoBehaviour
 
     //Used to set parents/children of a tile, when the tile's target colour is predetermined (colour rules)
     //The colour could be "warm" "cool" or a specific colour meaning multiple rule options potentially
-    private static void AssignByColour(Tile t, Colour c)
+    private void AssignByColour(Tile t, Colour c)
     {
 
         //***You cannot assign a parent/child a Tmove or blank rule. If that's the option, the given maze + set fo rules doesn't work (or you have to restart)
@@ -513,7 +447,7 @@ public class ColourAssigner : MonoBehaviour
     /* Round 1
      *Place all Tmove and Blank rules
      */
-    private static void RoundOne()
+    private void RoundOne()
     {
         foreach (MovementRule rule in mRules)
         {
@@ -632,7 +566,7 @@ public class ColourAssigner : MonoBehaviour
      * 
      * Go from entrace to exit following up the parents. For each child go down their child list until you hit a dead end, you you pass through cycle back to SP
      */
-    private static void RoundTwo()
+    private void RoundTwo()
     {
         Tile tile = maze.LP.entrance;
         Tile lastTile = maze.LP.exit; //this will be set to the previously visited tile
@@ -763,7 +697,7 @@ public class ColourAssigner : MonoBehaviour
      * 
      * This traverses down children until tile of rank 0 is becomes previosu tile
      */
-    private static void ParentToChild(Tile tile)
+    private void ParentToChild(Tile tile)
     {
 
         //player must be able to traverse to parent and every child of tile
@@ -880,7 +814,7 @@ public class ColourAssigner : MonoBehaviour
     *  - if none of that is possible try include
     *  - if none of the above worked, no rules work
     */
-    private static bool AdjacentAssigned(Tile tile, List<Tile> adjacent, List<Tile> walls, bool check)
+    private bool AdjacentAssigned(Tile tile, List<Tile> adjacent, List<Tile> walls, bool check)
     {
         foreach (MovementRule m in mRules) //first try to assign a warm or cool rule
         {
@@ -1054,7 +988,7 @@ public class ColourAssigner : MonoBehaviour
 
     }
 
-    private static List<Tile> getAdjacentWallTiles(Tile tile) //returns assigned adjacent tiles on other side of wall
+    private List<Tile> getAdjacentWallTiles(Tile tile) //returns assigned adjacent tiles on other side of wall
     {
 
         List<Tile> wallNeighbours = new List<Tile>();
@@ -1165,7 +1099,7 @@ public class ColourAssigner : MonoBehaviour
         return wallNeighbours;
     }
 
-    private static List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
+    private List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
     {
 
         List<Tile> wallNeighbours = new List<Tile>();
@@ -1271,7 +1205,7 @@ public class ColourAssigner : MonoBehaviour
      * - Colour the tiles that are only reachable by going past exit
      * - try not to colour them with a teleport colour
      */
-    private static void RoundThree()
+    private void RoundThree()
     {
         //1. Ensure exit tile is coloured
         if (maze.LP.exit.assigned == false)
