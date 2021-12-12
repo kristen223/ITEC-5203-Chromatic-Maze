@@ -31,57 +31,36 @@ public class MazeCreation : MonoBehaviour
             foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
             {
 
-
+                
                 foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
                 {
-                    if (k.Key == x.Key)
-                    {
-                        List<MovementRule> mr = new List<MovementRule>();
-                        List<ColourRule> cr = new List<ColourRule>();
-                        foreach (Dictionary<int, Type> d in clist.Values) //suppose to
-                        {
+                Debug.Log("reached before check"+ k.Key +" ,"+ x.Key);
 
-                            foreach (KeyValuePair<int, Type> kvp in d) //supposed to run 8 times
-                            {
-                                if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                                {
-                                    Debug.Log(kvp.Value + "so adding to cr");
-                                    ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-                                    Debug.Log("this rule " + z.index);
-                                    cr.Add(z);
-                                }
-                                else
-                                {
-                                    mr.Add(Fitness1.GetMRule(kvp.Key, m));
-                                }
-                                // ChosenRulesIdx.Add(kvp.Key);
-                            }
-                        }
-                        Debug.Log("total mr : " + mr.Count);
-                        Debug.Log("total cr : " + cr.Count);
-                    }
-
-                    //List<MovementRule> mr = new List<MovementRule>();
-                    //List<ColourRule> cr = new List<ColourRule>();
-                    //if (clist.ContainsKey(k.Key)) //chosenChr.key = clist.key
+                if (k.Key == x.Key)
+                {
+                    List<MovementRule> mr = new List<MovementRule>();
+                    List<ColourRule> cr = new List<ColourRule>();
+                    //foreach (Dictionary<int, Type> d in clist.Values) //suppose to
                     //{
-                    //    foreach (Dictionary<int, Type> d in clist.Values)
-                    //    {
-                    //        foreach (KeyValuePair<int, Type> kvp in d)
-                    //        {
-                    //            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                    //            {
-                    //                cr.Add(Fitness1.GetCRule(kvp.Key, c));
-                    //            }
-                    //            else
-                    //            {
-                    //                mr.Add(Fitness1.GetMRule(kvp.Key, m));
-                    //            }
-                    //            // ChosenRulesIdx.Add(kvp.Key);
-                    //        }
-                    //    }
-                    //}
 
+                    foreach (KeyValuePair<int, Type> kvp in x.Value) //supposed to run 8 times
+                    {
+                        if (kvp.Value == Type.exclude || kvp.Value == Type.include)
+                        {
+                            Debug.Log(kvp.Value + "so adding to cr");
+                            ColourRule z = Fitness1.GetCRule(kvp.Key, c);
+                            Debug.Log("this rule " + z.index);
+                            cr.Add(z);
+                        }
+                        else
+                        {
+                            mr.Add(Fitness1.GetMRule(kvp.Key, m));
+                        }
+                        // ChosenRulesIdx.Add(kvp.Key);
+
+                    }
+                    Debug.Log("total mr : " + mr.Count);
+                    Debug.Log("total cr : " + cr.Count);
                     GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
                     maze.name = "Prefab-" + counter;
                     counter++;
@@ -90,9 +69,34 @@ public class MazeCreation : MonoBehaviour
                     //Debug.Log(mr.Count + "   " + cr.Count); //printed 301 and 99
                     Debug.Log("new maze");
 
-                    maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
+                    // maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
                     cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+
                 }
+
+
+                //List<MovementRule> mr = new List<MovementRule>();
+                //List<ColourRule> cr = new List<ColourRule>();
+                //if (clist.ContainsKey(k.Key)) //chosenChr.key = clist.key
+                //{
+                //    foreach (Dictionary<int, Type> d in clist.Values)
+                //    {
+                //        foreach (KeyValuePair<int, Type> kvp in d)
+                //        {
+                //            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
+                //            {
+                //                cr.Add(Fitness1.GetCRule(kvp.Key, c));
+                //            }
+                //            else
+                //            {
+                //                mr.Add(Fitness1.GetMRule(kvp.Key, m));
+                //            }
+                //            // ChosenRulesIdx.Add(kvp.Key);
+                //        }
+                //    }
+                //}
+
+            }
 
             }
         }
