@@ -124,148 +124,63 @@ public class MazeCreation : MonoBehaviour
             }
         }
 
-        /*
+        //FITNESS 2
+        ColourAssigner.ColouredMaze finalMaze = PickMaze.GetFinalMaze(cmazes, prefabs);
 
-        List of coloured mazes now exists
-        1.  Call fitness 2 here (with list of coloured mazes and prefabs a parameter) and return a single coloured maze
-            **inside fitness two, once final maze is picked, delete all other prefabs and coloured mazes from lists
-
-            CODE: ColourAssigner.ColouredMaze finalMaze = fitnessc(cmazes, prefabs);
-
-
-
-        2. Execute code written below comment block, but with the actual final maze 
-
-            //Set Tile components of tile game objects in grid
-            for (int i = 0; i < GenerateGrid.tiles.Length; i++)
-            {
-                Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
-
-                System.Type type = chosenComponent.GetType();
-
-                System.Reflection.FieldInfo[] fields = type.GetFields();
-                foreach (System.Reflection.FieldInfo field in fields)
-                {
-                    field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
-                }
-            }
-        */
-
-        //Set the instruction text
-        //temporarily picking a maze with a solution path since fitness 2 doesn't exist atm
-        foreach (ColourAssigner.ColouredMaze cm in cmazes)
+        //TEMP DEBUG STUFF
+        string ss = "xxfinal rules: ";
+        foreach (MovementRule g in finalMaze.mr)
         {
-            if (cm.spaths.allPaths.Count > 0)
+            ss += g.type + "-" + g.src + ", ";
+        }
+        foreach (ColourRule h in finalMaze.cr)
+        {
+            ss += h.type + "-" + h.src + ", ";
+        }
+        Debug.Log(ss);
+        Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
+
+        string debugs = "xxShortest path: ";
+        foreach (Tile t in finalMaze.spaths.shortestPath)
+        {
+            debugs += t.name + ", ";
+        }
+        Debug.Log(debugs);
+
+        string debugsss = "xxMedium path: ";
+        foreach (Tile t in finalMaze.spaths.mediumPath)
+        {
+            debugsss += t.name + ", ";
+        }
+        Debug.Log(debugsss);
+
+        string debug = "xxLongest path: ";
+        foreach (Tile t in finalMaze.spaths.longestPath)
+        {
+            debug += t.name + ", ";
+        }
+        Debug.Log(debug);
+
+        //SET INSTRUCTIONS TEXT
+        InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+
+        //SET TILE GRID TO CORRECT MAZE'S TILES
+        for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+        {
+            Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+
+            System.Type type = chosenComponent.GetType();
+
+            System.Reflection.FieldInfo[] fields = type.GetFields();
+            foreach (System.Reflection.FieldInfo field in fields)
             {
-                ColourAssigner.ColouredMaze finalMaze = cm;
-
-                string ss = "xxfinal rules: ";
-                foreach (MovementRule g in finalMaze.mr)
-                {
-                    ss += g.type + "-" + g.src + ", ";
-                }
-                foreach (ColourRule h in finalMaze.cr)
-                {
-                    ss += h.type + "-" + h.src + ", ";
-                }
-                Debug.Log(ss);
-
-
-                Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
-
-                string debugs = "xxShortest path: ";
-                foreach (Tile t in finalMaze.spaths.shortestPath)
-                {
-                    debugs += t.name + ", ";
-                }
-                Debug.Log(debugs);
-
-                string debugsss = "xxMedium path: ";
-                foreach (Tile t in finalMaze.spaths.mediumPath)
-                {
-                    debugsss += t.name + ", ";
-                }
-                Debug.Log(debugsss);
-
-                string debug = "xxLongest path: ";
-                foreach (Tile t in finalMaze.spaths.longestPath)
-                {
-                    debug += t.name + ", ";
-                }
-                Debug.Log(debug);
-
-
-                //Starts here
-
-                InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
-
-                for (int i = 0; i < GenerateGrid.tiles.Length; i++)
-                {
-                    Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
-
-                    System.Type type = chosenComponent.GetType();
-
-                    System.Reflection.FieldInfo[] fields = type.GetFields();
-                    foreach (System.Reflection.FieldInfo field in fields)
-                    {
-                        field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
-                    }
-                }
-
-                //Set up step count, undos, etc.
-                PlayerController.SetupPlayerController(finalMaze);
-                break;
+                field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
             }
         }
-            
 
+        //SET UP PLAYER CONTROLLER (steps, undos, etc.)
+        PlayerController.SetupPlayerController(finalMaze);
 
+        //Ending
     }
 }
-
-
-
-
-//    public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
-//    {
-//        //int[][] chromosomes = new int[2][];
-//        Debug.Log("reached get final rules");
-//        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
-//        {
-
-
-//            foreach(KeyValuePair<int, Dictionary<int, Type>> x in clist)
-//            {
-//                if (k.Key == x.Key)
-//                {
-//                    List<MovementRule> mr = new List<MovementRule>();
-//                    List<ColourRule> cr = new List<ColourRule>();
-//                    foreach (Dictionary<int, Type> d in clist.Values) //suppose to
-//                    {
-
-//                        foreach (KeyValuePair<int, Type> kvp in d) //supposed to run 8 times
-//                        {
-//                            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-//                            {
-//                                Debug.Log(kvp.Value + "so adding to cr");
-//                                ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-//                                Debug.Log("this rule " + z.index);
-//                                cr.Add(z);
-//                            }
-//                            else
-//                            {
-//                                mr.Add(Fitness1.GetMRule(kvp.Key, m));
-//                            }
-//                            // ChosenRulesIdx.Add(kvp.Key);
-//                        }
-//                    }
-//                    Debug.Log("total mr : " + mr.Count);
-//                    Debug.Log("total cr : " + cr.Count);
-//                }
-
-
-//            }
-//        }
-
-//    }
-//}

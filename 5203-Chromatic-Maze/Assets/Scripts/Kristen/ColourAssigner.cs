@@ -33,8 +33,7 @@ public class ColourAssigner : MonoBehaviour
         public Dictionary<int, int> used; //rule index and amount of times rule was used
         public int checkers; //number of checkers
         public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles (not added to onPathViolations because it doesn't wreck the path)
-        public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
-        public int offPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles off solution path (not including CyclesAdded count)
+        public int PathViolations; //number of walls
 
         public List<MovementRule> mr;
         public List<ColourRule> cr;
@@ -70,8 +69,7 @@ public class ColourAssigner : MonoBehaviour
         {
             maze = maze,
             used = used,
-            onPathViolations = pathUnassigned,
-            offPathViolations = unassigned,
+            PathViolations = pathUnassigned + unassigned,
             properExit = exitAssigned
         };
 
