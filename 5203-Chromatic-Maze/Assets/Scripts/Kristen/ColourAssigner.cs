@@ -39,7 +39,7 @@ public class ColourAssigner : MonoBehaviour
      }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         paths = new TraverseMaze.SolutionPaths();
 
@@ -157,6 +157,7 @@ public class ColourAssigner : MonoBehaviour
     //not in start because other script needs to finish first
     public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
+
         mRules = mr;
         cRules = cr;
         Debug.Log(mr.Count);
@@ -167,7 +168,9 @@ public class ColourAssigner : MonoBehaviour
         {
             identifiers.Add(rule.index);
             ruleTypes.Add(rule.type);
-            used.Add(rule.index, 0);
+
+            Debug.Log("number of rules " + used.Count);
+            used.Add(rule.index, 0); //ERROR the same rule index is being added (same key value) ********************************************************
             if (rule.type == Type.checkPathInc) //check path include
             {
                 includeRules.Add(cRules.IndexOf(rule));
