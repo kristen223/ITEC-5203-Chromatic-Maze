@@ -62,6 +62,7 @@ public class MazeCreation : MonoBehaviour
                             Debug.Log("original color was---------------------------------" + y.src);
                             y.src = allcolors[i];
                             i++;
+                            Debug.Log("new color is------------------------- " + y.src);
                             mr.Add(y);
                         }
                         // ChosenRulesIdx.Add(kvp.Key);
