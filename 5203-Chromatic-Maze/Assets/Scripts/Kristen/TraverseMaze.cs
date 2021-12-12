@@ -76,28 +76,28 @@ public class TraverseMaze : MonoBehaviour
             GetThreePaths();
         }
 
-        Debug.Log("xxnumber of paths: " +  sPaths.allPaths.Count);
+        //Debug.Log("xxnumber of paths: " +  sPaths.allPaths.Count);
 
-        String debugs = "xxShortest path: ";
-        foreach (Tile t in sPaths.shortestPath)
-        {
-            debugs += t.name + ", ";
-        }
-        Debug.Log(debugs);
+        //String debugs = "xxShortest path: ";
+        //foreach (Tile t in sPaths.shortestPath)
+        //{
+        //    debugs += t.name + ", ";
+        //}
+        //Debug.Log(debugs);
 
-        String debugsss = "xxMedium path: ";
-        foreach (Tile t in sPaths.mediumPath)
-        {
-            debugsss += t.name + ", ";
-        }
-        Debug.Log(debugsss);
+        //String debugsss = "xxMedium path: ";
+        //foreach (Tile t in sPaths.mediumPath)
+        //{
+        //    debugsss += t.name + ", ";
+        //}
+        //Debug.Log(debugsss);
 
-        String debug = "xxLongest path: ";
-        foreach (Tile t in sPaths.longestPath)
-        {
-            debug += t.name + ", ";
-        }
-        Debug.Log(debug);
+        //String debug = "xxLongest path: ";
+        //foreach (Tile t in sPaths.longestPath)
+        //{
+        //    debug += t.name + ", ";
+        //}
+        //Debug.Log(debug);
 
         return sPaths;
         //returns the final found path a lot (like it replaces all others)

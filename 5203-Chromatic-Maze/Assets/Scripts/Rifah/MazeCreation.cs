@@ -79,39 +79,23 @@ public class MazeCreation : MonoBehaviour
                         cruleCount++;
                     }
 
-                    //temporary
-                    if (counter == 1)
-                    {
-                        string s = "xxrules: ";
-                        foreach(MovementRule g in mr)
-                        {
-                            s += g.type + "-" + g.src + "-" + g.index + ", ";
-                        }
-                        foreach (ColourRule h in cr)
-                        {
-                            s += h.type + "-" + h.src + "-" + h.index + ", ";
-                        }
-                        Debug.Log(s);
 
-                        //Making two mazes per set of rules
-                        GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                        maze.name = "Prefab-" + counter;
-                        counter++;
-                        prefabs.Add(maze);
+                    //Making two mazes per set of rules
+                    GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                    maze.name = "Prefab-" + counter;
+                    counter++;
+                    prefabs.Add(maze);
 
-                        maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
-                        cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
-                    }
+                    maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
+                    cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
 
-                    
+                    GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                    mazeTwo.name = "Prefab-" + counter;
+                    counter++;
+                    prefabs.Add(mazeTwo);
 
-                    //GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    //mazeTwo.name = "Prefab-" + counter;
-                    //counter++;
-                    //prefabs.Add(mazeTwo);
-
-                    //mazeTwo.GetComponent<ColourAssigner>().SetRules(mr, cr);
-                    //cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
+                    mazeTwo.GetComponent<ColourAssigner>().SetRules(mr, cr);
+                    cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
 
                 }
 
@@ -140,24 +124,19 @@ public class MazeCreation : MonoBehaviour
             }
         }
 
-            //Set the instruction text
-            ColourAssigner.ColouredMaze finalMaze = cmazes[0];
+        /*
 
-            string ss = "xxfinal rules: ";
-            foreach (MovementRule g in finalMaze.mr)
-            {
-                ss += g.type + "-" + g.src + ", ";
-            }
-            foreach (ColourRule h in finalMaze.cr)
-            {
-                ss += h.type + "-" + h.src + ", ";
-            }
-            Debug.Log(ss);
+        List of coloured mazes now exists
+        1.  Call fitness 2 here (with list of coloured mazes and prefabs a parameter) and return a single coloured maze
+            **inside fitness two, once final maze is picked, delete all other prefabs and coloured mazes from lists
+
+            CODE: ColourAssigner.ColouredMaze finalMaze = fitnessc(cmazes, prefabs);
 
 
 
-        InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+        2. Execute code written below comment block, but with the actual final maze 
 
+            //Set Tile components of tile game objects in grid
             for (int i = 0; i < GenerateGrid.tiles.Length; i++)
             {
                 Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
@@ -170,41 +149,78 @@ public class MazeCreation : MonoBehaviour
                     field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
                 }
             }
+        */
 
-
-         Debug.Log("checkers " + finalMaze.checkers);
-
-    }
-
-
-    /*
-
-    List of coloured mazes now exists
-    1.  Call fitness 2 here (with list of coloured mazes and prefabs a parameter) and return a single coloured maze
-        **inside fitness two, once final maze is picked, delete all other prefabs and coloured mazes from lists
-
-        CODE: ColourAssigner.ColouredMaze finalMaze = fitnessc(cmazes, prefabs);
-
-
-
-    2. Set Tile components of tile game objects in grid
-
-        for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+        //Set the instruction text
+        //temporarily picking a maze with a solution path since fitness 2 doesn't exist atm
+        foreach (ColourAssigner.ColouredMaze cm in cmazes)
         {
-            Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
-
-            System.Type type = chosenComponent.GetType();
-
-            System.Reflection.FieldInfo[] fields = type.GetFields();
-            foreach (System.Reflection.FieldInfo field in fields)
+            if (cm.spaths.allPaths.Count > 0)
             {
-                field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+                ColourAssigner.ColouredMaze finalMaze = cm;
+
+                string ss = "xxfinal rules: ";
+                foreach (MovementRule g in finalMaze.mr)
+                {
+                    ss += g.type + "-" + g.src + ", ";
+                }
+                foreach (ColourRule h in finalMaze.cr)
+                {
+                    ss += h.type + "-" + h.src + ", ";
+                }
+                Debug.Log(ss);
+
+
+                Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
+
+                string debugs = "xxShortest path: ";
+                foreach (Tile t in finalMaze.spaths.shortestPath)
+                {
+                    debugs += t.name + ", ";
+                }
+                Debug.Log(debugs);
+
+                string debugsss = "xxMedium path: ";
+                foreach (Tile t in finalMaze.spaths.mediumPath)
+                {
+                    debugsss += t.name + ", ";
+                }
+                Debug.Log(debugsss);
+
+                string debug = "xxLongest path: ";
+                foreach (Tile t in finalMaze.spaths.longestPath)
+                {
+                    debug += t.name + ", ";
+                }
+                Debug.Log(debug);
+
+
+                //Starts here
+
+                InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+
+                for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+                {
+                    Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+
+                    System.Type type = chosenComponent.GetType();
+
+                    System.Reflection.FieldInfo[] fields = type.GetFields();
+                    foreach (System.Reflection.FieldInfo field in fields)
+                    {
+                        field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+                    }
+                }
+
+                //Set up step count, undos, etc.
+                PlayerController.SetupPlayerController(finalMaze);
+                break;
             }
         }
+            
 
-    3. Set all of the player controller variables and texts according to finalMaze
 
-    */
+    }
 }
 
 

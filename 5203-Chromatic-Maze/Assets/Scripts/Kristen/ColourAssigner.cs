@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class ColourAssigner : MonoBehaviour
 {
-    public TraverseMaze.SolutionPaths paths;
-
     public KruskalMaze.Maze maze;
     public List<MovementRule> RoundOneRules; //Tmove and blank rules only
     public List<MovementRule> mRules; //movement rules (Tmoves and blanks removed from this list part way through process)
@@ -30,6 +28,7 @@ public class ColourAssigner : MonoBehaviour
 
     public struct ColouredMaze
     {
+        public TraverseMaze.SolutionPaths spaths;
         public KruskalMaze.Maze maze;
         public Dictionary<int, int> used; //rule index and amount of times rule was used
         public int checkers; //number of checkers
@@ -91,12 +90,13 @@ public class ColourAssigner : MonoBehaviour
             cmaze.cr.Add(c);
         }
 
-        paths = GetComponent<TraverseMaze>().GetPathsFromEntrance(cmaze);
+        cmaze.spaths = new TraverseMaze.SolutionPaths();
+        cmaze.spaths = GetComponent<TraverseMaze>().GetPathsFromEntrance(cmaze);
 
-        if (paths.longest > 0) //if solution paths exist
+        if (cmaze.spaths.longest > 0) //if solution paths exist
         {
-            Shinro.PlaceCheckers(paths.shortestPath, cmaze, .5f);
-            Shinro.PlaceCheckers(paths.mediumPath, cmaze, .3f);
+            Shinro.PlaceCheckers(cmaze.spaths.shortestPath, cmaze, .5f);
+            Shinro.PlaceCheckers(cmaze.spaths.mediumPath, cmaze, .3f);
             cmaze.checkers = NumClues.SetClues(maze.tiles);
         }
         return cmaze;
@@ -134,8 +134,6 @@ public class ColourAssigner : MonoBehaviour
     //not in start because other script needs to finish first
     public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
-        paths = new TraverseMaze.SolutionPaths();
-
         //copy over the maze to create all new references
         maze = new KruskalMaze.Maze();
         maze.w = GenerateGrid.maze.w;
