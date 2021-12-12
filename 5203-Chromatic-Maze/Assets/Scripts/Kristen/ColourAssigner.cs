@@ -93,14 +93,11 @@ public class ColourAssigner : MonoBehaviour
 
         paths = GetComponent<TraverseMaze>().GetPathsFromEntrance(cmaze);
 
-        Debug.Log("shortest: " + paths.shortestPath + " medium: " + paths.mediumPath);
-
         if (paths.longest > 0) //if solution paths exist
         {
             Shinro.PlaceCheckers(paths.shortestPath, cmaze, .5f);
             Shinro.PlaceCheckers(paths.mediumPath, cmaze, .3f);
             cmaze.checkers = NumClues.SetClues(maze.tiles);
-            Debug.Log("checkers " + cmaze.checkers);
         }
         return cmaze;
     }
@@ -641,7 +638,7 @@ public class ColourAssigner : MonoBehaviour
                         int rand = randIndex[randListItem];
                         randIndex.RemoveAt(randListItem); //remove this index so rule does not get checked again
 
-                        if (identifiers[rand] <= Rules.movementRuleSets.Count-1) //MovementRule
+                        if (identifiers[rand] < (mRules.Count + RoundOneRules.Count)) //MovementRule
                         {
                             MovementRule r = GetMRule(identifiers[rand]); //assign current tile (DOESN'T GET A RULE, GETS A TMOVE OLD RULE WITH WRONG SOURCE COLOUR??)
 
@@ -766,7 +763,7 @@ public class ColourAssigner : MonoBehaviour
                     int rand = randIndex[randListItem];
                     randIndex.RemoveAt(randListItem); //remove this index so rule does not get checked again
 
-                    if (identifiers[rand] <= Rules.movementRuleSets.Count-1) //MovementRule
+                    if (identifiers[rand] < (mRules.Count + RoundOneRules.Count)) //MovementRule
                     {
                         MovementRule r = GetMRule(identifiers[rand]); //assign current tile
 

@@ -61,13 +61,57 @@ public class MazeCreation : MonoBehaviour
                     }
                     //Debug.Log("total mr : " + mr.Count);
                     //Debug.Log("total cr : " + cr.Count);
-                    GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    maze.name = "Prefab-" + counter;
-                    counter++;
-                    prefabs.Add(maze);
 
-                    maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
-                    cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+                    //resetting indexes
+                    for (int ind = 0; ind < mr.Count; ind++)
+                    {
+                        MovementRule newm = mr[ind];
+                        newm.index = ind;
+                        mr[ind] = newm;
+                    }
+
+                    int cruleCount = 0;
+                    for (int ind = mr.Count; ind < cr.Count + mr.Count; ind++)
+                    {
+                        ColourRule newc = cr[cruleCount];
+                        newc.index = ind;
+                        cr[cruleCount] = newc;
+                        cruleCount++;
+                    }
+
+                    //temporary
+                    if (counter == 1)
+                    {
+                        string s = "xxrules: ";
+                        foreach(MovementRule g in mr)
+                        {
+                            s += g.type + "-" + g.src + "-" + g.index + ", ";
+                        }
+                        foreach (ColourRule h in cr)
+                        {
+                            s += h.type + "-" + h.src + "-" + h.index + ", ";
+                        }
+                        Debug.Log(s);
+
+                        //Making two mazes per set of rules
+                        GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                        maze.name = "Prefab-" + counter;
+                        counter++;
+                        prefabs.Add(maze);
+
+                        maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
+                        cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+                    }
+
+                    
+
+                    //GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                    //mazeTwo.name = "Prefab-" + counter;
+                    //counter++;
+                    //prefabs.Add(mazeTwo);
+
+                    //mazeTwo.GetComponent<ColourAssigner>().SetRules(mr, cr);
+                    //cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
 
                 }
 
@@ -97,8 +141,22 @@ public class MazeCreation : MonoBehaviour
         }
 
             //Set the instruction text
-            ColourAssigner.ColouredMaze finalMaze = cmazes[5];
-            InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+            ColourAssigner.ColouredMaze finalMaze = cmazes[0];
+
+            string ss = "xxfinal rules: ";
+            foreach (MovementRule g in finalMaze.mr)
+            {
+                ss += g.type + "-" + g.src + ", ";
+            }
+            foreach (ColourRule h in finalMaze.cr)
+            {
+                ss += h.type + "-" + h.src + ", ";
+            }
+            Debug.Log(ss);
+
+
+
+        InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
 
             for (int i = 0; i < GenerateGrid.tiles.Length; i++)
             {

@@ -58,6 +58,10 @@ public class TraverseMaze : MonoBehaviour
             {
                 sPaths.mediumPath = path;
             }
+            else if(path.Count <= average && path.Count == sPaths.mediumPath.Count && sPaths.mediumPath == sPaths.shortestPath)
+            {
+                sPaths.mediumPath = path;
+            }
         }
 
     }
@@ -72,21 +76,23 @@ public class TraverseMaze : MonoBehaviour
             GetThreePaths();
         }
 
-        String debugs = "Shortest path: ";
+        Debug.Log("xxnumber of paths: " +  sPaths.allPaths.Count);
+
+        String debugs = "xxShortest path: ";
         foreach (Tile t in sPaths.shortestPath)
         {
             debugs += t.name + ", ";
         }
         Debug.Log(debugs);
 
-        String debugsss = "Medium path: ";
+        String debugsss = "xxMedium path: ";
         foreach (Tile t in sPaths.mediumPath)
         {
             debugsss += t.name + ", ";
         }
         Debug.Log(debugsss);
 
-        String debug = "Longest path: ";
+        String debug = "xxLongest path: ";
         foreach (Tile t in sPaths.longestPath)
         {
             debug += t.name + ", ";
