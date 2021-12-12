@@ -8,6 +8,7 @@ public class MazeCreation : MonoBehaviour
     private static GameObject mazePrefab; //put this at the top
     private static List<GameObject> prefabs; //list of colour assigner prefabs
     private static List<ColourAssigner.ColouredMaze> cmazes; //list of coloured mazes, one for each chromosome
+    public static Colour[] allcolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
 
     void Awake()
     {
@@ -33,17 +34,27 @@ public class MazeCreation : MonoBehaviour
                     List<ColourRule> cr = new List<ColourRule>();
                     //foreach (Dictionary<int, Type> d in clist.Values) //suppose to
                     //{
-
+                    int i = 0;
                     foreach (KeyValuePair<int, Type> kvp in x.Value) //supposed to run 8 times
                     {
                         if (kvp.Value == Type.exclude || kvp.Value == Type.include)
                         {
+
                             ColourRule z = Fitness1.GetCRule(kvp.Key, c);
+                            Debug.Log("original color was---------------------------------" + z.src);
+                            z.src = allcolors[i];
+                            i++;
+                            Debug.Log("new color is------------------------- " + z.src);
                             cr.Add(z);
                         }
                         else
                         {
-                            mr.Add(Fitness1.GetMRule(kvp.Key, m));
+                            MovementRule y = Fitness1.GetMRule(kvp.Key, m);
+                            Debug.Log("original color was---------------------------------" + y.src);
+                            y.src = allcolors[i];
+                            i++;
+                            Debug.Log("new color is------------------------- " + y.src);
+                            mr.Add(y);
                         }
                         // ChosenRulesIdx.Add(kvp.Key);
 
@@ -104,9 +115,9 @@ public class MazeCreation : MonoBehaviour
 
 
          Debug.Log("checkers " + finalMaze.checkers);
-        
+
     }
-    
+
 
     /*
 
@@ -184,4 +195,3 @@ public class MazeCreation : MonoBehaviour
 
 //    }
 //}
-
