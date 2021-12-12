@@ -171,47 +171,48 @@ public class MazeCreation : MonoBehaviour
 
 
 
-    public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
-    {
-        //int[][] chromosomes = new int[2][];
-        Debug.Log("reached get final rules");
-        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
-        {
+
+//    public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
+//    {
+//        //int[][] chromosomes = new int[2][];
+//        Debug.Log("reached get final rules");
+//        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
+//        {
 
 
-            foreach(KeyValuePair<int, Dictionary<int, Type>> x in clist)
-            {
-                if (k.Key == x.Key)
-                {
-                    List<MovementRule> mr = new List<MovementRule>();
-                    List<ColourRule> cr = new List<ColourRule>();
-                    foreach (Dictionary<int, Type> d in clist.Values) //suppose to
-                    {
+//            foreach(KeyValuePair<int, Dictionary<int, Type>> x in clist)
+//            {
+//                if (k.Key == x.Key)
+//                {
+//                    List<MovementRule> mr = new List<MovementRule>();
+//                    List<ColourRule> cr = new List<ColourRule>();
+//                    foreach (Dictionary<int, Type> d in clist.Values) //suppose to
+//                    {
 
-                        foreach (KeyValuePair<int, Type> kvp in d) //supposed to run 8 times
-                        {
-                            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                            {
-                                Debug.Log(kvp.Value + "so adding to cr");
-                                ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-                                Debug.Log("this rule " + z.index);
-                                cr.Add(z);
-                            }
-                            else
-                            {
-                                mr.Add(Fitness1.GetMRule(kvp.Key, m));
-                            }
-                            // ChosenRulesIdx.Add(kvp.Key);
-                        }
-                    }
-                    Debug.Log("total mr : " + mr.Count);
-                    Debug.Log("total cr : " + cr.Count);
-                }
+//                        foreach (KeyValuePair<int, Type> kvp in d) //supposed to run 8 times
+//                        {
+//                            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
+//                            {
+//                                Debug.Log(kvp.Value + "so adding to cr");
+//                                ColourRule z = Fitness1.GetCRule(kvp.Key, c);
+//                                Debug.Log("this rule " + z.index);
+//                                cr.Add(z);
+//                            }
+//                            else
+//                            {
+//                                mr.Add(Fitness1.GetMRule(kvp.Key, m));
+//                            }
+//                            // ChosenRulesIdx.Add(kvp.Key);
+//                        }
+//                    }
+//                    Debug.Log("total mr : " + mr.Count);
+//                    Debug.Log("total cr : " + cr.Count);
+//                }
 
 
-            }
-        }
+//            }
+//        }
 
-    }
-}
+//    }
+//}
 
