@@ -19,22 +19,13 @@ public class MazeCreation : MonoBehaviour
 
     public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
     {
-        //int[][] chromosomes = new int[2][];
         int counter = 1;
-        //mazePrefab = (GameObject)Resources.Load("ColourAssigner");
-        //prefabs = new List<GameObject>();
-        //cmazes = new List<ColourAssigner.ColouredMaze>();
 
-        
-            //int[][] chromosomes = new int[2][];
-            Debug.Log("reached get final rules");
-            foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
+        //int[][] chromosomes = new int[2][];
+        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
+        {
+            foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
             {
-
-                
-                foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
-                {
-                Debug.Log("reached before check"+ k.Key +" ,"+ x.Key);
 
                 if (k.Key == x.Key)
                 {
@@ -47,9 +38,7 @@ public class MazeCreation : MonoBehaviour
                     {
                         if (kvp.Value == Type.exclude || kvp.Value == Type.include)
                         {
-                            Debug.Log(kvp.Value + "so adding to cr");
                             ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-                            Debug.Log("this rule " + z.index);
                             cr.Add(z);
                         }
                         else
@@ -59,17 +48,14 @@ public class MazeCreation : MonoBehaviour
                         // ChosenRulesIdx.Add(kvp.Key);
 
                     }
-                    Debug.Log("total mr : " + mr.Count);
-                    Debug.Log("total cr : " + cr.Count);
+                    //Debug.Log("total mr : " + mr.Count);
+                    //Debug.Log("total cr : " + cr.Count);
                     GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
                     maze.name = "Prefab-" + counter;
                     counter++;
                     prefabs.Add(maze);
 
-                    //Debug.Log(mr.Count + "   " + cr.Count); //printed 301 and 99
-                    Debug.Log("new maze");
-
-                    // maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
+                    maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
                     cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
 
                 }
@@ -97,52 +83,31 @@ public class MazeCreation : MonoBehaviour
                 //}
 
             }
-
-            }
         }
+
+            //Set the instruction text
+            ColourAssigner.ColouredMaze finalMaze = cmazes[5];
+            InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+
+            for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+            {
+                Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+
+                System.Type type = chosenComponent.GetType();
+
+                System.Reflection.FieldInfo[] fields = type.GetFields();
+                foreach (System.Reflection.FieldInfo field in fields)
+                {
+                    field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+                }
+            }
+
+
+         Debug.Log("checkers " + finalMaze.checkers);
+        
+    }
     
 
-
-
-
-    //Creates a coloured maze for each final chromosome
-    public static void CreateCMazes(ArrayList chromosomes, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)   //an arraylist of chromosomes. its like : chromosomes=>[mr,cr,mr,cr,mr,cr,mr,cr.....]
-    {
-
-        foreach (Dictionary<int, int> chromosome in chromosomes) //for each chromosome in final list of chromosomes
-        {
-            List<MovementRule> mr = new List<MovementRule>();
-            List<ColourRule> cr = new List<ColourRule>();
-            //GetFinalRules code
-            foreach (KeyValuePair<int, int> k in chromosome) //for each rule in chromosome
-            {
-                if (clist.ContainsKey(k.Key)) //chosenChr.key = clist.key
-                {
-                    foreach (Dictionary<int, Type> d in clist.Values)
-                    {
-                        foreach (KeyValuePair<int, Type> kvp in d)
-                        {
-                            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                            {
-                                cr.Add(Fitness1.GetCRule(kvp.Key, c));
-                            }
-                            else
-                            {
-                                mr.Add(Fitness1.GetMRule(kvp.Key, m));
-                            }
-                        }
-                    }
-                }
-
-                GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                prefabs.Add(maze);
-
-                maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
-                cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
-            }
-        }
-
-    }
     /*
 
     List of coloured mazes now exists

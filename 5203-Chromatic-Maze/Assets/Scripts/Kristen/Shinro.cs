@@ -7,7 +7,7 @@ public class Shinro : MonoBehaviour
 
     private static int chance; //likelihood checker is placed (percentage)
       
-    void Start()
+    void Awake()
     {
         chance = 10;
     }

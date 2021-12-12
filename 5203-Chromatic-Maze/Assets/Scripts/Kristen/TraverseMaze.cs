@@ -19,7 +19,7 @@ public class TraverseMaze : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         sPaths = new SolutionPaths();
         sPaths.allPaths = new List<List<Tile>>();

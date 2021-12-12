@@ -36,52 +36,14 @@ public class ColourAssigner : MonoBehaviour
         public bool properExit; //true if exit was assigned properly, false if exit was assigned to be traversable via solution path, but violates rule(s) with other adjacent tiles (not added to onPathViolations because it doesn't wreck the path)
         public int onPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles on solution path (not including CyclesAdded count)
         public int offPathViolations; //number of tiles that violate rule(s) of one or more adjacent tiles off solution path (not including CyclesAdded count)
-     }
+
+        public List<MovementRule> mr;
+        public List<ColourRule> cr;
+    }
 
     // Start is called before the first frame update
     void Awake()
     {
-        paths = new TraverseMaze.SolutionPaths();
-
-        //copy over the maze to create all new references
-        maze = new KruskalMaze.Maze();
-        maze.w = GenerateGrid.maze.w;
-        maze.h = GenerateGrid.maze.h;
-        maze.LP = GenerateGrid.maze.LP;
-        maze.tree = GenerateGrid.maze.tree;
-
-        maze.deadends = new List<Tile>();
-        foreach (Tile t in GenerateGrid.maze.deadends)
-        {
-            maze.deadends.Add(t);
-        }
-        maze.rankZero = new List<Tile>();
-        foreach (Tile t in GenerateGrid.maze.rankZero)
-        {
-            maze.rankZero.Add(t);
-        }
-
-        maze.tileList = new List<Tile>();
-        foreach (Tile t in GenerateGrid.maze.tileList)
-        {
-            maze.tileList.Add(t);
-        }
-
-        maze.tiles = new Tile[GenerateGrid.maze.tiles.Length];
-        for(int i = 0; i < maze.tiles.Length; i++)
-        {
-            maze.tiles[i] = GenerateGrid.maze.tiles[i];
-        }
-
-        cRules = new List<ColourRule>();
-        mRules = new List<MovementRule>();
-        RoundOneRules = new List<MovementRule>();
-        identifiers = new List<int>();
-        ruleTypes = new List<Type>();
-        used = new Dictionary<int, int>();
-        pathUnassigned = 0;
-        unassigned = 0;
-        exitAssigned = true;
         cText = GameObject.Find("CCount").GetComponent<Text>();
 
         colours = new List<Material>
@@ -114,13 +76,31 @@ public class ColourAssigner : MonoBehaviour
             properExit = exitAssigned
         };
 
+        cmaze.mr = new List<MovementRule>();
+        foreach(MovementRule m in RoundOneRules)
+        {
+            cmaze.mr.Add(m);
+        }
+        foreach (MovementRule m in mRules)
+        {
+            cmaze.mr.Add(m);
+        }
+        cmaze.cr = new List<ColourRule>();
+        foreach (ColourRule c in cRules)
+        {
+            cmaze.cr.Add(c);
+        }
+
         paths = GetComponent<TraverseMaze>().GetPathsFromEntrance(cmaze);
 
-        if(paths.longest > 0) //if solution paths exist
+        Debug.Log("shortest: " + paths.shortestPath + " medium: " + paths.mediumPath);
+
+        if (paths.longest > 0) //if solution paths exist
         {
             Shinro.PlaceCheckers(paths.shortestPath, cmaze, .5f);
             Shinro.PlaceCheckers(paths.mediumPath, cmaze, .3f);
             cmaze.checkers = NumClues.SetClues(maze.tiles);
+            Debug.Log("checkers " + cmaze.checkers);
         }
         return cmaze;
     }
@@ -157,6 +137,47 @@ public class ColourAssigner : MonoBehaviour
     //not in start because other script needs to finish first
     public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
+        paths = new TraverseMaze.SolutionPaths();
+
+        //copy over the maze to create all new references
+        maze = new KruskalMaze.Maze();
+        maze.w = GenerateGrid.maze.w;
+        maze.h = GenerateGrid.maze.h;
+        maze.LP = GenerateGrid.maze.LP;
+        maze.tree = GenerateGrid.maze.tree;
+
+        maze.deadends = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.deadends)
+        {
+            maze.deadends.Add(t);
+        }
+        maze.rankZero = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.rankZero)
+        {
+            maze.rankZero.Add(t);
+        }
+
+        maze.tileList = new List<Tile>();
+        foreach (Tile t in GenerateGrid.maze.tileList)
+        {
+            maze.tileList.Add(t);
+        }
+
+        maze.tiles = new Tile[GenerateGrid.maze.tiles.Length];
+        for (int i = 0; i < maze.tiles.Length; i++)
+        {
+            maze.tiles[i] = GenerateGrid.maze.tiles[i];
+        }
+
+        cRules = new List<ColourRule>();
+        mRules = new List<MovementRule>();
+        RoundOneRules = new List<MovementRule>();
+        identifiers = new List<int>();
+        ruleTypes = new List<Type>();
+        used = new Dictionary<int, int>();
+        pathUnassigned = 0;
+        unassigned = 0;
+        exitAssigned = true;
 
         mRules = mr;
         cRules = cr;
@@ -192,8 +213,6 @@ public class ColourAssigner : MonoBehaviour
                 RoundOneRules.Add(rule);
             }
         }
-
-        InstructionsText.SetInstructions(mRules, cRules);
     }
 
     private void AssignByMRule(Tile t, MovementRule rule)
@@ -496,28 +515,28 @@ public class ColourAssigner : MonoBehaviour
 
                         if(north == false)
                         {
-                            if (rule.index == 13)
+                            if(rule.direction == Direction.North)
                             {
                                 AssignByMRule(t, rule);
                             }
                         }
                         else if (south == false)
                         {
-                            if (rule.index == 0)
+                            if (rule.direction == Direction.South)
                             {
                                 AssignByMRule(t, rule);
                             }
                         }
                         else if (east == false)
                         {
-                            if (rule.index == 15)
+                            if (rule.direction == Direction.East)
                             {
                                 AssignByMRule(t, rule);
                             }
                         }
                         else if (west == false)
                         {
-                            if (rule.index == 14)
+                            if (rule.direction == Direction.West)
                             {
                                 AssignByMRule(t, rule);
                             }
@@ -622,7 +641,7 @@ public class ColourAssigner : MonoBehaviour
                         int rand = randIndex[randListItem];
                         randIndex.RemoveAt(randListItem); //remove this index so rule does not get checked again
 
-                        if (identifiers[rand] <= 14) //MovementRule
+                        if (identifiers[rand] <= Rules.movementRuleSets.Count-1) //MovementRule
                         {
                             MovementRule r = GetMRule(identifiers[rand]); //assign current tile (DOESN'T GET A RULE, GETS A TMOVE OLD RULE WITH WRONG SOURCE COLOUR??)
 
@@ -738,7 +757,7 @@ public class ColourAssigner : MonoBehaviour
 
                 for (int i = 0; i < identifiers.Count; i++)
                 {
-                    randIndex.Add(i); //add indexes 0 to unchecked rule count - 1
+                    randIndex.Add(i); //add indexes 0 to unchecked rule count - 1 *********
                 }
 
                 while (!check && randIndex.Count > 0)
@@ -747,7 +766,7 @@ public class ColourAssigner : MonoBehaviour
                     int rand = randIndex[randListItem];
                     randIndex.RemoveAt(randListItem); //remove this index so rule does not get checked again
 
-                    if (identifiers[rand] <= 14) //MovementRule
+                    if (identifiers[rand] <= Rules.movementRuleSets.Count-1) //MovementRule
                     {
                         MovementRule r = GetMRule(identifiers[rand]); //assign current tile
 
