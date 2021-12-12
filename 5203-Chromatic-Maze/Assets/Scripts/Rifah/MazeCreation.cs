@@ -25,8 +25,7 @@ public class MazeCreation : MonoBehaviour
         //prefabs = new List<GameObject>();
         //cmazes = new List<ColourAssigner.ColouredMaze>();
 
-        foreach (KeyValuePair<int, int> k in chosenChr)
-        {
+        
             //int[][] chromosomes = new int[2][];
             Debug.Log("reached get final rules");
             foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times
