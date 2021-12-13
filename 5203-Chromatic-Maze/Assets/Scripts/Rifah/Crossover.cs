@@ -303,6 +303,7 @@ public class Crossover : MonoBehaviour
             makeCopies(xx);
         }
         List<chromosome> chrList = assignUniqueColors(mc);
+        Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList);
         //MazeCreation.
 

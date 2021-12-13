@@ -26,6 +26,6 @@ public class Fitness2 : MonoBehaviour
 
     public static void fitness2(ColourAssigner.ColouredMaze colouredMaze)
     {
-        
+        int f = 1 ;
     }
 }
