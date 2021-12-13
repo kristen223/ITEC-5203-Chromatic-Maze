@@ -172,7 +172,6 @@ public class PlayerController : MonoBehaviour
                         }
                         if (okayW == false)
                         {
-                            Debug.Log("hmm");
                             GameOver();
                             break;
                         }
@@ -195,7 +194,6 @@ public class PlayerController : MonoBehaviour
                         }
                         if (okayC == false)
                         {
-                            Debug.Log("huh");
                             GameOver();
                             break;
                         }

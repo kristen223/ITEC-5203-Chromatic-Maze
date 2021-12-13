@@ -70,6 +70,7 @@ public class PickMaze : MonoBehaviour
         GameObject finalMaze = new GameObject();
         if (cmazes.Count == 0)
         {
+            finalMaze = null;
             Debug.Log("NO VALID MAZE CREATED");
             return finalMaze;
         }

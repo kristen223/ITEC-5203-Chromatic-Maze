@@ -25,11 +25,11 @@ public class MazeCreation : MonoBehaviour
 
     public static void seperateRules(List<chromosome> mc)
     {
-        List<MovementRule> mr = new List<MovementRule>();
-        List<ColourRule> cr = new List<ColourRule>();
-
+        int counter = 1;
         foreach (chromosome s in mc)
         {
+            List<MovementRule> mr = new List<MovementRule>();
+            List<ColourRule> cr = new List<ColourRule>();
 
             if (s.r1.type == Type.blank || s.r1.type == Type.cool || s.r1.type == Type.warm || s.r1.type == Type.jump1 || s.r1.type == Type.jump2 || s.r1.type == Type.teleport || s.r1.type == Type.teleport)
             {
@@ -183,15 +183,47 @@ public class MazeCreation : MonoBehaviour
                 m.target = s.r8.target;
                 cr.Add(m);
             }
+
+            //Kristen's Code
+
+            //reset index values
+            for (int ind = 0; ind < mr.Count; ind++)
+            {
+                MovementRule newm = mr[ind];
+                newm.index = ind;
+                mr[ind] = newm;
+            }
+
+            int cruleCount = 0;
+            for (int ind = mr.Count; ind < cr.Count + mr.Count; ind++)
+            {
+                ColourRule newc = cr[cruleCount];
+                newc.index = ind;
+                cr[cruleCount] = newc;
+                cruleCount++;
+            }
+
+
+            //Make one maze per chromosome
+            GameObject temp = Instantiate(new GameObject(), new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+            temp.name = "Maze-" + counter;
+
+            GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+            maze.name = "Prefab-" + counter;
+            counter++;
+
+            maze.transform.parent = temp.transform; //set prefab as child of empty game object temp
+                                                    //prefabs.Add(temp);
+
+            Debug.Log("Begin maze");
+            maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
+            cmazes.Add(temp, maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+            Debug.Log("finished maze");
+
+
         }
-        //you have mr and cr here.Kritsen just paste your work of the getFinaRules here
-        
+        LastStep();
     }
-
-
-
-
-
 
     public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
    
@@ -237,80 +269,33 @@ public class MazeCreation : MonoBehaviour
                         // ChosenRulesIdx.Add(kvp.Key);
 
                     }
-                    //Debug.Log("total mr : " + mr.Count);
-                    //Debug.Log("total cr : " + cr.Count);
-
-                    //resetting indexes
-                    for (int ind = 0; ind < mr.Count; ind++)
-                    {
-                        MovementRule newm = mr[ind];
-                        newm.index = ind;
-                        mr[ind] = newm;
-                    }
-
-                    int cruleCount = 0;
-                    for (int ind = mr.Count; ind < cr.Count + mr.Count; ind++)
-                    {
-                        ColourRule newc = cr[cruleCount];
-                        newc.index = ind;
-                        cr[cruleCount] = newc;
-                        cruleCount++;
-                    }
-
-
-                    //Making two mazes per set of rules
-                    GameObject temp = Instantiate(new GameObject(), new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    temp.name = "Maze-" + counter;
-
-                    GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    maze.name = "Prefab-" + counter;
-                    counter++;
-
-                    maze.transform.parent = temp.transform; //set prefab as child of empty game object temp
-                    //prefabs.Add(temp);
-
-                    Debug.Log("Begin maze");
-                    maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
-                    cmazes.Add(temp, maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
-                    Debug.Log("finished maze");
-
-
-                    //List<MovementRule> mrCopy = new List<MovementRule>();
-                    //foreach(MovementRule mcopy in mr)
-                    //{
-                    //    mrCopy.Add(mcopy);
-                    //}
-                    //List<ColourRule> crCopy = new List<ColourRule>();
-                    //foreach (ColourRule ccopy in cr)
-                    //{
-                    //    crCopy.Add(ccopy);
-                    //}
-
-                    //GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    //mazeTwo.name = "Prefab-" + counter;
-                    //counter++;
-                    //prefabs.Add(mazeTwo);
-
-                    //mazeTwo.GetComponent<ColourAssigner>().SetRules(mrCopy, crCopy);
-                    //cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
                 }
             }
         }
+    }
 
+    private static void LastStep()
+    {
         //FITNESS 2
         GameObject finalMazePrefab = PickMaze.GetFinalMaze(cmazes); //prefab Key
+
+        if (finalMazePrefab == null)
+        {
+            return; //no valid mazes created (debug statement somewhere else)
+        }
+
         ColourAssigner.ColouredMaze finalMaze = cmazes[finalMazePrefab];
 
         //DELETE ALL GAME OBJECTS EXCEPT CHOSEN MAZE
-        foreach(KeyValuePair<GameObject, ColourAssigner.ColouredMaze> kvp in cmazes)
+        foreach (KeyValuePair<GameObject, ColourAssigner.ColouredMaze> kvp in cmazes)
         {
-            if(kvp.Key != finalMazePrefab)
+            if (kvp.Key != finalMazePrefab)
             {
                 kvp.Key.SetActive(false); //better to destroy
             }
         }
 
-        if(finalMaze.spaths.allPaths != null) //if maze was chosen
+        if (finalMaze.spaths.allPaths != null) //if maze was chosen
         {
             //TEMP DEBUG STUFF
             string ss = "xxfinal rules: ";
@@ -350,22 +335,52 @@ public class MazeCreation : MonoBehaviour
             InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
 
             //SET TILE GRID TO CORRECT MAZE'S TILES AND RESET CHECKERS
-            for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+            //for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+            //{
+            //    GenerateGrid.tiles[i].tag = "Untagged";
+            //    GenerateGrid.tiles[i].transform.Find("Checker").GetComponent<SpriteRenderer>().enabled = false;
+
+            //    Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+            //    Debug.Log("Tile-" + (i + 1) + "colour = " + finalMaze.maze.tiles[i].GetComponent<Tile>().colour + ", rule type = " + finalMaze.maze.tiles[i].GetComponent<Tile>().ruleType);
+
+            //    System.Type type = chosenComponent.GetType();
+
+            //    System.Reflection.FieldInfo[] fields = type.GetFields();
+            //    foreach (System.Reflection.FieldInfo field in fields)
+            //    {
+            //        field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+            //    }
+            //}
+
+
+            Debug.Log("Start Here " + finalMaze.mRuleAssignments.Count);
+            foreach (KeyValuePair<Tile, MovementRule> mrAssignment in finalMaze.mRuleAssignments)
             {
-                GenerateGrid.tiles[i].tag = "Untagged";
-                GenerateGrid.tiles[i].transform.Find("Checker").GetComponent<SpriteRenderer>().enabled = false;
-
-                Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
-                Debug.Log("Tile-" + (i+1) + "colour = " + finalMaze.maze.tiles[i].GetComponent<Tile>().colour + ", rule type = " + finalMaze.maze.tiles[i].GetComponent<Tile>().ruleType);
-
-                System.Type type = chosenComponent.GetType();
-
-                System.Reflection.FieldInfo[] fields = type.GetFields();
-                foreach (System.Reflection.FieldInfo field in fields)
-                {
-                    field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
-                }
+                Debug.Log(mrAssignment.Key.name + "x  " + mrAssignment.Value);
             }
+
+
+            //REASSIGN AND COLOUR TILES
+            finalMazePrefab.GetComponentInChildren<ColourAssigner>().ResetGrid(finalMaze.maze.tiles);
+            foreach (KeyValuePair<Tile, MovementRule> mrAssignment in finalMaze.mRuleAssignments)
+            {
+                finalMazePrefab.GetComponentInChildren<ColourAssigner>().AssignMRule(mrAssignment.Key, mrAssignment.Value);
+            }
+            foreach (KeyValuePair<Tile, ColourRule> crAssignment in finalMaze.cRuleAssignments)
+            {
+                finalMazePrefab.GetComponentInChildren<ColourAssigner>().AssignCRule(crAssignment.Key, crAssignment.Value);
+            }
+            foreach (Tile t in finalMaze.wallAssignments)
+            {
+                t.failedToAssign = true;
+                t.ruleType = Type.wall;
+                t.colour = Colour.Black;
+                SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+                Material black = (Material)Resources.Load("Black");
+                sr.material.shader = black.shader;
+                sr.material.color = black.color;
+            }
+
 
             //ADD CHECKERS AND NUMBER CLUES
             Shinro.PlaceCheckers(finalMaze.spaths.mediumPath, finalMaze, .3f);

@@ -24,6 +24,10 @@ public class ColourAssigner : MonoBehaviour
     public List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
 
+    public Dictionary<Tile, MovementRule> mRuleAssignments;
+    public Dictionary<Tile, ColourRule> cRuleAssignments;
+    public List<Tile> wallAssignments;
+
     public struct ColouredMaze
     {
         public TraverseMaze.SolutionPaths spaths;
@@ -35,6 +39,9 @@ public class ColourAssigner : MonoBehaviour
 
         public List<MovementRule> mr;
         public List<ColourRule> cr;
+        public Dictionary<Tile, MovementRule> mRuleAssignments;
+        public Dictionary<Tile, ColourRule> cRuleAssignments;
+        public List<Tile> wallAssignments;
     }
 
     // Start is called before the first frame update
@@ -64,10 +71,37 @@ public class ColourAssigner : MonoBehaviour
         ColouredMaze cmaze = new ColouredMaze()
         {
             maze = maze,
-            used = used,
             PathViolations = pathUnassigned + unassigned,
-            properExit = exitAssigned
+            properExit = exitAssigned,
         };
+
+        cmaze.used = new Dictionary<int, int>();
+        foreach (KeyValuePair<int, int> use in used)
+        {
+            cmaze.used.Add(use.Key, use.Value);
+        }
+
+        cmaze.mRuleAssignments = new Dictionary<Tile, MovementRule>();
+        foreach (KeyValuePair<Tile, MovementRule> mrA in mRuleAssignments)
+        {
+            cmaze.mRuleAssignments.Add(mrA.Key, mrA.Value);
+        }
+
+        cmaze.cRuleAssignments = new Dictionary<Tile, ColourRule>();
+        foreach (KeyValuePair<Tile, ColourRule> crA in cRuleAssignments)
+        {
+            cmaze.cRuleAssignments.Add(crA.Key, crA.Value);
+        }
+
+        cmaze.wallAssignments = new List<Tile>();
+        foreach (Tile t in wallAssignments)
+        {
+            cmaze.wallAssignments.Add(t);
+        }
+        //used.Clear();
+        //cRuleAssignments.Clear();
+        //mRuleAssignments.Clear();
+        //wallAssignments.Clear();
 
         cmaze.mr = new List<MovementRule>();
         foreach(MovementRule m in RoundOneRules)
@@ -90,7 +124,7 @@ public class ColourAssigner : MonoBehaviour
         if (cmaze.spaths.longest > 0) //if solution paths exist
         {
             //Shinro.PlaceCheckers(cmaze.spaths.shortestPath, cmaze, .5f);
-            Shinro.PlaceCheckers(cmaze.spaths.mediumPath, cmaze, .3f);
+            //Shinro.PlaceCheckers(cmaze.spaths.mediumPath, cmaze, .3f);
             cmaze.checkers = Mathf.RoundToInt((cmaze.spaths.mediumPath.Count - 1) * .3f);
             //NumClues.SetClues(maze.tiles);
         }
@@ -126,25 +160,25 @@ public class ColourAssigner : MonoBehaviour
         return cRules[0]; //this should never happen
     }
 
-    private void ResetGrid(Tile[] tileGrid)
+    public void ResetGrid(Tile[] tileGrid)
     {
-        foreach(Tile t in tileGrid) //ruletype and index not reset
+        foreach(Tile t in tileGrid)
         {
             t.assigned = false;
             t.failedToAssign = false;
             t.moveRule = false;
-            t.canBe[Colour.Red] = false;
-            t.canBe[Colour.Orange] = false;
-            t.canBe[Colour.Yellow] = false;
-            t.canBe[Colour.Pink] = false;
-            t.canBe[Colour.Green] = false;
-            t.canBe[Colour.Blue] = false;
-            t.canBe[Colour.Purple] = false;
-            t.canBe[Colour.Teal] = false;
+            t.canBe[Colour.Red] = true;
+            t.canBe[Colour.Orange] = true;
+            t.canBe[Colour.Yellow] = true;
+            t.canBe[Colour.Pink] = true;
+            t.canBe[Colour.Green] = true;
+            t.canBe[Colour.Blue] = true;
+            t.canBe[Colour.Purple] = true;
+            t.canBe[Colour.Teal] = true;
             //t.mRule = new MovementRule();
             //t.cRule = new ColourRule();
             //t.index = new int();
-            //t.colour = new Colour();
+            //t.colour = Colour.All; //??
             //t.ruleType = new Type();
         }
     }
@@ -152,6 +186,9 @@ public class ColourAssigner : MonoBehaviour
     //not in start because other script needs to finish first
     public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
+        mRuleAssignments = new Dictionary<Tile, MovementRule>();
+        cRuleAssignments = new Dictionary<Tile, ColourRule>();
+
         //copy over the maze to create all new references
         maze = new KruskalMaze.Maze();
         maze.w = GenerateGrid.maze.w;
@@ -176,15 +213,12 @@ public class ColourAssigner : MonoBehaviour
             maze.tileList.Add(t);
         }
 
-        GenerateGrid.maze.tiles.CopyTo(maze.tiles, 0);
-
+        ResetGrid(GenerateGrid.maze.tiles); //reset rule assignments
         maze.tiles = new Tile[GenerateGrid.maze.tiles.Length];
         for (int i = 0; i < maze.tiles.Length; i++)
         {
-            maze.tiles[i] = GenerateGrid.vertices[i];
+            maze.tiles[i] = GenerateGrid.maze.tiles[i];
         }
-
-        ResetGrid(maze.tiles); //reset rule assignments
 
         cRules = new List<ColourRule>();
         mRules = new List<MovementRule>();
@@ -251,10 +285,33 @@ public class ColourAssigner : MonoBehaviour
         Debug.Log(ss);
     }
 
+    public void AssignMRule(Tile t, MovementRule rule)
+    {
+        t.assigned = true;
+        t.mRule = rule;
+        t.ruleType = rule.type;
+        t.moveRule = true;
+        t.colour = rule.src;
+        t.index = rule.index;
+
+        SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+
+        foreach (Material mat in colours)
+        {
+            if (mat.name == t.colour.ToString())
+            {
+                sr.material.shader = mat.shader;
+                sr.material.color = mat.color;
+                break;
+            }
+        }
+    }
+
     private void AssignByMRule(Tile t, MovementRule rule)
     {
-        if (t.failedToAssign == false) //maybe?? abcd
+        if (t.failedToAssign == false)
         {
+            mRuleAssignments.Add(t, rule);
             Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
             t.assigned = true;
             t.mRule = rule;
@@ -264,17 +321,17 @@ public class ColourAssigner : MonoBehaviour
             t.index = rule.index;
             used[rule.index]++;
 
-            SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+            //SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
-            foreach (Material mat in colours)
-            {
-                if (mat.name == t.colour.ToString())
-                {
-                    sr.material.shader = mat.shader;
-                    sr.material.color = mat.color;
-                    break;
-                }
-            }
+            //foreach (Material mat in colours)
+            //{
+            //    if (mat.name == t.colour.ToString())
+            //    {
+            //        sr.material.shader = mat.shader;
+            //        sr.material.color = mat.color;
+            //        break;
+            //    }
+            //}
 
             List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
 
@@ -327,12 +384,34 @@ public class ColourAssigner : MonoBehaviour
         }
     }
 
+    public void AssignCRule(Tile t, ColourRule rule)
+    {
+        t.assigned = true;
+        t.cRule = rule;
+        t.ruleType = rule.type;
+        t.moveRule = false;
+        t.colour = rule.src;
+        t.index = rule.index;
+
+        SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+
+        foreach (Material mat in colours)
+        {
+            if (mat.name == t.colour.ToString())
+            {
+                sr.material.shader = mat.shader;
+                sr.material.color = mat.color;
+                break;
+            }
+        }
+    }
+
     private void AssignByCRule(Tile t, ColourRule rule)
     {
-        
-
+       
         if (t.failedToAssign == false) //maybe?? abcd
         {
+            cRuleAssignments.Add(t, rule);
             Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
 
             t.assigned = true;
@@ -343,17 +422,17 @@ public class ColourAssigner : MonoBehaviour
             t.index = rule.index;
             used[rule.index]++;
 
-            SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+            //SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
-            foreach (Material mat in colours)
-            {
-                if (mat.name == t.colour.ToString())
-                {
-                    sr.material.shader = mat.shader;
-                    sr.material.color = mat.color;
-                    break;
-                }
-            }
+            //foreach (Material mat in colours)
+            //{
+            //    if (mat.name == t.colour.ToString())
+            //    {
+            //        sr.material.shader = mat.shader;
+            //        sr.material.color = mat.color;
+            //        break;
+            //    }
+            //}
 
             List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
 
@@ -499,10 +578,11 @@ public class ColourAssigner : MonoBehaviour
                     t.failedToAssign = true;
                     t.ruleType = Type.wall;
                     t.colour = Colour.Black;
-                    SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
-                    Material black = (Material)Resources.Load("Black");
-                    sr.material.shader = black.shader;
-                    sr.material.color = black.color;
+                    wallAssignments.Add(t);
+                    //SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
+                    // Material black = (Material)Resources.Load("Black");
+                    //sr.material.shader = black.shader;
+                    //sr.material.color = black.color;
                     Debug.Log("Failed to assigned " + t.name);
 
                     if (maze.LP.path.Contains(t) == true)
@@ -705,7 +785,6 @@ public class ColourAssigner : MonoBehaviour
                         else
                         {
                             ColourRule r = GetCRule(identifiers[rand]); //assign current tile
-
                             if (tile.canBe[r.src] == true)
                             {
                                 check = true;
@@ -720,10 +799,11 @@ public class ColourAssigner : MonoBehaviour
                     tile.failedToAssign = true;
                     tile.ruleType = Type.wall;
                     tile.colour = Colour.Black;
-                    SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
-                    Material black = (Material)Resources.Load("Black");
-                    sr.material.shader = black.shader;
-                    sr.material.color = black.color;
+                    wallAssignments.Add(tile);
+                    //SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+                    //Material black = (Material)Resources.Load("Black");
+                    //sr.material.shader = black.shader;
+                    //sr.material.color = black.color;
                     Debug.Log("Failed to assigned " + tile.name);
 
                     if(maze.LP.path.Contains(tile) == true)
@@ -843,10 +923,11 @@ public class ColourAssigner : MonoBehaviour
                 tile.failedToAssign = true;
                 tile.colour = Colour.Black;
                 tile.ruleType = Type.wall;
-                SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
-                Material black = (Material)Resources.Load("Black");
-                sr.material.shader = black.shader;
-                sr.material.color = black.color;
+                wallAssignments.Add(tile);
+                //SpriteRenderer sr = tile.GetComponent<SpriteRenderer>();
+                //Material black = (Material)Resources.Load("Black");
+                //sr.material.shader = black.shader;
+                //sr.material.color = black.color;
                 Debug.Log("Failed to assigned " + tile.name);
 
                 if (maze.LP.path.Contains(tile) == true)
