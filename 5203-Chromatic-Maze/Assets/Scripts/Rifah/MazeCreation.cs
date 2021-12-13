@@ -20,17 +20,44 @@ public class MazeCreation : MonoBehaviour
         unassignedTiles = new List<Tile[]>();
     }
 
-    public static void seperateRules(List<chromosome<newRules>> mc)
+    public static void seperateRules(List<Chromosome> mc)
     {
         Debug.Log("count: " + mc.Count);
         int counter = 1;
-        foreach (chromosome<newRules> s in mc)
+        foreach (Chromosome s in mc)
         {
             Debug.Log("chromosome " + counter);
             List<MovementRule> mr = new List<MovementRule>();
             List<ColourRule> cr = new List<ColourRule>();
 
-            if (s.r1.type == Type.blank || s.r1.type == Type.cool || s.r1.type == Type.warm || s.r1.type == Type.jump1 || s.r1.type == Type.jump2 || s.r1.type == Type.teleport || s.r1.type == Type.teleport)
+
+            List<newRules> rr = new List<newRules>() { s.r1, s.r2, s.r3, s.r4, s.r5, s.r6, s.r7, s.r8 };
+
+            foreach(newRules rule in rr)
+            {
+                if(rule.type == Type.blank || rule.type == Type.cool || rule.type == Type.warm || rule.type == Type.jump1 || rule.type == Type.jump2 || rule.type == Type.teleport || rule.type == Type.teleport){
+                    MovementRule m = new MovementRule();
+                    m.direction = rule.direction;
+                    m.distance = rule.distance;
+                    m.type = rule.type;
+                    m.src = rule.src;
+                    m.target = rule.target;
+                    mr.Add(m);
+                }
+                else
+                {
+                    ColourRule m = new ColourRule();
+                    m.inclusion = rule.inclusion;
+                    m.type = rule.type;
+                    m.src = rule.src;
+                    m.target = rule.target;
+                    cr.Add(m);
+                  
+                }
+            
+            }
+
+      /*      if (s.r1.type == Type.blank || s.r1.type == Type.cool || s.r1.type == Type.warm || s.r1.type == Type.jump1 || s.r1.type == Type.jump2 || s.r1.type == Type.teleport || s.r1.type == Type.teleport)
             {
                 MovementRule m = new MovementRule();
                 m.direction = s.r1.direction;
@@ -182,7 +209,7 @@ public class MazeCreation : MonoBehaviour
                 m.target = s.r8.target;
                 cr.Add(m);
             }
-
+      */
             //Kristen's Code
 
             Debug.Log("mr count "  + mr.Count);

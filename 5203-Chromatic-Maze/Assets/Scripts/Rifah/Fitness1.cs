@@ -257,7 +257,7 @@ public class Fitness1 : MonoBehaviour
 
 
         //CROSSOVER
-        Crossover.crossover(chosenChr,cList,m,c,pop);
+        Crossover.crossovers(chosenChr,cList,m,c,pop);
         //Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
         //newSetOfChrs=Crossover.crossover(chosenChr);
 

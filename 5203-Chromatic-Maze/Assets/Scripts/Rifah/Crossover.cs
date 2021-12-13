@@ -12,32 +12,32 @@ public class newRules
     public bool inclusion;
 }
 
-public class chromosome<rs> where rs : newRules
-{
-    public newRules r1;
-    public newRules r2;
-    public newRules r3;
-    public newRules r4;
-    public newRules r5;
-    public newRules r6;
-    public newRules r7;
-    public newRules r8;
-    public int fit;
+//public class chromosome<rs> where rs : newRules
+//{
+//    public newRules r1;
+//    public newRules r2;
+//    public newRules r3;
+//    public newRules r4;
+//    public newRules r5;
+//    public newRules r6;
+//    public newRules r7;
+//    public newRules r8;
+//    public int fit;
     
     
-    //List<newRules> nr;
-    //newRules[] rs = new newRules[] { r1,r2,r3,r4,r5,r6,r7,r8};
-    //public List<MovementRule> mr;
-    //public List<ColourRule> cr;
+//    //List<newRules> nr;
+//    //newRules[] rs = new newRules[] { r1,r2,r3,r4,r5,r6,r7,r8};
+//    //public List<MovementRule> mr;
+//    //public List<ColourRule> cr;
 
     
-}
+//}
 public class Crossover : MonoBehaviour
 {
     //public int pop = Rules.popSize;
     public static int newIdx = 0;
 
-    public static List<chromosome<newRules>> mc = new List<chromosome<newRules>>();
+    public static List<Chromosome> mc = new List<Chromosome>();
     //public static List<newRules> newruleslist = new List<newRules>();
     public static Colour[] scolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
     public static Colour[] tcolors = new Colour[11] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green, Colour.All, Colour.Warm, Colour.Cool };
@@ -66,9 +66,9 @@ public class Crossover : MonoBehaviour
         return nr.target;
     }
 
-    public static List<chromosome<newRules>> assignUniqueColors(List<chromosome<newRules>> mc)
+    public static List<Chromosome> assignUniqueColors(List<Chromosome> mc)
     {
-        foreach (chromosome<newRules> zz in mc)
+        foreach (Chromosome zz in mc)
         {
             List<int> usedIdx = new List<int>();
             System.Random rand = new System.Random();
@@ -149,12 +149,12 @@ public class Crossover : MonoBehaviour
     }
 
 
-    public static void makeCopies(chromosome<newRules> xx,int pop)
+    public static void makeCopies(Chromosome xx,int pop)
     {
         int count = (int)System.Math.Ceiling(0.2 * pop);
         for (int i = 0; i < count; i++)
         {
-            chromosome<newRules> yy = xx;
+            Chromosome yy = xx;
             Debug.Log("adding to mc" + yy.ToString());
             mc.Add(yy);
         }
@@ -164,7 +164,7 @@ public class Crossover : MonoBehaviour
     {
 
     }
-    public static void crossover(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c, int pop)
+    public static void crossovers(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c, int pop)
     {
         //Dictionary<int, int> newChrs = new Dictionary<int, int>();
         Debug.Log("at crossover and length of chosenChr is "+chosenChr.Count );
@@ -187,137 +187,164 @@ public class Crossover : MonoBehaviour
 
                 //ONE CHROMOSOME:
                 ICollection ruleIndexs = x.Value.Keys; //8 rules indexs
-                                                       //ICollection ruleTypes= x.Value.Values;//8 rule types
+                Debug.Log(ruleIndexs);                                       //ICollection ruleTypes= x.Value.Values;//8 rule types
 
                 //chromosome mc = new chromosome();
 
                 int count = 1;
+
                 foreach (int i in ruleIndexs)
                 {
-
-
+                    List<newRules> r = new List<newRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
+                    Debug.Log("ruleindex originals: " + i);
                     if (i < m.Count) //its a movement rule
                     {
-                        MovementRule mm = Fitness1.GetMRule(i, m);
-                        switch (count)
+                        MovementRule mm = new MovementRule();
+                        mm = Fitness1.GetMRule(i, m);
+                        Debug.Log("made a movement rule and src is " + mm.src);
+                        Debug.Log("type is"+mm.type);
+                        foreach (newRules rx in r)
                         {
-
-                            case 1:
-                                xx.r1.type = mm.type;
-                                xx.r1.distance = mm.distance;
-                                xx.r1.direction = mm.direction;
-                                count++;
-                                break;
-                            case 2:
-                                xx.r2.type = mm.type;
-                                xx.r2.distance = mm.distance;
-                                xx.r2.direction = mm.direction;
-                                count++;
-                                break;
-                            case 3:
-                                xx.r3.type = mm.type;
-                                xx.r3.distance = mm.distance;
-                                xx.r3.direction = mm.direction;
-                                count++;
-                                break;
-                            case 4:
-                                xx.r4.type = mm.type;
-                                xx.r4.distance = mm.distance;
-                                xx.r4.direction = mm.direction;
-                                count++;
-                                break;
-                            case 5:
-                                xx.r5.type = mm.type;
-                                xx.r5.distance = mm.distance;
-                                xx.r5.direction = mm.direction;
-                                count++;
-                                break;
-                            case 6:
-                                xx.r6.type = mm.type;
-                                xx.r6.distance = mm.distance;
-                                xx.r6.direction = mm.direction;
-                                count++;
-                                break;
-                            case 7:
-                                xx.r7.type = mm.type;
-                                xx.r7.distance = mm.distance;
-                                xx.r7.direction = mm.direction;
-                                count++;
-                                break;
-                            case 8:
-                                xx.r8.type = mm.type;
-                                xx.r8.distance = mm.distance;
-                                xx.r8.direction = mm.direction;
-                                count++;
-                                break;
-                            default:
-                                Debug.Log("Your input in default case is out of range");
-                                break;
+                            Debug.Log("reached forloop");
+                            rx.type = mm.type;
+                            rx.distance = mm.distance;
+                            rx.direction = mm.direction;
+                           
                         }
-
-
                     }
-
-
-
-                    //createMCopies(mm,);
-
                     else
                     {
-                        ColourRule mm = Fitness1.GetCRule(i, c);
-                        //createCCopies(cc,);
-                        switch (count)
+                        ColourRule cc = new ColourRule();
+                        cc = Fitness1.GetCRule(i, c);
+                        foreach (newRules rx in r)
                         {
+                            rx.type = cc.type;
+                            rx.inclusion = cc.inclusion;
 
-                            case 1:
-                                xx.r1.type = mm.type;
-                                count++;
-                                break;
-                            case 2:
-                                xx.r2.type = mm.type;
-                                count++;
-                                break;
-                            case 3:
-                                xx.r3.type = mm.type;
-                                count++;
-                                break;
-                            case 4:
-                                xx.r4.type = mm.type;
-                                count++;
-                                break;
-                            case 5:
-                                xx.r5.type = mm.type;
-                                count++;
-                                break;
-                            case 6:
-                                xx.r6.type = mm.type;
-                                count++;
-                                break;
-                            case 7:
-                                xx.r7.type = mm.type;
-                                count++;
-                                break;
-                            case 8:
-                                xx.r8.type = mm.type;
-                                count++;
-                                break;
-                            default:
-                                Debug.Log("Your input in default case is out of range");
-                                break;
                         }
-
-
                     }
                 }
-                
+                    //switch (count)
+                    //{
+
+                    //    case 1:
+                    //        xx.r1.type = mm.type;
+                    //        xx.r1.distance = mm.distance;
+                    //        xx.r1.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 2:
+                    //        xx.r2.type = mm.type;
+                    //        xx.r2.distance = mm.distance;
+                    //        xx.r2.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 3:
+                    //        xx.r3.type = mm.type;
+                    //        xx.r3.distance = mm.distance;
+                    //        xx.r3.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 4:
+                    //        xx.r4.type = mm.type;
+                    //        xx.r4.distance = mm.distance;
+                    //        xx.r4.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 5:
+                    //        xx.r5.type = mm.type;
+                    //        xx.r5.distance = mm.distance;
+                    //        xx.r5.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 6:
+                    //        xx.r6.type = mm.type;
+                    //        xx.r6.distance = mm.distance;
+                    //        xx.r6.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 7:
+                    //        xx.r7.type = mm.type;
+                    //        xx.r7.distance = mm.distance;
+                    //        xx.r7.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    case 8:
+                    //        xx.r8.type = mm.type;
+                    //        xx.r8.distance = mm.distance;
+                    //        xx.r8.direction = mm.direction;
+                    //        count++;
+                    //        break;
+                    //    default:
+                    //        Debug.Log("Your input in default case is out of range");
+                    //        break;
+                    //}
+
+                    Debug.Log("for loop ended");
+
+
+
+
+
+                //createMCopies(mm,);
+
+                //else
+                //{
+                //    ColourRule mm = new ColourRule();
+                //    mm = Fitness1.GetCRule(i, c);
+                //    //createCCopies(cc,);
+                //    switch (count)
+                //    {
+
+                //        case 1:
+                //            xx.r1.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 2:
+                //            xx.r2.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 3:
+                //            xx.r3.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 4:
+                //            xx.r4.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 5:
+                //            xx.r5.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 6:
+                //            xx.r6.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 7:
+                //            xx.r7.type = mm.type;
+                //            count++;
+                //            break;
+                //        case 8:
+                //            xx.r8.type = mm.type;
+                //            count++;
+                //            break;
+                //        default:
+                //            Debug.Log("Your input in default case is out of range");
+                //            break;
+                //    }
+
+
+                //}
+
+
             }
             Debug.Log("make copies now");
             makeCopies(xx,pop);
 
         }
-        List<chromosome<newRules>> chrList = assignUniqueColors(mc);
+        List<Chromosome> chrList = assignUniqueColors(mc);
         Debug.Log("length of mc is "+chrList.Count);
-        List<chromosome<newRules>> chrList2a = new List<chromosome<newRules>>();
+        List< Chromosome> chrList2a = new List<Chromosome>();
         chrList2a = Fitness2.fitness2a(chrList);
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList2a);

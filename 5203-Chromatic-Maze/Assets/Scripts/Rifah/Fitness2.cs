@@ -25,13 +25,13 @@ public class Fitness2 : MonoBehaviour
 
 
     //public static void fitness2(ColourAssigner.ColouredMaze colouredMaze)
-    public static List<chromosome<newRules>> fitness2a(List<chromosome<newRules>> mc)
+    public static List<Chromosome> fitness2a(List<Chromosome> mc)
     {
         //PART 3 : CHECKING BADNESS WITH COLORS : "target color of teleport should not be src color of include/exclude"
         //ICollection ruleIdxs = d.Keys;
         int fit = 0;
-        List<chromosome<newRules>> chosenChr2 = new List<chromosome<newRules>>();
-        foreach (chromosome<newRules> r in mc)
+        List<Chromosome> chosenChr2 = new List<Chromosome>();
+        foreach (Chromosome r in mc)
         {
             List<newRules> rr = new List<newRules>() { r.r1, r.r2, r.r3, r.r4, r.r5, r.r6, r.r7, r.r8 };
             foreach (newRules rule in rr)
@@ -79,7 +79,7 @@ public class Fitness2 : MonoBehaviour
 
         }
         List<int> fitvals2a = new List<int>();
-        foreach(chromosome<newRules> r in mc){
+        foreach(Chromosome r in mc){
             fitvals2a.Add(r.fit);
         }
         fitvals2a.Sort();
@@ -91,7 +91,7 @@ public class Fitness2 : MonoBehaviour
             
         }
         int i = 0;
-        foreach (chromosome<newRules> r in mc)
+        foreach (Chromosome r in mc)
         {
             if (chosenfits[i]==r.fit)
             {
