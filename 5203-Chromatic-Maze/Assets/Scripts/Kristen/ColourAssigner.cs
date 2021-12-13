@@ -92,7 +92,7 @@ public class ColourAssigner : MonoBehaviour
             //Shinro.PlaceCheckers(cmaze.spaths.shortestPath, cmaze, .5f);
             Shinro.PlaceCheckers(cmaze.spaths.mediumPath, cmaze, .3f);
             cmaze.checkers = Mathf.RoundToInt((cmaze.spaths.mediumPath.Count - 1) * .3f);
-            NumClues.SetClues(maze.tiles);
+            //NumClues.SetClues(maze.tiles);
         }
         return cmaze;
     }
@@ -126,6 +126,29 @@ public class ColourAssigner : MonoBehaviour
         return cRules[0]; //this should never happen
     }
 
+    private void ResetGrid(Tile[] tileGrid)
+    {
+        foreach(Tile t in tileGrid) //ruletype and index not reset
+        {
+            t.assigned = false;
+            t.failedToAssign = false;
+            t.moveRule = false;
+            t.canBe[Colour.Red] = false;
+            t.canBe[Colour.Orange] = false;
+            t.canBe[Colour.Yellow] = false;
+            t.canBe[Colour.Pink] = false;
+            t.canBe[Colour.Green] = false;
+            t.canBe[Colour.Blue] = false;
+            t.canBe[Colour.Purple] = false;
+            t.canBe[Colour.Teal] = false;
+            //t.mRule = new MovementRule();
+            //t.cRule = new ColourRule();
+            //t.index = new int();
+            //t.colour = new Colour();
+            //t.ruleType = new Type();
+        }
+    }
+
     //not in start because other script needs to finish first
     public void SetRules(List<MovementRule> mr, List<ColourRule> cr)
     {
@@ -153,14 +176,31 @@ public class ColourAssigner : MonoBehaviour
             maze.tileList.Add(t);
         }
 
+        GenerateGrid.maze.tiles.CopyTo(maze.tiles, 0);
+
         maze.tiles = new Tile[GenerateGrid.maze.tiles.Length];
         for (int i = 0; i < maze.tiles.Length; i++)
         {
-            maze.tiles[i] = GenerateGrid.maze.tiles[i];
+            maze.tiles[i] = GenerateGrid.vertices[i];
         }
+
+        ResetGrid(maze.tiles); //reset rule assignments
 
         cRules = new List<ColourRule>();
         mRules = new List<MovementRule>();
+        foreach(MovementRule mCopy in mr)
+        {
+            mRules.Add(mCopy);
+        }
+        foreach (ColourRule cCopy in cr)
+        {
+            cRules.Add(cCopy);
+        }
+        //mRules = mr;
+        //cRules = cr;
+        //Debug.Log(mr.Count);
+        //Debug.Log(cr.Count);
+
         RoundOneRules = new List<MovementRule>();
         identifiers = new List<int>();
         ruleTypes = new List<Type>();
@@ -168,11 +208,6 @@ public class ColourAssigner : MonoBehaviour
         pathUnassigned = 0;
         unassigned = 0;
         exitAssigned = true;
-
-        mRules = mr;
-        cRules = cr;
-        //Debug.Log(mr.Count);
-        //Debug.Log(cr.Count);
 
         //Get list of CheckPath rule indexes
         foreach (ColourRule rule in cRules)
@@ -202,137 +237,160 @@ public class ColourAssigner : MonoBehaviour
                 RoundOneRules.Add(rule);
             }
         }
+
+        //TEMPORARY
+        string ss = "maze rules: ";
+        foreach (MovementRule g in mRules)
+        {
+            ss += g.type + "-" + g.src + ", ";
+        }
+        foreach (ColourRule h in cRules)
+        {
+            ss += h.type + "-" + h.src + ", ";
+        }
+        Debug.Log(ss);
     }
 
     private void AssignByMRule(Tile t, MovementRule rule)
     {
-        t.assigned = true;
-        t.mRule = rule;
-        t.ruleType = rule.type;
-        t.moveRule = true;
-        t.colour = rule.src;
-        t.index = rule.index;
-        used[rule.index]++;
-
-        SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
-
-        foreach(Material mat in colours)
+        if (t.failedToAssign == false) //maybe?? abcd
         {
-            if(mat.name == t.colour.ToString())
-            {
-                sr.material.shader = mat.shader;
-                sr.material.color = mat.color;
-                break;
-            }
-        }
+            Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
+            t.assigned = true;
+            t.mRule = rule;
+            t.ruleType = rule.type;
+            t.moveRule = true;
+            t.colour = rule.src;
+            t.index = rule.index;
+            used[rule.index]++;
 
-        List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+            SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
-        if (rule.type == Type.warm) //|| r.type == Type.teleport) *******I'm not setting the parnet/children of Teleport tiles meaning if one is placed anywhere but a deadend, it'll alter the paths
-        {
-            t.parent.canBe[Colour.Green] = false;
-            t.parent.canBe[Colour.Blue] = false;
-            t.parent.canBe[Colour.Purple] = false;
-            t.parent.canBe[Colour.Teal] = false;
-            foreach (Tile c in t.children)
+            foreach (Material mat in colours)
             {
-                c.canBe[Colour.Green] = false;
-                c.canBe[Colour.Blue] = false;
-                c.canBe[Colour.Purple] = false;
-                c.canBe[Colour.Teal] = false;
+                if (mat.name == t.colour.ToString())
+                {
+                    sr.material.shader = mat.shader;
+                    sr.material.color = mat.color;
+                    break;
+                }
             }
 
-            //Set the can be bools of tiles on other side of walls
-            for (int i = 0; i < wallNeighbours.Count; i++)
+            List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+
+            if (rule.type == Type.warm) //|| r.type == Type.teleport) *******I'm not setting the parnet/children of Teleport tiles meaning if one is placed anywhere but a deadend, it'll alter the paths
             {
-                wallNeighbours[i].canBe[Colour.Red] = false;
-                wallNeighbours[i].canBe[Colour.Orange] = false;
-                wallNeighbours[i].canBe[Colour.Yellow] = false;
-                wallNeighbours[i].canBe[Colour.Pink] = false;
+                t.parent.canBe[Colour.Green] = false;
+                t.parent.canBe[Colour.Blue] = false;
+                t.parent.canBe[Colour.Purple] = false;
+                t.parent.canBe[Colour.Teal] = false;
+                foreach (Tile c in t.children)
+                {
+                    c.canBe[Colour.Green] = false;
+                    c.canBe[Colour.Blue] = false;
+                    c.canBe[Colour.Purple] = false;
+                    c.canBe[Colour.Teal] = false;
+                }
+
+                //Set the can be bools of tiles on other side of walls
+                for (int i = 0; i < wallNeighbours.Count; i++)
+                {
+                    wallNeighbours[i].canBe[Colour.Red] = false;
+                    wallNeighbours[i].canBe[Colour.Orange] = false;
+                    wallNeighbours[i].canBe[Colour.Yellow] = false;
+                    wallNeighbours[i].canBe[Colour.Pink] = false;
+                }
             }
-        }
-        else if (rule.type == Type.cool)
-        {
-            t.parent.canBe[Colour.Red] = false;
-            t.parent.canBe[Colour.Orange] = false;
-            t.parent.canBe[Colour.Yellow] = false;
-            t.parent.canBe[Colour.Pink] = false;
-            foreach (Tile c in t.children)
+            else if (rule.type == Type.cool)
             {
-                c.canBe[Colour.Red] = false;
-                c.canBe[Colour.Orange] = false;
-                c.canBe[Colour.Yellow] = false;
+                t.parent.canBe[Colour.Red] = false;
+                t.parent.canBe[Colour.Orange] = false;
+                t.parent.canBe[Colour.Yellow] = false;
                 t.parent.canBe[Colour.Pink] = false;
-            }
+                foreach (Tile c in t.children)
+                {
+                    c.canBe[Colour.Red] = false;
+                    c.canBe[Colour.Orange] = false;
+                    c.canBe[Colour.Yellow] = false;
+                    t.parent.canBe[Colour.Pink] = false;
+                }
 
-            //Set the can be bools of tiles on other side of walls
-            for (int i = 0; i < wallNeighbours.Count; i++)
-            {
-                wallNeighbours[i].canBe[Colour.Blue] = false;
-                wallNeighbours[i].canBe[Colour.Green] = false;
-                wallNeighbours[i].canBe[Colour.Purple] = false;
-                wallNeighbours[i].canBe[Colour.Teal] = false;
+                //Set the can be bools of tiles on other side of walls
+                for (int i = 0; i < wallNeighbours.Count; i++)
+                {
+                    wallNeighbours[i].canBe[Colour.Blue] = false;
+                    wallNeighbours[i].canBe[Colour.Green] = false;
+                    wallNeighbours[i].canBe[Colour.Purple] = false;
+                    wallNeighbours[i].canBe[Colour.Teal] = false;
+                }
             }
         }
     }
 
     private void AssignByCRule(Tile t, ColourRule rule)
     {
-        t.assigned = true;
-        t.cRule = rule;
-        t.ruleType = rule.type;
-        t.moveRule = false;
-        t.colour = rule.src;
-        t.index = rule.index;
-        used[rule.index]++;
+        
 
-        SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
-
-        foreach (Material mat in colours)
+        if (t.failedToAssign == false) //maybe?? abcd
         {
-            if (mat.name == t.colour.ToString())
-            {
-                sr.material.shader = mat.shader;
-                sr.material.color = mat.color;
-                break;
-            }
-        }
+            Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
 
-        List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+            t.assigned = true;
+            t.cRule = rule;
+            t.ruleType = rule.type;
+            t.moveRule = false;
+            t.colour = rule.src;
+            t.index = rule.index;
+            used[rule.index]++;
 
-        if (rule.type == Type.include) //may not need these after updating Round 2 method
-        {
-            //Set the can be bools of tiles on other side of walls
-            for (int i = 0; i < wallNeighbours.Count; i++)
-            {
-                wallNeighbours[i].canBe[rule.target] = false;
-            }
+            SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
-            //Set the parent and children as the ruel of the target colour
-            if (t.parent.canBe[rule.target] == true && t.parent.assigned == false)
+            foreach (Material mat in colours)
             {
-                AssignByColour(t.parent, rule.target);
-            }
-            foreach (Tile c in t.children)
-            {
-                if (c.canBe[rule.target] == true && c.assigned == false)
+                if (mat.name == t.colour.ToString())
                 {
-                    AssignByColour(c, rule.target);
+                    sr.material.shader = mat.shader;
+                    sr.material.color = mat.color;
+                    break;
                 }
             }
-        }
-        else if (rule.type == Type.exclude)
-        {
-            t.parent.canBe[rule.target] = false;
-            foreach (Tile c in t.children)
-            {
-                c.canBe[rule.target] = false;
-            }
 
-            //Assign exclude target colour to all tiels on other side of walls
-            for (int i = 0; i < wallNeighbours.Count; i++)
+            List<Tile> wallNeighbours = getAllWallTiles(t); //assigned and unassigned adjacent tiles on other side of wall
+
+            if (rule.type == Type.include) //may not need these after updating Round 2 method
             {
-                AssignByColour(wallNeighbours[i], rule.target);
+                //Set the can be bools of tiles on other side of walls
+                for (int i = 0; i < wallNeighbours.Count; i++)
+                {
+                    wallNeighbours[i].canBe[rule.target] = false;
+                }
+
+                //Set the parent and children as the ruel of the target colour
+                if (t.parent.canBe[rule.target] == true && t.parent.assigned == false)
+                {
+                    AssignByColour(t.parent, rule.target);
+                }
+                foreach (Tile c in t.children)
+                {
+                    if (c.canBe[rule.target] == true && c.assigned == false)
+                    {
+                        AssignByColour(c, rule.target);
+                    }
+                }
+            }
+            else if (rule.type == Type.exclude)
+            {
+                t.parent.canBe[rule.target] = false;
+                foreach (Tile c in t.children)
+                {
+                    c.canBe[rule.target] = false;
+                }
+
+                //Assign exclude target colour to all tiels on other side of walls
+                for (int i = 0; i < wallNeighbours.Count; i++)
+                {
+                    AssignByColour(wallNeighbours[i], rule.target);
+                }
             }
         }
     }
@@ -414,6 +472,7 @@ public class ColourAssigner : MonoBehaviour
                 {
                     AssignByMRule(t, rule); //assign rule to t
                     assigned = true;
+                    break;
                 }
             }
 
@@ -421,9 +480,10 @@ public class ColourAssigner : MonoBehaviour
             {
                 foreach (ColourRule rule in cRules)
                 {
-                    if (rule.index == rand)
+                    if (rule.index == indexes[rand])
                     {
                         AssignByCRule(t, rule); //assign rule to t
+                        break;
                     }
                 }
             }
@@ -860,7 +920,8 @@ public class ColourAssigner : MonoBehaviour
                     check = true;
                     //Debug.Log("Assigned warm to " + tile.name + " Adjacent walls: " + walls.Count + "Neighbours: " + adjacent.Count);
 
-                    AssignByMRule(tile, m);
+                    AssignByMRule(tile, m); //GETS CALLED TWICE ***** ABCD
+                    break;
                 }
             }
             else if (m.type == Type.cool)
@@ -889,7 +950,8 @@ public class ColourAssigner : MonoBehaviour
                 if (cool == true && tile.canBe[m.src] == true)
                 {
                     check = true;
-                    AssignByMRule(tile, m);
+                    AssignByMRule(tile, m); //ALL 3 CALLS******** ABCD
+                    break;
                 }
             }
         }
