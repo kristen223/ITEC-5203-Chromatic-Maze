@@ -70,7 +70,7 @@ public class Crossover : MonoBehaviour
             //{
             zz.r1.src = scolors[idx];
             zz.r1.target = setTarget(zz.r1, idx);
-            idx++;
+            idx++; //going serially which could be bad
             if (idx >= 8)
             {
                 idx = 0;
