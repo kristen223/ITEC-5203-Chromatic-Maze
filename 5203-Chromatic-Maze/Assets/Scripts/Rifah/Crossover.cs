@@ -62,7 +62,7 @@ public class Crossover : MonoBehaviour
         return nr.target;
     }
 
-    public static void assignUniqueColors(List<chromosome> mc)
+    public static List<chromosome> assignUniqueColors(List<chromosome> mc)
     {
         foreach (chromosome zz in mc)
         {
@@ -141,6 +141,7 @@ public class Crossover : MonoBehaviour
 
 
         }
+        return mc;
     }
 
 
@@ -301,8 +302,8 @@ public class Crossover : MonoBehaviour
             }
             makeCopies(xx);
         }
-        assignUniqueColors(mc);
-        MazeCreation.seperateRules(mc);
+        List<chromosome> chrList = assignUniqueColors(mc);
+        MazeCreation.seperateRules(chrList);
         //MazeCreation.
 
     }
