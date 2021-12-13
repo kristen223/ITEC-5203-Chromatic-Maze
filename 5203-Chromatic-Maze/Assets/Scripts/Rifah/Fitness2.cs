@@ -85,9 +85,9 @@ public class Fitness2 : MonoBehaviour
         fitvals2a.Sort();
         fitvals2a.Reverse();
         List<int> chosenfits = new List<int>();
-        for (int i = 0; i < (int)Math.Ceiling(fitvals2a.Count*0.2); i++)
+        for (int k = 0; k < (int)Math.Ceiling(fitvals2a.Count*0.2); k++)
         {
-            chosenfits.Add(fitvals2a[i]);
+            chosenfits.Add(fitvals2a[k]);
             
         }
         int i = 0;
@@ -96,6 +96,7 @@ public class Fitness2 : MonoBehaviour
             if (chosenfits[i]==r.fit)
             {
                 chosenChr2.Add(r);
+                i++;
             }
         }
         return chosenChr2;
