@@ -57,14 +57,14 @@ public class Rules : MonoBehaviour
     public static List<MovementRule> movementRuleSets = new List<MovementRule>();
     public static List<ColourRule> colourRuleSets = new List<ColourRule>();
 
-    public int popSize;
+    public static int popSize;
 
 
     void Start()
     {
        
         defineRules();
-        selectChromosomes(movementRuleSets,colourRuleSets,popSize); //mutate and fitness are nested inside
+        selectChromosomes(movementRuleSets,colourRuleSets,popSize); 
 
     }
 

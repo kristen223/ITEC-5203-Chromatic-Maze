@@ -43,20 +43,22 @@ public class MazeCreation : MonoBehaviour
                         {
 
                             ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-                            Debug.Log("original color was---------------------------------" + z.src);
-                            z.src = allcolors[i];
-                            i++;
-                            Debug.Log("new color is------------------------- " + z.src);
+                            //Debug.Log("original color was---------------------------------" + z.src);
+                            //z.src = allcolors[i];
+                            //i++;
+                            //Debug.Log("new color is------------------------- " + z.src);
                             cr.Add(z);
+                            Debug.Log("src color is-----" + z.src);
                         }
                         else
                         {
                             MovementRule y = Fitness1.GetMRule(kvp.Key, m);
-                            Debug.Log("original color was---------------------------------" + y.src);
-                            y.src = allcolors[i];
-                            i++;
-                            Debug.Log("new color is------------------------- " + y.src);
+                            //Debug.Log("original color was---------------------------------" + y.src);
+                            //y.src = allcolors[i];
+                           // i++;
+                           // Debug.Log("new color is------------------------- " + y.src);
                             mr.Add(y);
+                            Debug.Log("src color is-----" + y.src);
                         }
                         // ChosenRulesIdx.Add(kvp.Key);
 
@@ -221,9 +223,9 @@ public class MazeCreation : MonoBehaviour
             //SET UP PLAYER CONTROLLER (steps, undos, etc.)
             PlayerController.SetupPlayerController(finalMaze);
         }
-        
 
-        
+
+
 
         //Ending
     }
