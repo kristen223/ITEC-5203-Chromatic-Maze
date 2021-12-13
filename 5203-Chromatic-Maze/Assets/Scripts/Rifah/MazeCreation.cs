@@ -20,8 +20,8 @@ public class MazeCreation : MonoBehaviour
         unassignedTiles = new List<Tile[]>();
     }
 
-    
-    
+
+
 
     public static void seperateRules(List<chromosome> mc)
     {
@@ -226,7 +226,7 @@ public class MazeCreation : MonoBehaviour
     }
 
     public static void getFinalRules(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
-   
+
     {
         int counter = 1;
 
