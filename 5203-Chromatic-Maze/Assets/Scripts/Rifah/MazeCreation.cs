@@ -50,24 +50,27 @@ public class MazeCreation : MonoBehaviour
                         {
                             
                             ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-                            Debug.Log("original color was---------------------------------" + z.src);
-                            z.src = allcolors[i];
-                            i++;
-                            Debug.Log("new color is------------------------- " + z.src);
+                            //Debug.Log("original color was---------------------------------" + z.src);
+                            //z.src = allcolors[i];
+                            //i++;
+                            //Debug.Log("new color is------------------------- " + z.src);
                             cr.Add(z);
+                            Debug.Log("src color is-----" + z.src);
                         }
                         else
                         {
                             MovementRule y = Fitness1.GetMRule(kvp.Key, m);
-                            Debug.Log("original color was---------------------------------" + y.src);
-                            y.src = allcolors[i];
-                            i++;
-                            Debug.Log("new color is------------------------- " + y.src);
+                            //Debug.Log("original color was---------------------------------" + y.src);
+                            //y.src = allcolors[i];
+                           // i++;
+                           // Debug.Log("new color is------------------------- " + y.src);
                             mr.Add(y);
+                            Debug.Log("src color is-----" + y.src);
                         }
                         // ChosenRulesIdx.Add(kvp.Key);
 
                     }
+                    Debug.Log("===========================END OF 8 UNIQUE COLORS==========================");
                     Debug.Log("total mr : " + mr.Count);
                     Debug.Log("total cr : " + cr.Count);
                     GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
