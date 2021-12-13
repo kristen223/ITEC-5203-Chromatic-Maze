@@ -175,10 +175,11 @@ public class Crossover : MonoBehaviour
 
             //List<Type>
 
-            chromosome<newRules> xx = new chromosome<newRules>();
+            //chromosome<newRules> xx = new chromosome<newRules>();
             GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
-            chromosome<newRules> yy = g.AddComponent<chromosome<newRules>>();
 
+            g.AddComponent<Chromosome>(); //CHANGED THESE TWO LINES
+            Chromosome xx = g.GetComponent<Chromosome>(); //rest of your script still uses your old chromosome class.
 
             foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
             {
