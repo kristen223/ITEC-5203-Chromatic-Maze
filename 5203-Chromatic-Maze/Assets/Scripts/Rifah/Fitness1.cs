@@ -140,73 +140,78 @@ public class Fitness1 : MonoBehaviour
                     }
                 }
 
+
+
+
+
+                // --------DONE IN FITNESS2A----------
                 //PART 3 : CHECKING BADNESS WITH COLORS : "target color of teleport should not be src color of include/exclude"
                 //ICollection ruleIdxs = d.Keys;
 
 
-                foreach (KeyValuePair<int, Type> kvc in d)
-                {
-                    if (kvc.Value == Type.teleport) //teleport so its a movement rule
-                    {
-                        MovementRule r1 = GetMRule(kvc.Key, m);
-                        foreach (KeyValuePair<int, Type> kvb in d)
-                        {
-                            if (kvb.Value == Type.include || kvb.Value == Type.exclude)
-                            {
-                                ColourRule r2 = GetCRule(kvb.Key, c);
-                                if (r1.target == r2.src)
-                                {
-                                    fit = fit - 5;
-                                }
-                            }
-                        }
-                    }
+                //foreach (KeyValuePair<int, Type> kvc in d)
+                //{
+                //    if (kvc.Value == Type.teleport) //teleport so its a movement rule
+                //    {
+                //        MovementRule r1 = GetMRule(kvc.Key, m);
+                //        foreach (KeyValuePair<int, Type> kvb in d)
+                //        {
+                //            if (kvb.Value == Type.include || kvb.Value == Type.exclude)
+                //            {
+                //                ColourRule r2 = GetCRule(kvb.Key, c);
+                //                if (r1.target == r2.src)
+                //                {
+                //                    fit = fit - 5;
+                //                }
+                //            }
+                //        }
+                //    }
 
 
-                }
+                //}
 
-                //PART 4 : WARM/COOL BALANCE
-                int wrm = 0;
-                int cld = 0;
+                ////PART 4 : WARM/COOL BALANCE
+                //int wrm = 0;
+                //int cld = 0;
 
-                foreach (KeyValuePair<int, Type> p in d)
-                {
-                    if (p.Value == Type.include || p.Value == Type.exclude)
-                    {
-                        ColourRule r = GetCRule(p.Key, c);
-                        if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
-                        {
-                            wrm++;
-                        }
-                        if (r.src == Colour.Cool || r.src == Colour.Blue || r.src == Colour.Green || r.src == Colour.Teal || r.src == Colour.Teal || r.target == Colour.Cool || r.target == Colour.Blue || r.target == Colour.Teal || r.target == Colour.Green || r.target == Colour.Purple)
-                        {
-                            cld++;
-                        }
+                //foreach (KeyValuePair<int, Type> p in d)
+                //{
+                //    if (p.Value == Type.include || p.Value == Type.exclude)
+                //    {
+                //        ColourRule r = GetCRule(p.Key, c);
+                //        if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
+                //        {
+                //            wrm++;
+                //        }
+                //        if (r.src == Colour.Cool || r.src == Colour.Blue || r.src == Colour.Green || r.src == Colour.Teal || r.src == Colour.Teal || r.target == Colour.Cool || r.target == Colour.Blue || r.target == Colour.Teal || r.target == Colour.Green || r.target == Colour.Purple)
+                //        {
+                //            cld++;
+                //        }
 
-                    }
-                    else
-                    {
-                        MovementRule r = GetMRule(p.Key, m);
-                        if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
-                        {
-                            wrm++;
-                        }
-                        if (r.src == Colour.Cool || r.src == Colour.Blue || r.src == Colour.Green || r.src == Colour.Teal || r.src == Colour.Teal || r.target == Colour.Cool || r.target == Colour.Blue || r.target == Colour.Teal || r.target == Colour.Green || r.target == Colour.Purple)
-                        {
-                            cld++;
-                        }
-                    }
+                //    }
+                //    else
+                //    {
+                //        MovementRule r = GetMRule(p.Key, m);
+                //        if (r.src == Colour.Warm || r.src == Colour.Red || r.src == Colour.Orange || r.src == Colour.Pink || r.src == Colour.Yellow || r.target == Colour.Warm || r.target == Colour.Red || r.target == Colour.Orange || r.target == Colour.Pink || r.target == Colour.Yellow)
+                //        {
+                //            wrm++;
+                //        }
+                //        if (r.src == Colour.Cool || r.src == Colour.Blue || r.src == Colour.Green || r.src == Colour.Teal || r.src == Colour.Teal || r.target == Colour.Cool || r.target == Colour.Blue || r.target == Colour.Teal || r.target == Colour.Green || r.target == Colour.Purple)
+                //        {
+                //            cld++;
+                //        }
+                //    }
 
-                }
+                //}
 
-                if (wrm == cld)
-                {
-                    fit = fit + 2; //most fit = 8+2 = 10
-                }
-                if (wrm != cld)
-                {
-                    fit = fit - (Mathf.Abs(wrm - cld));
-                }
+                //if (wrm == cld)
+                //{
+                //    fit = fit + 2; //most fit = 8+2 = 10
+                //}
+                //if (wrm != cld)
+                //{
+                //    fit = fit - (Mathf.Abs(wrm - cld));
+                //}
             //existence of warm/cold rules, then check the exc/incl 's src colors to not be the same warm/cold
 
        
