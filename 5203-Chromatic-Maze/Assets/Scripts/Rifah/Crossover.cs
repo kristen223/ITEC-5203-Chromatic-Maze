@@ -11,6 +11,7 @@ public class newRules
     public Colour target;
     public bool inclusion;
 }
+
 public class chromosome
 {
     public newRules r1;
@@ -21,6 +22,10 @@ public class chromosome
     public newRules r6;
     public newRules r7;
     public newRules r8;
+    //List<newRules> nr;
+    //newRules[] rs = new newRules[] { r1,r2,r3,r4,r5,r6,r7,r8};
+    //public List<MovementRule> mr;
+    //public List<ColourRule> cr;
 
     
 }
@@ -50,7 +55,7 @@ public class Crossover : MonoBehaviour
             nr.target = Colour.All;
 
         }
-        if (nr.type == Type.teleport)
+        if (nr.type == Type.teleport || nr.type==Type.include || nr.type == Type.exclude)
         {
             nr.target = tcolors[(idx + 1) % tcolors.Length]; //circular array concept
         }
@@ -65,7 +70,13 @@ public class Crossover : MonoBehaviour
             System.Random rand = new System.Random();
             int idx = rand.Next(0, scolors.Length);
             //usedIdx.Add(idx);
+            //for (int i = 0; i < zz.mr.Count; i++)
+            //{
+            //    Colour c1 = scolors[idx];
+            //    zz.mr[i].src =c1 ;
+            //}
 
+            //}
             //if (!usedIdx.Contains(idx))
             //{
             zz.r1.src = scolors[idx];
@@ -142,7 +153,7 @@ public class Crossover : MonoBehaviour
             mc.Add(yy);
         }
     }
-
+    
     public Crossover()
     {
 
@@ -291,6 +302,8 @@ public class Crossover : MonoBehaviour
             makeCopies(xx);
         }
         assignUniqueColors(mc);
+        MazeCreation.seperateRules(mc);
+        //MazeCreation.
 
     }
 }
