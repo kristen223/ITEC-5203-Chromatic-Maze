@@ -12,7 +12,7 @@ public class newRules
     public bool inclusion;
 }
 
-public class chromosome
+public class chromosome<rs> where rs : newRules
 {
     public newRules r1;
     public newRules r2;
@@ -35,7 +35,8 @@ public class Crossover : MonoBehaviour
 {
     //public int pop = Rules.popSize;
     public static int newIdx = 0;
-    public static List<chromosome> mc = new List<chromosome>();
+
+    public static List<chromosome<newRules>> mc = new List<chromosome<newRules>>();
     //public static List<newRules> newruleslist = new List<newRules>();
     public static Colour[] scolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
     public static Colour[] tcolors = new Colour[11] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green, Colour.All, Colour.Warm, Colour.Cool };
@@ -64,9 +65,9 @@ public class Crossover : MonoBehaviour
         return nr.target;
     }
 
-    public static List<chromosome> assignUniqueColors(List<chromosome> mc)
+    public static List<chromosome<newRules>> assignUniqueColors(List<chromosome<newRules>> mc)
     {
-        foreach (chromosome zz in mc)
+        foreach (chromosome<newRules> zz in mc)
         {
             List<int> usedIdx = new List<int>();
             System.Random rand = new System.Random();
@@ -147,12 +148,12 @@ public class Crossover : MonoBehaviour
     }
 
 
-    public static void makeCopies(chromosome xx,int pop)
+    public static void makeCopies(chromosome<newRules> xx,int pop)
     {
         int count = (int)System.Math.Ceiling(0.2 * pop);
         for (int i = 0; i < count; i++)
         {
-            chromosome yy = xx;
+            chromosome<newRules> yy = xx;
             Debug.Log("adding to mc" + yy.ToString());
             mc.Add(yy);
         }
@@ -173,8 +174,11 @@ public class Crossover : MonoBehaviour
 
             //List<Type>
 
-            chromosome xx = new chromosome();
-            
+            chromosome<newRules> xx = new chromosome<newRules>();
+            //GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
+            //chromosome yy = g.AddComponent<chromosome>();
+
+
             foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
             {
                 Debug.Log("reached crossover" + k.Key + " ," + x.Key);
@@ -309,8 +313,9 @@ public class Crossover : MonoBehaviour
             makeCopies(xx,pop);
 
         }
-        List<chromosome> chrList = assignUniqueColors(mc);
+        List<chromosome<newRules>> chrList = assignUniqueColors(mc);
         Debug.Log("length of mc is "+chrList.Count);
+        //Fitness2.fitness2(chrList);
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList);
         //MazeCreation.

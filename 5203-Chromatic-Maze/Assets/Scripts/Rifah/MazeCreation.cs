@@ -20,11 +20,11 @@ public class MazeCreation : MonoBehaviour
         unassignedTiles = new List<Tile[]>();
     }
 
-    public static void seperateRules(List<chromosome> mc)
+    public static void seperateRules(List<chromosome<newRules>> mc)
     {
         Debug.Log("count: " + mc.Count);
         int counter = 1;
-        foreach (chromosome s in mc)
+        foreach (chromosome<newRules> s in mc)
         {
             Debug.Log("chromosome " + counter);
             List<MovementRule> mr = new List<MovementRule>();

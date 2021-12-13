@@ -209,44 +209,12 @@ public class Fitness1 : MonoBehaviour
                 }
             //existence of warm/cold rules, then check the exc/incl 's src colors to not be the same warm/cold
 
-        /*    //PART 5 : CHECKING FOR ALL UNIQUE SRC COLORS
-            List<Colour> uniqueColors = new List<Colour>();
- 
-            foreach (KeyValuePair<int, Type> kvc in d)
-            {
-                if(kvc.Value==Type.include || kvc.Value == Type.exclude)
-                {
-                    ColourRule rr = GetCRule(kvc.Key,c);
-                   
-                    if (uniqueColors.Contains(rr.src))
-                    {
-                        fit = fit - 50;
-                    }
-                    else
-                    {
-                        uniqueColors.Add(rr.src);
-                    }
-                    
-
-                }
-                else
-                {
-                    MovementRule rr = GetMRule(kvc.Key, m);
-
-                    if (uniqueColors.Contains(rr.src))
-                    {
-                        fit = fit - 50;
-                    }
-                    else
-                    {
-                        uniqueColors.Add(rr.src);
-                    }
-                }
+       
                 
 
 
 
-                }*/
+                
 
                 //FINAL STEP : ADDING THE FITNESS VALUE TO THE dict ALONG WITH INDEX
 
