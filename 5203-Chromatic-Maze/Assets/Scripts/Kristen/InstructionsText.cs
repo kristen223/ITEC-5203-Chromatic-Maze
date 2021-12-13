@@ -9,7 +9,7 @@ public class InstructionsText : MonoBehaviour
     private static Text ruleText;
     private static string instructions;
 
-    void Start()
+    void Awake()
     {
         instructions = "Rules: " + "\n";
         ruleText = GameObject.Find("ruleText").GetComponent<Text>();

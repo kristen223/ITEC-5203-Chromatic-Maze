@@ -64,7 +64,7 @@ public class Fitness1 : MonoBehaviour
                 // PART 1 : CHECKING VARAITION IN TYPES
 
                 // ICollection valueColl = d.Values; //types
-                Debug.Log("-------START of a single chr------------");
+                //Debug.Log("-------START of a single chr------------");
                 //Debug.Log("this should be length 8 but it is : " + d.Count);
                 foreach (Type v in d.Values) //looping in types (chr.value)
                 {
@@ -73,10 +73,10 @@ public class Fitness1 : MonoBehaviour
                     if (!uniqueTypes.Contains(v)) //types are added if they dont already exist in the list
                     {
                         uniqueTypes.Add(v);
-                        Debug.Log("adding this to uniqetypes " + v);
+                        //Debug.Log("adding this to uniqetypes " + v);
                     }
                 }
-                Debug.Log("uniquetypes length is : " + uniqueTypes.Count);
+                //Debug.Log("uniquetypes length is : " + uniqueTypes.Count);
                 if (uniqueTypes.Count == 8) //length is 8 if all types are unique
                 {
                     fit = 8;
@@ -253,8 +253,8 @@ public class Fitness1 : MonoBehaviour
 
 
 
-                Debug.Log("-------END of a single chr------------");
-                Debug.Log("fitness of " + chrCount + "is " + fit);
+                //Debug.Log("-------END of a single chr------------");
+               // Debug.Log("fitness of " + chrCount + "is " + fit);
                 fitVals.Add(chrCount, fit);
                 chrCount++;
                
@@ -282,12 +282,12 @@ public class Fitness1 : MonoBehaviour
             }
             
         }
-        Debug.Log("printing chosen chromosomes");
+       // Debug.Log("printing chosen chromosomes");
         foreach(var item in chosenChr)
         {
-            Debug.Log("chosen fitness are : "+item.Value);
+           // Debug.Log("chosen fitness are : "+item.Value);
         }
-        Debug.Log("done");
+        //Debug.Log("done");
 
 
 

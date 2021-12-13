@@ -8,6 +8,8 @@ public class TraverseMaze : MonoBehaviour
 
     SolutionPaths sPaths;
 
+    public int NumberOfPaths;
+
     public struct SolutionPaths
     {
         public List<List<Tile>> allPaths; //all possible solution paths
@@ -19,7 +21,7 @@ public class TraverseMaze : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         sPaths = new SolutionPaths();
         sPaths.allPaths = new List<List<Tile>>();
@@ -58,6 +60,10 @@ public class TraverseMaze : MonoBehaviour
             {
                 sPaths.mediumPath = path;
             }
+            else if(path.Count <= average && path.Count == sPaths.mediumPath.Count && sPaths.mediumPath == sPaths.shortestPath)
+            {
+                sPaths.mediumPath = path;
+            }
         }
 
     }
@@ -72,27 +78,30 @@ public class TraverseMaze : MonoBehaviour
             GetThreePaths();
         }
 
-        String debugs = "Shortest path: ";
-        foreach (Tile t in sPaths.shortestPath)
-        {
-            debugs += t.name + ", ";
-        }
-        Debug.Log(debugs);
+        //Debug.Log("xxnumber of paths: " +  sPaths.allPaths.Count);
 
-        String debugsss = "Medium path: ";
-        foreach (Tile t in sPaths.mediumPath)
-        {
-            debugsss += t.name + ", ";
-        }
-        Debug.Log(debugsss);
+        //String debugs = "xxShortest path: ";
+        //foreach (Tile t in sPaths.shortestPath)
+        //{
+        //    debugs += t.name + ", ";
+        //}
+        //Debug.Log(debugs);
 
-        String debug = "Longest path: ";
-        foreach (Tile t in sPaths.longestPath)
-        {
-            debug += t.name + ", ";
-        }
-        Debug.Log(debug);
+        //String debugsss = "xxMedium path: ";
+        //foreach (Tile t in sPaths.mediumPath)
+        //{
+        //    debugsss += t.name + ", ";
+        //}
+        //Debug.Log(debugsss);
 
+        //String debug = "xxLongest path: ";
+        //foreach (Tile t in sPaths.longestPath)
+        //{
+        //    debug += t.name + ", ";
+        //}
+        //Debug.Log(debug);
+
+        NumberOfPaths = sPaths.allPaths.Count;
         return sPaths;
         //returns the final found path a lot (like it replaces all others)
     }

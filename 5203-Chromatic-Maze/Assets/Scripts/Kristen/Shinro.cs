@@ -7,16 +7,16 @@ public class Shinro : MonoBehaviour
 
     private static int chance; //likelihood checker is placed (percentage)
       
-    void Start()
+    void Awake()
     {
         chance = 10;
     }
 
     public static void PlaceCheckers(List<Tile> path, ColourAssigner.ColouredMaze cmaze, float percent)
     {
+        
         int length = path.Count;
         int checkerCount = Mathf.RoundToInt((length - 1) * percent);
-        Debug.Log(checkerCount);
         Tile previous = path[0]; //skip the entrance by making it previous
 
         for (int i = 0; i < path.Count-1; i++)
