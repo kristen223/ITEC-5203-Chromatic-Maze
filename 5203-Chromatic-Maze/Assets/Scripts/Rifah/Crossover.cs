@@ -162,7 +162,7 @@ public class Crossover : MonoBehaviour
     public static void crossover(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
     {
         //Dictionary<int, int> newChrs = new Dictionary<int, int>();
-
+        Debug.Log("at crossover");
 
 
         foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times = 4

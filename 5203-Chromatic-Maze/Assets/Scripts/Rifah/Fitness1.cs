@@ -42,7 +42,7 @@ public class Fitness1 : MonoBehaviour
     // Start is called before the first frame update
     public static void fitnessOne(Dictionary<int, Dictionary<int,Type>> cList,  List<MovementRule> m, List<ColourRule> c)
     {
-       // Debug.Log("fitness1");
+         Debug.Log("fitness1");
         //Debug.Log("clist: " + cList.Count);
         //Debug.Log("clist keys: " + cList.Keys.Count);
         //Debug.Log("clist val: " + cList.Values.Count);
@@ -292,6 +292,7 @@ public class Fitness1 : MonoBehaviour
 
 
         //CROSSOVER
+        Crossover.crossover(chosenChr,cList,m,c);
         //Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
         //newSetOfChrs=Crossover.crossover(chosenChr);
 
