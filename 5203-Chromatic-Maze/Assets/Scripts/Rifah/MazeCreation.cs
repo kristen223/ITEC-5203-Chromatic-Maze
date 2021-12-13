@@ -20,17 +20,17 @@ public class MazeCreation : MonoBehaviour
         unassignedTiles = new List<Tile[]>();
     }
 
-    
-    
+
+
 
     public static void seperateRules(List<chromosome> mc)
     {
-        List<MovementRule> mr = new List<MovementRule>();
-        List<ColourRule> cr = new List<ColourRule>();
+       
 
         foreach (chromosome s in mc)
         {
-
+            List<MovementRule> mr = new List<MovementRule>();
+            List<ColourRule> cr = new List<ColourRule>();
             if (s.r1.type == Type.blank || s.r1.type == Type.cool || s.r1.type == Type.warm || s.r1.type == Type.jump1 || s.r1.type == Type.jump2 || s.r1.type == Type.teleport || s.r1.type == Type.teleport)
             {
                 MovementRule m = new MovementRule();
