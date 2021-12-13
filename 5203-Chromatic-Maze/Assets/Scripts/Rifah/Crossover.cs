@@ -22,6 +22,8 @@ public class chromosome
     public newRules r6;
     public newRules r7;
     public newRules r8;
+    
+    
     //List<newRules> nr;
     //newRules[] rs = new newRules[] { r1,r2,r3,r4,r5,r6,r7,r8};
     //public List<MovementRule> mr;
@@ -31,7 +33,7 @@ public class chromosome
 }
 public class Crossover : MonoBehaviour
 {
-    public static int pop = Rules.popSize;
+    //public int pop = Rules.popSize;
     public static int newIdx = 0;
     public static List<chromosome> mc = new List<chromosome>();
     //public static List<newRules> newruleslist = new List<newRules>();
@@ -145,12 +147,13 @@ public class Crossover : MonoBehaviour
     }
 
 
-    public static void makeCopies(chromosome xx)
+    public static void makeCopies(chromosome xx,int pop)
     {
         int count = (int)System.Math.Ceiling(0.2 * pop);
         for (int i = 0; i < count; i++)
         {
             chromosome yy = xx;
+            Debug.Log("adding to mc" + yy.ToString());
             mc.Add(yy);
         }
     }
@@ -159,18 +162,19 @@ public class Crossover : MonoBehaviour
     {
 
     }
-    public static void crossover(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c)
+    public static void crossover(Dictionary<int, int> chosenChr, Dictionary<int, Dictionary<int, Type>> clist, List<MovementRule> m, List<ColourRule> c, int pop)
     {
         //Dictionary<int, int> newChrs = new Dictionary<int, int>();
-        Debug.Log("at crossover");
+        Debug.Log("at crossover and length of chosenChr is "+chosenChr.Count );
 
-
+        
         foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times = 4
         {
 
             //List<Type>
 
             chromosome xx = new chromosome();
+            
             foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
             {
                 Debug.Log("reached crossover" + k.Key + " ," + x.Key);
@@ -299,10 +303,14 @@ public class Crossover : MonoBehaviour
 
                     }
                 }
+                
             }
-            makeCopies(xx);
+            Debug.Log("make copies now");
+            makeCopies(xx,pop);
+
         }
         List<chromosome> chrList = assignUniqueColors(mc);
+        Debug.Log("length of mc is "+chrList.Count);
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList);
         //MazeCreation.

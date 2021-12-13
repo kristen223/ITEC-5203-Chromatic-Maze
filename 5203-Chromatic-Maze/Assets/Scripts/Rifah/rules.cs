@@ -51,13 +51,14 @@ public struct RuleTypes //chromosomes (total 10 types of rules)
 
 public class Rules : MonoBehaviour
 {
-     public static int index=0;
-    
+    public int popSize;
+    public static int index=0;
+    //public static int pop = Rules.popSize;
 
     public static List<MovementRule> movementRuleSets = new List<MovementRule>();
     public static List<ColourRule> colourRuleSets = new List<ColourRule>();
 
-    public static int popSize;
+    
 
 
     void Start()
@@ -324,7 +325,7 @@ public class Rules : MonoBehaviour
         //    Debug.Log("chrs dictionary is " + item.Values);
         //}
        
-        Fitness1.fitnessOne(ChrsDict, movementRuleSets, colourRuleSets);
+        Fitness1.fitnessOne(ChrsDict, movementRuleSets, colourRuleSets,popSize);
 
     }
 

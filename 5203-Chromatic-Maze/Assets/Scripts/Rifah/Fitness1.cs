@@ -40,7 +40,7 @@ public class Fitness1 : MonoBehaviour
 
 
     // Start is called before the first frame update
-    public static void fitnessOne(Dictionary<int, Dictionary<int,Type>> cList,  List<MovementRule> m, List<ColourRule> c)
+    public static void fitnessOne(Dictionary<int, Dictionary<int,Type>> cList,  List<MovementRule> m, List<ColourRule> c ,int pop)
     {
          Debug.Log("fitness1");
         //Debug.Log("clist: " + cList.Count);
@@ -261,16 +261,8 @@ public class Fitness1 : MonoBehaviour
             }
 
 
-        
-       
-
-
-
-
-
-       
-
         int chosensize = (int)System.Math.Ceiling(fitVals.Count * 0.2); //20% of the best fits
+        Debug.Log("chosen size should be " + chosensize);
         Dictionary<int, int> chosenChr = new Dictionary<int, int>(); //sort descending order, crossover to build new 80% or 100%, passs to f1 again
         int count = 0;
         foreach(KeyValuePair<int,int> pairs in fitVals.OrderByDescending(val => val.Value)) //descending order sorted
@@ -282,17 +274,17 @@ public class Fitness1 : MonoBehaviour
             }
             
         }
-       // Debug.Log("printing chosen chromosomes");
+        Debug.Log("chosenChr size is "+chosenChr.Count);
         foreach(var item in chosenChr)
         {
-           // Debug.Log("chosen fitness are : "+item.Value);
+            Debug.Log("chosen fitness are : "+item.Value);
         }
-        //Debug.Log("done");
+        Debug.Log("done");
 
 
 
         //CROSSOVER
-        Crossover.crossover(chosenChr,cList,m,c);
+        Crossover.crossover(chosenChr,cList,m,c,pop);
         //Dictionary<int, int> newSetOfChrs = new Dictionary<int, int>();
         //newSetOfChrs=Crossover.crossover(chosenChr);
 
