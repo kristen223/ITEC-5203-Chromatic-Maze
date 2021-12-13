@@ -22,6 +22,7 @@ public class chromosome<rs> where rs : newRules
     public newRules r6;
     public newRules r7;
     public newRules r8;
+    public int fit;
     
     
     //List<newRules> nr;
@@ -175,8 +176,8 @@ public class Crossover : MonoBehaviour
             //List<Type>
 
             chromosome<newRules> xx = new chromosome<newRules>();
-            //GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
-            //chromosome yy = g.AddComponent<chromosome>();
+            GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
+            chromosome<newRules> yy = g.AddComponent<chromosome<newRules>>();
 
 
             foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
@@ -315,9 +316,10 @@ public class Crossover : MonoBehaviour
         }
         List<chromosome<newRules>> chrList = assignUniqueColors(mc);
         Debug.Log("length of mc is "+chrList.Count);
-        //Fitness2.fitness2(chrList);
+        List<chromosome<newRules>> chrList2a = new List<chromosome<newRules>>();
+        chrList2a = Fitness2.fitness2a(chrList);
         Debug.Log("seperate rules now");
-        MazeCreation.seperateRules(chrList);
+        MazeCreation.seperateRules(chrList2a);
         //MazeCreation.
 
     }
