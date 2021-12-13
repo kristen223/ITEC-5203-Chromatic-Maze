@@ -33,9 +33,9 @@ public class PlayerController : MonoBehaviour
 
     void Awake()
     {
+        maze = GenerateGrid.maze;
         isRunning = false;
         checkerCount = 0;
-        maze = GenerateGrid.maze;
         player = maze.LP.entrance;
         player.transform.Find("border").gameObject.GetComponent<SpriteRenderer>().enabled = true;
 
@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
 
     public static void SetupPlayerController(ColourAssigner.ColouredMaze cmaze)
     {
+        
         tiles = cmaze.maze.tiles;
         sCount = cmaze.spaths.mediumPath.Count - 1; //player gets num steps equivalent to medium path
         sText.text = sCount.ToString();

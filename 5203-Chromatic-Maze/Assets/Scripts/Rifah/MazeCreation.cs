@@ -6,17 +6,184 @@ public class MazeCreation : MonoBehaviour
 {
     // Start is called before the first frame update
     private static GameObject mazePrefab; //put this at the top
-    private static List<GameObject> prefabs; //list of colour assigner prefabs
-    private static List<ColourAssigner.ColouredMaze> cmazes; //list of coloured mazes, one for each chromosome
+    //private static List<GameObject> prefabs; //list of colour assigner prefabs
+    //private static List<ColourAssigner.ColouredMaze> cmazes; //list of coloured mazes, one for each chromosome
+    private static Dictionary<GameObject, ColourAssigner.ColouredMaze> cmazes;
     public static Colour[] allcolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
+    private static List<Tile[]> unassignedTiles;
 
     void Awake()
     {
         mazePrefab = (GameObject)Resources.Load("ColourAssigner"); //put this in Start method
-        prefabs = new List<GameObject>();
-        cmazes = new List<ColourAssigner.ColouredMaze>();
+        //prefabs = new List<GameObject>();
+        cmazes = new Dictionary<GameObject, ColourAssigner.ColouredMaze>();
+        unassignedTiles = new List<Tile[]>();
     }
 
+    public static void seperateRules(List<chromosome> mc)
+    {
+        List<MovementRule> mr = new List<MovementRule>();
+        List<ColourRule> cr = new List<ColourRule>();
+
+        foreach (chromosome s in mc)
+        {
+
+            if (s.r1.type == Type.blank || s.r1.type == Type.cool || s.r1.type == Type.warm || s.r1.type == Type.jump1 || s.r1.type == Type.jump2 || s.r1.type == Type.teleport || s.r1.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r1.direction;
+                m.distance = s.r1.distance;
+                m.type = s.r1.type;
+                m.src = s.r1.src;
+                m.target = s.r1.target;
+                mr.Add(m);
+            }
+            if (s.r1.type == Type.include || s.r1.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r1.inclusion;
+                m.type = s.r1.type;
+                m.src = s.r1.src;
+                m.target = s.r1.target;
+                cr.Add(m);
+            }
+            if (s.r2.type == Type.blank || s.r2.type == Type.cool || s.r2.type == Type.warm || s.r2.type == Type.jump1 || s.r2.type == Type.jump2 || s.r2.type == Type.teleport || s.r2.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r2.direction;
+                m.distance = s.r2.distance;
+                m.type = s.r2.type;
+                m.src = s.r2.src;
+                m.target = s.r2.target;
+                mr.Add(m);
+            }
+            if (s.r2.type == Type.include || s.r2.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r2.inclusion;
+                m.type = s.r2.type;
+                m.src = s.r2.src;
+                m.target = s.r2.target;
+                cr.Add(m);
+            }
+            if (s.r3.type == Type.blank || s.r3.type == Type.cool || s.r3.type == Type.warm || s.r3.type == Type.jump1 || s.r3.type == Type.jump2 || s.r3.type == Type.teleport || s.r3.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r3.direction;
+                m.distance = s.r3.distance;
+                m.type = s.r3.type;
+                m.src = s.r3.src;
+                m.target = s.r3.target;
+                mr.Add(m);
+            }
+            if (s.r3.type == Type.include || s.r3.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r3.inclusion;
+                m.type = s.r3.type;
+                m.src = s.r3.src;
+                m.target = s.r3.target;
+                cr.Add(m);
+            }
+            if (s.r4.type == Type.blank || s.r4.type == Type.cool || s.r4.type == Type.warm || s.r4.type == Type.jump1 || s.r4.type == Type.jump2 || s.r4.type == Type.teleport || s.r4.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r4.direction;
+                m.distance = s.r4.distance;
+                m.type = s.r4.type;
+                m.src = s.r4.src;
+                m.target = s.r4.target;
+                mr.Add(m);
+            }
+            if (s.r4.type == Type.include || s.r4.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r4.inclusion;
+                m.type = s.r4.type;
+                m.src = s.r4.src;
+                m.target = s.r4.target;
+                cr.Add(m);
+            }
+            if (s.r5.type == Type.blank || s.r5.type == Type.cool || s.r5.type == Type.warm || s.r5.type == Type.jump1 || s.r5.type == Type.jump2 || s.r5.type == Type.teleport || s.r5.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r5.direction;
+                m.distance = s.r5.distance;
+                m.type = s.r5.type;
+                m.src = s.r5.src;
+                m.target = s.r5.target;
+                mr.Add(m);
+            }
+            if (s.r5.type == Type.include || s.r5.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r5.inclusion;
+                m.type = s.r5.type;
+                m.src = s.r5.src;
+                m.target = s.r5.target;
+                cr.Add(m);
+            }
+            if (s.r6.type == Type.blank || s.r6.type == Type.cool || s.r6.type == Type.warm || s.r6.type == Type.jump1 || s.r6.type == Type.jump2 || s.r6.type == Type.teleport || s.r6.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r6.direction;
+                m.distance = s.r6.distance;
+                m.type = s.r6.type;
+                m.src = s.r6.src;
+                m.target = s.r6.target;
+                mr.Add(m);
+            }
+            if (s.r6.type == Type.include || s.r6.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r6.inclusion;
+                m.type = s.r6.type;
+                m.src = s.r6.src;
+                m.target = s.r6.target;
+                cr.Add(m);
+            }
+            if (s.r7.type == Type.blank || s.r7.type == Type.cool || s.r7.type == Type.warm || s.r7.type == Type.jump1 || s.r7.type == Type.jump2 || s.r7.type == Type.teleport || s.r7.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r7.direction;
+                m.distance = s.r7.distance;
+                m.type = s.r7.type;
+                m.src = s.r7.src;
+                m.target = s.r7.target;
+                mr.Add(m);
+            }
+            if (s.r7.type == Type.include || s.r7.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r7.inclusion;
+                m.type = s.r7.type;
+                m.src = s.r7.src;
+                m.target = s.r7.target;
+                cr.Add(m);
+            }
+            if (s.r8.type == Type.blank || s.r8.type == Type.cool || s.r8.type == Type.warm || s.r8.type == Type.jump1 || s.r8.type == Type.jump2 || s.r8.type == Type.teleport || s.r8.type == Type.teleport)
+            {
+                MovementRule m = new MovementRule();
+                m.direction = s.r8.direction;
+                m.distance = s.r8.distance;
+                m.type = s.r8.type;
+                m.src = s.r8.src;
+                m.target = s.r8.target;
+                mr.Add(m);
+            }
+            if (s.r8.type == Type.include || s.r8.type == Type.exclude)
+            {
+                ColourRule m = new ColourRule();
+                m.inclusion = s.r8.inclusion;
+                m.type = s.r8.type;
+                m.src = s.r8.src;
+                m.target = s.r8.target;
+                cr.Add(m);
+            }
+        }
+        //you have mr and cr here.
+
+    }
 
     public static void seperateRules(List<chromosome> mc)
     {
@@ -252,62 +419,58 @@ public class MazeCreation : MonoBehaviour
                         cruleCount++;
                     }
 
-                    List<MovementRule> mrCopy = new List<MovementRule>();
-                    foreach(MovementRule mcopy in mr)
-                    {
-                        mrCopy.Add(mcopy);
-                    }
-                    List<ColourRule> crCopy = new List<ColourRule>();
-                    foreach (ColourRule ccopy in cr)
-                    {
-                        crCopy.Add(ccopy);
-                    }
 
                     //Making two mazes per set of rules
+                    GameObject temp = Instantiate(new GameObject(), new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                    temp.name = "Maze-" + counter;
+
                     GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
                     maze.name = "Prefab-" + counter;
                     counter++;
-                    prefabs.Add(maze);
 
+                    maze.transform.parent = temp.transform; //set prefab as child of empty game object temp
+                    //prefabs.Add(temp);
+
+                    Debug.Log("Begin maze");
                     maze.GetComponent<ColourAssigner>().SetRules(mr, cr); //set the maze rules to the current chromosome's rules
-                    cmazes.Add(maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+                    cmazes.Add(temp, maze.GetComponent<ColourAssigner>().ColourMaze()); //colour the maze and add it to the list
+                    Debug.Log("finished maze");
 
-                    GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
-                    mazeTwo.name = "Prefab-" + counter;
-                    counter++;
-                    prefabs.Add(mazeTwo);
 
-                    mazeTwo.GetComponent<ColourAssigner>().SetRules(mrCopy, crCopy);
-                    cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
+                    //List<MovementRule> mrCopy = new List<MovementRule>();
+                    //foreach(MovementRule mcopy in mr)
+                    //{
+                    //    mrCopy.Add(mcopy);
+                    //}
+                    //List<ColourRule> crCopy = new List<ColourRule>();
+                    //foreach (ColourRule ccopy in cr)
+                    //{
+                    //    crCopy.Add(ccopy);
+                    //}
+
+                    //GameObject mazeTwo = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
+                    //mazeTwo.name = "Prefab-" + counter;
+                    //counter++;
+                    //prefabs.Add(mazeTwo);
+
+                    //mazeTwo.GetComponent<ColourAssigner>().SetRules(mrCopy, crCopy);
+                    //cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
                 }
-
-
-                //List<MovementRule> mr = new List<MovementRule>();
-                //List<ColourRule> cr = new List<ColourRule>();
-                //if (clist.ContainsKey(k.Key)) //chosenChr.key = clist.key
-                //{
-                //    foreach (Dictionary<int, Type> d in clist.Values)
-                //    {
-                //        foreach (KeyValuePair<int, Type> kvp in d)
-                //        {
-                //            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-                //            {
-                //                cr.Add(Fitness1.GetCRule(kvp.Key, c));
-                //            }
-                //            else
-                //            {
-                //                mr.Add(Fitness1.GetMRule(kvp.Key, m));
-                //            }
-                //            // ChosenRulesIdx.Add(kvp.Key);
-                //        }
-                //    }
-                //}
-
             }
         }
 
         //FITNESS 2
-        ColourAssigner.ColouredMaze finalMaze = PickMaze.GetFinalMaze(cmazes, prefabs);
+        GameObject finalMazePrefab = PickMaze.GetFinalMaze(cmazes); //prefab Key
+        ColourAssigner.ColouredMaze finalMaze = cmazes[finalMazePrefab];
+
+        //DELETE ALL GAME OBJECTS EXCEPT CHOSEN MAZE
+        foreach(KeyValuePair<GameObject, ColourAssigner.ColouredMaze> kvp in cmazes)
+        {
+            if(kvp.Key != finalMazePrefab)
+            {
+                kvp.Key.SetActive(false); //better to destroy
+            }
+        }
 
         if(finalMaze.spaths.allPaths != null) //if maze was chosen
         {
@@ -355,6 +518,7 @@ public class MazeCreation : MonoBehaviour
                 GenerateGrid.tiles[i].transform.Find("Checker").GetComponent<SpriteRenderer>().enabled = false;
 
                 Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+                Debug.Log("Tile-" + (i+1) + "colour = " + finalMaze.maze.tiles[i].GetComponent<Tile>().colour + ", rule type = " + finalMaze.maze.tiles[i].GetComponent<Tile>().ruleType);
 
                 System.Type type = chosenComponent.GetType();
 
@@ -365,15 +529,13 @@ public class MazeCreation : MonoBehaviour
                 }
             }
 
-            //ADD CHECKERS
+            //ADD CHECKERS AND NUMBER CLUES
             Shinro.PlaceCheckers(finalMaze.spaths.mediumPath, finalMaze, .3f);
+            NumClues.SetClues(finalMaze.maze.tiles);
 
             //SET UP PLAYER CONTROLLER (steps, undos, etc.)
             PlayerController.SetupPlayerController(finalMaze);
         }
-
-
-
 
         //Ending
     }
