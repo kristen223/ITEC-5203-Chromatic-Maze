@@ -24,8 +24,6 @@ public class ColourAssigner : MonoBehaviour
     public List<int> excludeRules; //list of indexes of CheckPathExc rules of cRules list
     private static List<Material> colours;
 
-    private static Text cText;
-
     public struct ColouredMaze
     {
         public TraverseMaze.SolutionPaths spaths;
@@ -42,8 +40,6 @@ public class ColourAssigner : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        cText = GameObject.Find("CCount").GetComponent<Text>();
-
         colours = new List<Material>
         {
             (Material)Resources.Load("Materials/Red"),
@@ -93,9 +89,10 @@ public class ColourAssigner : MonoBehaviour
 
         if (cmaze.spaths.longest > 0) //if solution paths exist
         {
-            Shinro.PlaceCheckers(cmaze.spaths.shortestPath, cmaze, .5f);
+            //Shinro.PlaceCheckers(cmaze.spaths.shortestPath, cmaze, .5f);
             Shinro.PlaceCheckers(cmaze.spaths.mediumPath, cmaze, .3f);
-            cmaze.checkers = NumClues.SetClues(maze.tiles);
+            cmaze.checkers = Mathf.RoundToInt((cmaze.spaths.mediumPath.Count - 1) * .3f);
+            NumClues.SetClues(maze.tiles);
         }
         return cmaze;
     }
@@ -174,8 +171,8 @@ public class ColourAssigner : MonoBehaviour
 
         mRules = mr;
         cRules = cr;
-        Debug.Log(mr.Count);
-        Debug.Log(cr.Count);
+        //Debug.Log(mr.Count);
+        //Debug.Log(cr.Count);
 
         //Get list of CheckPath rule indexes
         foreach (ColourRule rule in cRules)
@@ -183,7 +180,6 @@ public class ColourAssigner : MonoBehaviour
             identifiers.Add(rule.index);
             ruleTypes.Add(rule.type);
 
-            Debug.Log("number of rules " + used.Count);
             used.Add(rule.index, 0); //ERROR the same rule index is being added (same key value) ********************************************************
             if (rule.type == Type.checkPathInc) //check path include
             {

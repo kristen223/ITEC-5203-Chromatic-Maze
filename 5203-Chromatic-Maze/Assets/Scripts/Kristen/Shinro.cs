@@ -14,9 +14,9 @@ public class Shinro : MonoBehaviour
 
     public static void PlaceCheckers(List<Tile> path, ColourAssigner.ColouredMaze cmaze, float percent)
     {
+        
         int length = path.Count;
         int checkerCount = Mathf.RoundToInt((length - 1) * percent);
-        Debug.Log(checkerCount);
         Tile previous = path[0]; //skip the entrance by making it previous
 
         for (int i = 0; i < path.Count-1; i++)

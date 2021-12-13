@@ -79,6 +79,16 @@ public class MazeCreation : MonoBehaviour
                         cruleCount++;
                     }
 
+                    List<MovementRule> mrCopy = new List<MovementRule>();
+                    foreach(MovementRule mcopy in mr)
+                    {
+                        mrCopy.Add(mcopy);
+                    }
+                    List<ColourRule> crCopy = new List<ColourRule>();
+                    foreach (ColourRule ccopy in cr)
+                    {
+                        crCopy.Add(ccopy);
+                    }
 
                     //Making two mazes per set of rules
                     GameObject maze = Instantiate(mazePrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 0));
@@ -94,9 +104,8 @@ public class MazeCreation : MonoBehaviour
                     counter++;
                     prefabs.Add(mazeTwo);
 
-                    mazeTwo.GetComponent<ColourAssigner>().SetRules(mr, cr);
+                    mazeTwo.GetComponent<ColourAssigner>().SetRules(mrCopy, crCopy);
                     cmazes.Add(mazeTwo.GetComponent<ColourAssigner>().ColourMaze());
-
                 }
 
 
@@ -127,59 +136,71 @@ public class MazeCreation : MonoBehaviour
         //FITNESS 2
         ColourAssigner.ColouredMaze finalMaze = PickMaze.GetFinalMaze(cmazes, prefabs);
 
-        //TEMP DEBUG STUFF
-        string ss = "xxfinal rules: ";
-        foreach (MovementRule g in finalMaze.mr)
+        if(finalMaze.spaths.allPaths != null) //if maze was chosen
         {
-            ss += g.type + "-" + g.src + ", ";
-        }
-        foreach (ColourRule h in finalMaze.cr)
-        {
-            ss += h.type + "-" + h.src + ", ";
-        }
-        Debug.Log(ss);
-        Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
-
-        string debugs = "xxShortest path: ";
-        foreach (Tile t in finalMaze.spaths.shortestPath)
-        {
-            debugs += t.name + ", ";
-        }
-        Debug.Log(debugs);
-
-        string debugsss = "xxMedium path: ";
-        foreach (Tile t in finalMaze.spaths.mediumPath)
-        {
-            debugsss += t.name + ", ";
-        }
-        Debug.Log(debugsss);
-
-        string debug = "xxLongest path: ";
-        foreach (Tile t in finalMaze.spaths.longestPath)
-        {
-            debug += t.name + ", ";
-        }
-        Debug.Log(debug);
-
-        //SET INSTRUCTIONS TEXT
-        InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
-
-        //SET TILE GRID TO CORRECT MAZE'S TILES
-        for (int i = 0; i < GenerateGrid.tiles.Length; i++)
-        {
-            Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
-
-            System.Type type = chosenComponent.GetType();
-
-            System.Reflection.FieldInfo[] fields = type.GetFields();
-            foreach (System.Reflection.FieldInfo field in fields)
+            //TEMP DEBUG STUFF
+            string ss = "xxfinal rules: ";
+            foreach (MovementRule g in finalMaze.mr)
             {
-                field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+                ss += g.type + "-" + g.src + ", ";
             }
-        }
+            foreach (ColourRule h in finalMaze.cr)
+            {
+                ss += h.type + "-" + h.src + ", ";
+            }
+            Debug.Log(ss);
+            Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
 
-        //SET UP PLAYER CONTROLLER (steps, undos, etc.)
-        PlayerController.SetupPlayerController(finalMaze);
+            string debugs = "xxShortest path: ";
+            foreach (Tile t in finalMaze.spaths.shortestPath)
+            {
+                debugs += t.name + ", ";
+            }
+            Debug.Log(debugs);
+
+            string debugsss = "xxMedium path: ";
+            foreach (Tile t in finalMaze.spaths.mediumPath)
+            {
+                debugsss += t.name + ", ";
+            }
+            Debug.Log(debugsss);
+
+            string debug = "xxLongest path: ";
+            foreach (Tile t in finalMaze.spaths.longestPath)
+            {
+                debug += t.name + ", ";
+            }
+            Debug.Log(debug);
+
+            //SET INSTRUCTIONS TEXT
+            InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+
+            //SET TILE GRID TO CORRECT MAZE'S TILES AND RESET CHECKERS
+            for (int i = 0; i < GenerateGrid.tiles.Length; i++)
+            {
+                GenerateGrid.tiles[i].tag = "Untagged";
+                GenerateGrid.tiles[i].transform.Find("Checker").GetComponent<SpriteRenderer>().enabled = false;
+
+                Component chosenComponent = finalMaze.maze.tiles[i].GetComponent<Tile>();
+
+                System.Type type = chosenComponent.GetType();
+
+                System.Reflection.FieldInfo[] fields = type.GetFields();
+                foreach (System.Reflection.FieldInfo field in fields)
+                {
+                    field.SetValue(GenerateGrid.tiles[i].GetComponent<Tile>(), field.GetValue(chosenComponent));
+                }
+            }
+
+            //ADD CHECKERS
+            Shinro.PlaceCheckers(finalMaze.spaths.mediumPath, finalMaze, .3f);
+
+            //SET UP PLAYER CONTROLLER (steps, undos, etc.)
+            PlayerController.SetupPlayerController(finalMaze);
+        }
+        
+
+        
 
         //Ending
     }

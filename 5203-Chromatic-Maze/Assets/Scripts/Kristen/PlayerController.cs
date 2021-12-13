@@ -17,12 +17,12 @@ public class PlayerController : MonoBehaviour
     public static int checkerCount; //SET THIS ONCE YOU PICK A MAZE
 
     //game object to represent player (liek the checker) (you can remove the checker really)
-    //maybe highlioght the tile somehow instead? (give it an outline, illusion like it's bumped outward? some sort of gradient from centre?)
+    //maybe highlight the tile somehow instead? (give it an outline, illusion like it's bumped outward? some sort of gradient from centre?)
     private int cCount;
     private static int sCount;
     private static int bCount;
 
-    private Text cText;
+    private static Text cText;
     private static Text sText;
     private static Text bText;
     private Text message;
@@ -62,6 +62,10 @@ public class PlayerController : MonoBehaviour
         //Can't accurately set this until the colour assigner is properly set up
         bCount = bCount = (int)Math.Ceiling(sCount * .25f);
         bText.text = bCount.ToString();
+
+        checkerCount = cmaze.checkers;
+        cText.text = "0/" + checkerCount;
+
         isRunning = true;
     }
 
