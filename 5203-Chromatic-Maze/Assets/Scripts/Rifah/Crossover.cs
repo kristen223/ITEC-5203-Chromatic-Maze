@@ -72,23 +72,7 @@ public class Crossover : MonoBehaviour
             List<int> usedIdx = new List<int>();
             System.Random rand = new System.Random();
             int idx = rand.Next(0, scolors.Length);
-            //usedIdx.Add(idx);
-            //for (int i = 0; i < zz.mr.Count; i++)
-            //{
-            //    Colour c1 = scolors[idx];
-            //    zz.mr[i].src =c1 ;
-            //}
 
-            //}
-            //if (!usedIdx.Contains(idx))
-            //{
-
-
-
-            //mc[i].r1.src = scolors[idx];
-            //zz.r1.target = setTarget(zz.r1, idx);
-
-            Debug.Log(mc[i].r1.type + " " + mc[i].r1.src);
             Chromosome c = mc[i];
             NewRules rule1 = mc[i].r1;
             rule1.src = scolors[idx];
@@ -100,19 +84,18 @@ public class Crossover : MonoBehaviour
                 idx = 0;
             }
             c.r1 = rule1;
-
-            Debug.Log(mc[i].r1.type + " " + mc[i].r1.src);
+            mc[i] = c;
 
             NewRules rule2 = mc[i].r2;
             rule2.src = scolors[idx];
             rule2.target = setTarget(rule2, idx);
+
             idx++;
             if (idx >= 8)
             {
                 idx = 0;
             }
             c.r2 = rule2;
-            
 
             NewRules rule3 = mc[i].r3;
             rule3.src = scolors[idx];
@@ -175,6 +158,19 @@ public class Crossover : MonoBehaviour
             c.r8 = rule8;
 
             mc[i] = c;
+
+
+            Debug.Log("kk Start of Chromosome");
+            Debug.Log("kk" + mc[i].r1.src + " " + mc[i].r1.target + " " + mc[i].r1.type);
+            Debug.Log("kk" + mc[i].r2.src + " " + mc[i].r2.target + " " + mc[i].r2.type);
+            Debug.Log("kk" + mc[i].r3.src + " " + mc[i].r3.target + " " + mc[i].r3.type);
+            Debug.Log("kk" + mc[i].r4.src + " " + mc[i].r4.target + " " + mc[i].r4.type);
+            Debug.Log("kk" + mc[i].r5.src + " " + mc[i].r5.target + " " + mc[i].r5.type);
+            Debug.Log("kk" + mc[i].r6.src + " " + mc[i].r6.target + " " + mc[i].r6.type);
+            Debug.Log("kk" + mc[i].r7.src + " " + mc[i].r7.target + " " + mc[i].r7.type);
+            Debug.Log("kk" + mc[i].r8.src + " " + mc[i].r8.target + " " + mc[i].r8.type);
+            Debug.Log("kk End");
+
         }
         return mc;
     }

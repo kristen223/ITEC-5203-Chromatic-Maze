@@ -188,6 +188,7 @@ public class ColourAssigner : MonoBehaviour
     {
         mRuleAssignments = new Dictionary<Tile, MovementRule>();
         cRuleAssignments = new Dictionary<Tile, ColourRule>();
+        wallAssignments = new List<Tile>();
 
         //copy over the maze to create all new references
         maze = new KruskalMaze.Maze();

@@ -35,7 +35,8 @@ public class MazeCreation : MonoBehaviour
 
             foreach(NewRules rule in rr)
             {
-                if(rule.type == Type.blank || rule.type == Type.cool || rule.type == Type.warm || rule.type == Type.jump1 || rule.type == Type.jump2 || rule.type == Type.teleport || rule.type == Type.teleport){
+                Debug.Log("rule " + rule.type);
+                if(rule.type == Type.blank || rule.type == Type.cool || rule.type == Type.warm || rule.type == Type.jump1 || rule.type == Type.jump2 || rule.type == Type.teleport || rule.type == Type.Tmove){
                     MovementRule m = new MovementRule();
                     m.direction = rule.direction;
                     m.distance = rule.distance;
