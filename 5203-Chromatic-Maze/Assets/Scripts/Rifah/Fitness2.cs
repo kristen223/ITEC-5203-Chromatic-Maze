@@ -31,9 +31,11 @@ public class Fitness2 : MonoBehaviour
         //ICollection ruleIdxs = d.Keys;
         int fit = 0;
         List<Chromosome> chosenChr2 = new List<Chromosome>();
-        foreach (Chromosome r in mc)
+
+        for (int k = 0; k < mc.Count; k++)
+        //foreach (Chromosome r in mc)
         {
-            List<NewRules> rr = new List<NewRules>() { r.r1, r.r2, r.r3, r.r4, r.r5, r.r6, r.r7, r.r8 };
+            List<NewRules> rr = new List<NewRules>() { mc[k].r1, mc[k].r2, mc[k].r3, mc[k].r4, mc[k].r5, mc[k].r6, mc[k].r7, mc[k].r8 };
             foreach (NewRules rule in rr)
             {
                 if (rule.type == Type.teleport)
@@ -54,19 +56,21 @@ public class Fitness2 : MonoBehaviour
             int wrm = 0;
             int cld = 0;
 
-            foreach (NewRules rule in rr)
+            for(int j = 0; j < rr.Count; j++)
+            //foreach (NewRules rule in rr)
             {
                 
-                if (rule.src == Colour.Warm || rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Pink || rule.src == Colour.Yellow || rule.target == Colour.Warm || rule.target == Colour.Red || rule.target == Colour.Orange || rule.target == Colour.Pink || rule.target == Colour.Yellow)
+                if (rr[j].src == Colour.Warm || rr[j].src == Colour.Red || rr[j].src == Colour.Orange || rr[j].src == Colour.Pink || rr[j].src == Colour.Yellow || rr[j].target == Colour.Warm || rr[j].target == Colour.Red || rr[j].target == Colour.Orange || rr[j].target == Colour.Pink || rr[j].target == Colour.Yellow)
                 {
                     wrm++;
                 }
-                if (rule.src == Colour.Cool || rule.src == Colour.Blue || rule.src == Colour.Green || rule.src == Colour.Teal || rule.src == Colour.Teal || rule.target == Colour.Cool || rule.target == Colour.Blue || rule.target == Colour.Teal || rule.target == Colour.Green || rule.target == Colour.Purple)
+                if (rr[j].src == Colour.Cool || rr[j].src == Colour.Blue || rr[j].src == Colour.Green || rr[j].src == Colour.Teal || rr[j].src == Colour.Teal || rr[j].target == Colour.Cool || rr[j].target == Colour.Blue || rr[j].target == Colour.Teal || rr[j].target == Colour.Green || rr[j].target == Colour.Purple)
                 {
                     cld++;
                 }
 
             }
+
             if (wrm == cld)
             {
                 fit = fit + 5; //most fit = 8+2 = 10
@@ -75,9 +79,12 @@ public class Fitness2 : MonoBehaviour
             {
                 fit = fit - (Mathf.Abs(wrm - cld));
             }
-            r.fit = fit;
 
+            Chromosome c = mc[k];
+            c.fit = fit;
+            mc[k] = c;
         }
+
         List<int> fitvals2a = new List<int>();
         foreach(Chromosome r in mc){
             fitvals2a.Add(r.fit);

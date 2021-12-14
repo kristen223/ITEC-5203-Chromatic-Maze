@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public struct NewRules
 {
     public int index;
@@ -11,9 +12,9 @@ public struct NewRules
     public Colour target;
     public bool inclusion;
 }
+
 public struct Chromosome
 {
-
     public NewRules r1;
     public NewRules r2;
     public NewRules r3;
@@ -64,7 +65,9 @@ public class Crossover : MonoBehaviour
 
     public static List<Chromosome> assignUniqueColors(List<Chromosome> mc)
     {
-        foreach (Chromosome zz in mc)
+        List<Chromosome> newMc = new List<Chromosome>();
+       // foreach (Chromosome zz in mc)
+       for (int i = 0; i < mc.Count; i++)
         {
             List<int> usedIdx = new List<int>();
             System.Random rand = new System.Random();
@@ -79,65 +82,87 @@ public class Crossover : MonoBehaviour
             //}
             //if (!usedIdx.Contains(idx))
             //{
-            zz.r1.src = scolors[idx];
-            zz.r1.target = setTarget(zz.r1, idx);
+
+
+
+            //mc[i].r1.src = scolors[idx];
+            //zz.r1.target = setTarget(zz.r1, idx);
+
+            Chromosome c = mc[i];
+            NewRules rule1 = mc[i].r1;
+            rule1.src = scolors[idx];
+
+            rule1.target = setTarget(rule1, idx);
             idx++; //going serially which could be bad
             if (idx >= 8)
             {
                 idx = 0;
             }
-            zz.r2.src = scolors[idx];
-            zz.r2.target = setTarget(zz.r2, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r3.src = scolors[idx];
-            zz.r3.target = setTarget(zz.r3, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r4.src = scolors[idx];
-            zz.r4.target = setTarget(zz.r4, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r5.src = scolors[idx];
-            zz.r5.target = setTarget(zz.r5, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r6.src = scolors[idx];
-            zz.r6.target = setTarget(zz.r6, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r7.src = scolors[idx];
-            zz.r7.target = setTarget(zz.r7, idx);
-            idx++;
-            if (idx >= 8)
-            {
-                idx = 0;
-            }
-            zz.r8.src = scolors[idx];
-            zz.r8.target = setTarget(zz.r8, idx);
+            c.r1 = rule1;
+            mc[i] = c;
+
+            NewRules rule2 = mc[i].r2;
+            rule2.src = scolors[idx];
+            rule2.target = setTarget(rule2, idx);
             idx++;
             if (idx >= 8)
             {
                 idx = 0;
             }
 
+            NewRules rule3 = mc[i].r3;
+            rule3.src = scolors[idx];
+            rule3.target = setTarget(rule3, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
 
+            NewRules rule4 = mc[i].r4;
+            rule4.src = scolors[idx];
+            rule4.target = setTarget(rule4, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
 
+            NewRules rule5 = mc[i].r5;
+            rule5.src = scolors[idx];
+            rule5.target = setTarget(rule5, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
+
+            NewRules rule6 = mc[i].r6;
+            rule6.src = scolors[idx];
+            rule6.target = setTarget(rule6, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
+
+            NewRules rule7 = mc[i].r7;
+            rule7.src = scolors[idx];
+            rule7.target = setTarget(rule7, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
+
+            NewRules rule8 = mc[i].r8;
+            rule8.src = scolors[idx];
+            rule8.target = setTarget(rule8, idx);
+            idx++;
+            if (idx >= 8)
+            {
+                idx = 0;
+            }
 
 
         }
@@ -209,21 +234,28 @@ public class Crossover : MonoBehaviour
                         mm = Fitness1.GetMRule(i, m);
                         Debug.Log("made a movement rule and src is " + mm.src);
                         Debug.Log("type is"+mm.type);
-                        
-                        foreach (NewRules rx in r)
-                        
-                        {
-                            Debug.Log("reached forloop");
-                            rx.type = mm.type;
-                            rx.distance = mm.distance;
-                            rx.direction = mm.direction;
-                           
-                        }
+
+
+                        //CANNOT modify rx if youre traversing through r
+                        //foreach (NewRules rx in r)
+                        //{
+                        //    Debug.Log("reached forloop");
+                        //    rx.type = mm.type;
+                        //    rx.distance = mm.distance;
+                        //    rx.direction = mm.direction;
+                        //}
+
+
                         for (int j = 0; j < r.Count; j++)
                         {
-                            xx[j].r.type = mm.type;
-                            xx
-                            r[0].type = Type.blank;
+                            //xx[j].r.type = mm.type;
+                            //xx
+                            //r[0].type = Type.blank;
+
+                            //not sure if this is what you want or not
+                            NewRules rule = r[j];
+                            rule.type = Type.blank;
+                            r[j] = rule;
                         }
                     }
                     else
@@ -232,12 +264,21 @@ public class Crossover : MonoBehaviour
                         cc = Fitness1.GetCRule(i, c);
                         Debug.Log("made a color rule and src is " + cc.src);
                         Debug.Log("type is" + cc.type);
-                        foreach (NewRules rx in r)
-                        {
-                            rx.type = cc.type;
-                            rx.inclusion = cc.inclusion;
 
+                        for (int j = 0; j < r.Count; j++)
+                        {
+                            NewRules rule = r[j];
+                            rule.type = cc.type;
+                            rule.inclusion = cc.inclusion;
+                            r[j] = rule;
                         }
+
+                        //    foreach (NewRules rx in r)
+                        //{
+                        //    rx.type = cc.type;
+                        //    rx.inclusion = cc.inclusion;
+
+                        //}
                     }
                 }
                     //switch (count)
