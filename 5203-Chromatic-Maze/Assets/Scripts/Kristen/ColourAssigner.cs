@@ -312,6 +312,9 @@ public class ColourAssigner : MonoBehaviour
     {
         if (t.failedToAssign == false)
         {
+            Debug.Log(t.name + " " + t.assigned);
+            Debug.Log("m assignments " + mRuleAssignments.Count);
+            Debug.Log(t.name);
             mRuleAssignments.Add(t, rule);
             Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
             t.assigned = true;
@@ -321,6 +324,8 @@ public class ColourAssigner : MonoBehaviour
             t.colour = rule.src;
             t.index = rule.index;
             used[rule.index]++;
+
+            Debug.Log(t.name + " " + t.assigned);
 
             //SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
@@ -647,28 +652,40 @@ public class ColourAssigner : MonoBehaviour
                         {
                             if(rule.direction == Direction.North)
                             {
-                                AssignByMRule(t, rule);
+                                if(t.assigned == false)
+                                {
+                                    AssignByMRule(t, rule);
+                                } 
                             }
                         }
                         else if (south == false)
                         {
                             if (rule.direction == Direction.South)
                             {
-                                AssignByMRule(t, rule);
+                                if (t.assigned == false)
+                                {
+                                    AssignByMRule(t, rule);
+                                }
                             }
                         }
                         else if (east == false)
                         {
                             if (rule.direction == Direction.East)
                             {
-                                AssignByMRule(t, rule);
+                                if (t.assigned == false)
+                                {
+                                    AssignByMRule(t, rule);
+                                }
                             }
                         }
                         else if (west == false)
                         {
                             if (rule.direction == Direction.West)
                             {
-                                AssignByMRule(t, rule);
+                                if (t.assigned == false)
+                                {
+                                    AssignByMRule(t, rule);
+                                }
                             }
                         }
 
