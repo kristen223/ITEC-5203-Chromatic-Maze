@@ -237,11 +237,13 @@ public class Crossover : MonoBehaviour
 
                 //int count = 1;
                 //CONVERTING INTO LIST OF CHROMOSOME STRUCT:
+                List<NewRules> r = new List<NewRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
+                int j = 0;
                 foreach (int i in ruleIndexs)
                 {
-                    List<NewRules> r = new List<NewRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
+                    
                     Debug.Log("ruleindex originals: " + i);
-                    int j = 0;
+                   
                     if (i < m.Count) //its a movement rule
                     {
 
@@ -252,17 +254,21 @@ public class Crossover : MonoBehaviour
 
                         MovementRule mm = new MovementRule();
                         mm = Fitness1.GetMRule(i, m);
-                        Debug.Log("made a movement rule and src is " + mm.src);
-                        Debug.Log("type is" + mm.type);
+                        Debug.Log("made a movement rule src is " + mm.src);
+                        Debug.Log("rule type is" + mm.type);
                         NewRules rule = r[j];
                         rule.type = mm.type;
                         rule.direction = mm.direction;
                         rule.distance = mm.distance;
+                       
 
                         r[j] = rule;
+                        
                         j++;
 
-
+                        
+                        
+                        
 
                         //}
                     }
@@ -281,27 +287,32 @@ public class Crossover : MonoBehaviour
                         rule.inclusion = cc.inclusion;
                         r[j] = rule;
                         j++;
-                        Debug.Log("NEW TYPE: " + rule.type + "OLD TYPE: " + cc.type);
-                    //}
-                
+                        
                         
 
-                        //    foreach (NewRules rx in r)
-                        //{
-                        //    rx.type = cc.type;
-                        //    rx.inclusion = cc.inclusion;
-
-                        //}
                     }
 
-                    foreach(NewRules g in r)
-                    {
-                        Debug.Log("TYPE IS -------------------"+g.type);
-
-                    }
+                    
+                        
+                    
 
 
                 }
+                foreach (NewRules g in r)
+                {
+                    Debug.Log("TYPE IS HERE-------------------" + g.type);
+
+                }
+
+                xx.r1 = r[0];
+                xx.r2 = r[1];
+                xx.r3 = r[2];
+                xx.r4 = r[3];
+                xx.r5 = r[4];
+                xx.r6 = r[5];
+                xx.r7 = r[6];
+                xx.r8 = r[7];
+
                     
 
                     Debug.Log("for loop ended");
