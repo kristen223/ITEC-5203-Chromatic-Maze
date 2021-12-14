@@ -58,7 +58,7 @@ public class Crossover : MonoBehaviour
         }
         if (nr.type == Type.teleport || nr.type==Type.include || nr.type == Type.exclude)
         {
-            nr.target = tcolors[(idx + 1) % tcolors.Length]; //circular array concept
+            nr.target = scolors[(idx + 1) % scolors.Length]; //circular array concept
         }
         return nr.target;
     }
@@ -76,7 +76,7 @@ public class Crossover : MonoBehaviour
             Chromosome c = mc[i];
             NewRules rule1 = mc[i].r1;
             rule1.src = scolors[idx];
-
+            
             rule1.target = setTarget(rule1, idx);
             idx++; //going serially which could be bad
             if (idx >= 8)
@@ -341,12 +341,12 @@ public class Crossover : MonoBehaviour
         foreach (Chromosome ch in chrList2a)
         {
             Debug.Log("==================================");
-            Debug.Log("all the rule types are:" + ch.r1.type);
-            Debug.Log("all the rule types are:" + ch.r2.type);
-            Debug.Log("all the rule types are:" + ch.r3.type);
-            Debug.Log("all the rule types are:" + ch.r4.type);
-            Debug.Log("all the rule types are:" + ch.r5.type);
-            Debug.Log("all the rule types are:" + ch.r6.type);
+            Debug.Log("all the rule types and target  are:" + ch.r1.type + "-"+ch.r1.target);
+            Debug.Log("all the rule types are:" + ch.r2.type + "-" + ch.r2.target);
+            Debug.Log("all the rule types are:" + ch.r3.type + "-" + ch.r3.target);
+            Debug.Log("all the rule types are:" + ch.r4.type + "-" + ch.r4.target);
+            Debug.Log("all the rule types are:" + ch.r5.type + "-" + ch.r5.target);
+            Debug.Log("all the rule types are:" + ch.r6.type + "-" + ch.r6.target);
             Debug.Log("==================================");
 
 
