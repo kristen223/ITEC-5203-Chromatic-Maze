@@ -61,8 +61,7 @@ public class PlayerController : MonoBehaviour
         sText.text = sCount.ToString();
 
         //Can't accurately set this until the colour assigner is properly set up
-        //bCount = bCount = (int)Math.Ceiling(sCount * .25f);
-        bCount = 25;
+        bCount = bCount = (int)Math.Ceiling(sCount * .3f);
         bText.text = bCount.ToString();
 
         checkerCount = cmaze.checkers;
