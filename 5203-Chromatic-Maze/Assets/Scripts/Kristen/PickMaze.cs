@@ -206,40 +206,43 @@ public class PickMaze : MonoBehaviour
              Make a new KVP list and sort cmazes by differences
              The larger the difference, the more the fitness is incremented
         */
-        Dictionary<GameObject, int> RuleDistribution = new Dictionary<GameObject, int>();
+        //Dictionary<GameObject, int> RuleDistribution = new Dictionary<GameObject, int>();
 
+        Dictionary<GameObject, int> unique = new Dictionary<GameObject, int>();
         foreach (KeyValuePair<GameObject, ColourAssigner.ColouredMaze> pair in cmazes)
         {
-            int lowest = pair.Value.used.ElementAt(0).Value;
-            int highest = pair.Value.used.ElementAt(0).Value;
-            foreach (KeyValuePair<int, int> used in pair.Value.used)
-            {
-                if(used.Value < lowest)
-                {
-                    lowest = used.Value;
-                }
-                if (used.Value > highest)
-                {
-                    highest = used.Value;
-                }
-            }
-            int difference = highest - lowest;
-
-            //int average = 0;
+            //int lowest = pair.Value.used.ElementAt(0).Value;
+            //int highest = pair.Value.used.ElementAt(0).Value;
             //foreach (KeyValuePair<int, int> used in pair.Value.used)
             //{
-            //    average += used.Value;
+            //    if(used.Value < lowest)
+            //    {
+            //        lowest = used.Value;
+            //    }
+            //    if (used.Value > highest)
+            //    {
+            //        highest = used.Value;
+            //    }
             //}
-            //average /= pair.Value.used.Count;
+            //int difference = highest - lowest;
+            //RuleDistribution.Add(pair.Key, difference);
 
-            
-            RuleDistribution.Add(pair.Key, difference);
+            int uni = 0;
+            foreach (KeyValuePair<int, int> used in pair.Value.used)
+            {
+                if(!unique.Values.Contains(used.Value))
+                {
+                    uni++; 
+                }
+            }
+            unique.Add(pair.Key, uni);
         }
 
-        var distributions = RuleDistribution.OrderByDescending(pair => pair.Value); //list of mazes by distribution of rules (most even distributions first)
+        //var distributions = RuleDistribution.OrderByDescending(pair => pair.Value); //list of mazes by distribution of rules (most even distributions first)
+        var uniqueness = unique.OrderByDescending(pair => pair.Value); //more evenly distributed mazes are first in list
         increment = -1;
         int lastdist = -1;
-        foreach (KeyValuePair<GameObject, int> cmDist in distributions)
+        foreach (KeyValuePair<GameObject, int> cmDist in uniqueness)
         {
             if (cmDist.Value != lastdist)
             {
