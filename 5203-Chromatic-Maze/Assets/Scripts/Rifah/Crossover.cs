@@ -254,7 +254,7 @@ public class Crossover : MonoBehaviour
 
                             //not sure if this is what you want or not
                             NewRules rule = r[j];
-                            rule.type = Type.blank;
+                            //rule.type = Type.blank;
                             r[j] = rule;
                         }
                     }
@@ -281,61 +281,7 @@ public class Crossover : MonoBehaviour
                         //}
                     }
                 }
-                    //switch (count)
-                    //{
-
-                    //    case 1:
-                    //        xx.r1.type = mm.type;
-                    //        xx.r1.distance = mm.distance;
-                    //        xx.r1.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 2:
-                    //        xx.r2.type = mm.type;
-                    //        xx.r2.distance = mm.distance;
-                    //        xx.r2.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 3:
-                    //        xx.r3.type = mm.type;
-                    //        xx.r3.distance = mm.distance;
-                    //        xx.r3.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 4:
-                    //        xx.r4.type = mm.type;
-                    //        xx.r4.distance = mm.distance;
-                    //        xx.r4.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 5:
-                    //        xx.r5.type = mm.type;
-                    //        xx.r5.distance = mm.distance;
-                    //        xx.r5.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 6:
-                    //        xx.r6.type = mm.type;
-                    //        xx.r6.distance = mm.distance;
-                    //        xx.r6.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 7:
-                    //        xx.r7.type = mm.type;
-                    //        xx.r7.distance = mm.distance;
-                    //        xx.r7.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    case 8:
-                    //        xx.r8.type = mm.type;
-                    //        xx.r8.distance = mm.distance;
-                    //        xx.r8.direction = mm.direction;
-                    //        count++;
-                    //        break;
-                    //    default:
-                    //        Debug.Log("Your input in default case is out of range");
-                    //        break;
-                    //}
+                    
 
                     Debug.Log("for loop ended");
 
@@ -352,7 +298,9 @@ public class Crossover : MonoBehaviour
         List<Chromosome> chrList = assignUniqueColors(mc);
         Debug.Log("length of mc is "+chrList.Count);
         List< Chromosome> chrList2a = new List<Chromosome>();
+        Debug.Log("hi");
         chrList2a = Fitness2.fitness2a(chrList);
+        Debug.Log("bye");
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList2a);
         //MazeCreation.

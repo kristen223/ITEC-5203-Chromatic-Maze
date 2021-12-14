@@ -84,28 +84,45 @@ public class Fitness2 : MonoBehaviour
             c.fit = fit;
             mc[k] = c;
         }
+        Debug.Log("Done adding all the fitnesses");
 
         List<int> fitvals2a = new List<int>();
         foreach(Chromosome r in mc){
             fitvals2a.Add(r.fit);
         }
+        Debug.Log("added the fitness values to a list for sorting");
         fitvals2a.Sort();
         fitvals2a.Reverse();
         List<int> chosenfits = new List<int>();
-        for (int k = 0; k < (int)Math.Ceiling(fitvals2a.Count*0.2); k++)
+        for (int h = 0; h < (int)Math.Ceiling(fitvals2a.Count*0.2); h++)
         {
-            chosenfits.Add(fitvals2a[k]);
+            chosenfits.Add(fitvals2a[h]);
             
         }
-        int i = 0;
+        Debug.Log("chosenfits now has the fittest values gone through fitness2a with length"+chosenfits.Count);
+        int count = 0;
         foreach (Chromosome r in mc)
         {
-            if (chosenfits[i]==r.fit)
+
+            for (int i = 0; i < chosenfits.Count; i++)
             {
-                chosenChr2.Add(r);
-                i++;
+                if (r.fit == chosenfits[i])
+                {
+                    Debug.Log(chosenfits[count] + "==" + r.fit);
+                    chosenChr2.Add(r);
+                    Debug.Log("chosenChr2 length is " + chosenChr2.Count);
+                }
             }
+            //if (chosenfits[count] == r.fit )
+            //{
+            //    Debug.Log(chosenfits[count] + "==" + r.fit);
+            //    chosenChr2.Add(r);
+            //    Debug.Log("chosenChr2 length is " + chosenChr2.Count);
+                
+            //}
+            //count++;
         }
+        Debug.Log("ChosenChr2 created and passed back from fitness2a");
         return chosenChr2;
     }
     
