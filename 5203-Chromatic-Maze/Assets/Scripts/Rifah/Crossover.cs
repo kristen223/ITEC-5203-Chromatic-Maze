@@ -1,49 +1,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-public class newRules
-{
-    public int index;
-    public int distance;
-    public Type type;
-    public Direction direction;
-    public Colour src; //set this later
-    public Colour target;
-    public bool inclusion;
-}
-
-//public class chromosome<rs> where rs : newRules
+//public class NewRules
 //{
-//    public newRules r1;
-//    public newRules r2;
-//    public newRules r3;
-//    public newRules r4;
-//    public newRules r5;
-//    public newRules r6;
-//    public newRules r7;
-//    public newRules r8;
-//    public int fit;
-    
-    
-//    //List<newRules> nr;
-//    //newRules[] rs = new newRules[] { r1,r2,r3,r4,r5,r6,r7,r8};
-//    //public List<MovementRule> mr;
-//    //public List<ColourRule> cr;
-
-    
+//    public int index;
+//    public int distance;
+//    public Type type;
+//    public Direction direction;
+//    public Colour src; //set this later
+//    public Colour target;
+//    public bool inclusion;
 //}
+
+
 public class Crossover : MonoBehaviour
 {
     //public int pop = Rules.popSize;
     public static int newIdx = 0;
 
     public static List<Chromosome> mc = new List<Chromosome>();
-    //public static List<newRules> newruleslist = new List<newRules>();
+    //public static List<NewRules> NewRuleslist = new List<NewRules>();
     public static Colour[] scolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
     public static Colour[] tcolors = new Colour[11] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green, Colour.All, Colour.Warm, Colour.Cool };
     // Start is called before the first frame update
 
-    public static Colour setTarget(newRules nr, int idx)
+    public static Colour setTarget(NewRules nr, int idx)
     {
         if (nr.type == Type.warm)
         {
@@ -175,7 +156,7 @@ public class Crossover : MonoBehaviour
 
             //List<Type>
 
-            //chromosome<newRules> xx = new chromosome<newRules>();
+            //chromosome<NewRules> xx = new chromosome<NewRules>();
             GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
 
             g.AddComponent<Chromosome>(); //CHANGED THESE TWO LINES
@@ -191,11 +172,11 @@ public class Crossover : MonoBehaviour
 
                 //chromosome mc = new chromosome();
 
-                int count = 1;
+                //int count = 1;
 
                 foreach (int i in ruleIndexs)
                 {
-                    List<newRules> r = new List<newRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
+                    List<NewRules> r = new List<NewRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
                     Debug.Log("ruleindex originals: " + i);
                     if (i < m.Count) //its a movement rule
                     {
@@ -203,7 +184,7 @@ public class Crossover : MonoBehaviour
                         mm = Fitness1.GetMRule(i, m);
                         Debug.Log("made a movement rule and src is " + mm.src);
                         Debug.Log("type is"+mm.type);
-                        foreach (newRules rx in r)
+                        foreach (NewRules rx in r)
                         {
                             Debug.Log("reached forloop");
                             rx.type = mm.type;
@@ -216,7 +197,9 @@ public class Crossover : MonoBehaviour
                     {
                         ColourRule cc = new ColourRule();
                         cc = Fitness1.GetCRule(i, c);
-                        foreach (newRules rx in r)
+                        Debug.Log("made a color rule and src is " + cc.src);
+                        Debug.Log("type is" + cc.type);
+                        foreach (NewRules rx in r)
                         {
                             rx.type = cc.type;
                             rx.inclusion = cc.inclusion;
@@ -285,56 +268,6 @@ public class Crossover : MonoBehaviour
 
 
 
-
-                //createMCopies(mm,);
-
-                //else
-                //{
-                //    ColourRule mm = new ColourRule();
-                //    mm = Fitness1.GetCRule(i, c);
-                //    //createCCopies(cc,);
-                //    switch (count)
-                //    {
-
-                //        case 1:
-                //            xx.r1.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 2:
-                //            xx.r2.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 3:
-                //            xx.r3.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 4:
-                //            xx.r4.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 5:
-                //            xx.r5.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 6:
-                //            xx.r6.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 7:
-                //            xx.r7.type = mm.type;
-                //            count++;
-                //            break;
-                //        case 8:
-                //            xx.r8.type = mm.type;
-                //            count++;
-                //            break;
-                //        default:
-                //            Debug.Log("Your input in default case is out of range");
-                //            break;
-                //    }
-
-
-                //}
 
 
             }
@@ -427,7 +360,7 @@ public class Crossover : MonoBehaviour
         int copyCount = (int)System.Math.Ceiling(0.2 * pop); //avoiding zero with ceiling
         for (int i = 0; i < copyCount; i++)
         {
-            newRules newM = new newRules();
+            NewRules newM = new NewRules();
             newM.index = newIdx++;
             newM.type = mm.type;
             newM.src = scolors[idx];//find whats idx here???
@@ -450,7 +383,7 @@ public class Crossover : MonoBehaviour
                 newM.target = tcolors[(idx+1)%tcolors.Length]; //circular array concept
             }
 
-            newruleslist.Add(newM);
+            NewRuleslist.Add(newM);
 
         }
 
@@ -460,7 +393,7 @@ public class Crossover : MonoBehaviour
         int copyCount = (int)System.Math.Ceiling(0.2 * pop); //avoiding zero with ceiling
         for (int i = 0; i < copyCount; i++)
         {
-            newRules newC = new newRules();
+            NewRules newC = new NewRules();
             newC.index = newIdx++;
             newC.type = cc.type;
             newC.src = scolors[idx];//find whats idx here???firgurw out later
@@ -475,7 +408,7 @@ public class Crossover : MonoBehaviour
             
             
 
-            newruleslist.Add(newC);
+            NewRuleslist.Add(newC);
 
         }
 }*/

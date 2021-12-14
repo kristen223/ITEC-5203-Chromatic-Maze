@@ -31,9 +31,9 @@ public class MazeCreation : MonoBehaviour
             List<ColourRule> cr = new List<ColourRule>();
 
 
-            List<newRules> rr = new List<newRules>() { s.r1, s.r2, s.r3, s.r4, s.r5, s.r6, s.r7, s.r8 };
+            List<NewRules> rr = new List<NewRules>() { s.r1, s.r2, s.r3, s.r4, s.r5, s.r6, s.r7, s.r8 };
 
-            foreach(newRules rule in rr)
+            foreach(NewRules rule in rr)
             {
                 if(rule.type == Type.blank || rule.type == Type.cool || rule.type == Type.warm || rule.type == Type.jump1 || rule.type == Type.jump2 || rule.type == Type.teleport || rule.type == Type.teleport){
                     MovementRule m = new MovementRule();

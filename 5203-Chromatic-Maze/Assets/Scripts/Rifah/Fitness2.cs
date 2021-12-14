@@ -33,12 +33,12 @@ public class Fitness2 : MonoBehaviour
         List<Chromosome> chosenChr2 = new List<Chromosome>();
         foreach (Chromosome r in mc)
         {
-            List<newRules> rr = new List<newRules>() { r.r1, r.r2, r.r3, r.r4, r.r5, r.r6, r.r7, r.r8 };
-            foreach (newRules rule in rr)
+            List<NewRules> rr = new List<NewRules>() { r.r1, r.r2, r.r3, r.r4, r.r5, r.r6, r.r7, r.r8 };
+            foreach (NewRules rule in rr)
             {
                 if (rule.type == Type.teleport)
                 {
-                    foreach (newRules rule2 in rr)
+                    foreach (NewRules rule2 in rr)
                     {
                         if (rule2.type == Type.include || rule2.type == Type.exclude)
                         {
@@ -54,7 +54,7 @@ public class Fitness2 : MonoBehaviour
             int wrm = 0;
             int cld = 0;
 
-            foreach (newRules rule in rr)
+            foreach (NewRules rule in rr)
             {
                 
                 if (rule.src == Colour.Warm || rule.src == Colour.Red || rule.src == Colour.Orange || rule.src == Colour.Pink || rule.src == Colour.Yellow || rule.target == Colour.Warm || rule.target == Colour.Red || rule.target == Colour.Orange || rule.target == Colour.Pink || rule.target == Colour.Yellow)
