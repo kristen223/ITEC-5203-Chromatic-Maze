@@ -227,15 +227,16 @@ public class PickMaze : MonoBehaviour
             //int difference = highest - lowest;
             //RuleDistribution.Add(pair.Key, difference);
 
-            int uni = 0;
-            foreach (KeyValuePair<int, int> used in pair.Value.used)
+            //add up absolute difference between each number
+            int diff = 0;
+            foreach (KeyValuePair<int, int> i in pair.Value.used)
             {
-                if(!unique.Values.Contains(used.Value))
+                foreach (KeyValuePair<int, int> j in pair.Value.used)
                 {
-                    uni++; 
+                    diff += Mathf.Abs(i.Value - j.Value); // i equaling j doesn't affect this
                 }
             }
-            unique.Add(pair.Key, uni);
+            unique.Add(pair.Key, diff);
         }
 
         //var distributions = RuleDistribution.OrderByDescending(pair => pair.Value); //list of mazes by distribution of rules (most even distributions first)
