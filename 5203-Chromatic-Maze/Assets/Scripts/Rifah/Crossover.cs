@@ -335,7 +335,7 @@ public class Crossover : MonoBehaviour
         
         Debug.Log("length of mc is "+chrList.Count);
         List< Chromosome> chrList2a = new List<Chromosome>();
-        Debug.Log("hi");
+        
         
         chrList2a = Fitness2.fitness2a(chrList);
         foreach (Chromosome ch in chrList2a)
@@ -352,7 +352,7 @@ public class Crossover : MonoBehaviour
 
 
         }
-        Debug.Log("bye");
+      
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList2a);
        

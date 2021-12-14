@@ -47,7 +47,7 @@ public class Fitness1 : MonoBehaviour
         //Debug.Log("clist keys: " + cList.Keys.Count);
         //Debug.Log("clist val: " + cList.Values.Count);
         //SortedDict fitvals << rule-index, fit >>:
-        SortedDictionary<int,int> fitVals = new SortedDictionary<int, int>(); //automatically sort by key  => fit
+        SortedDictionary<int,int> fitVals = new SortedDictionary<int, int>(); //automatically sort by key 
         
        // foreach (var item in cList)//clist contains all chromosomes so checking for each chromosome
         //{
@@ -128,7 +128,7 @@ public class Fitness1 : MonoBehaviour
                         fit = fit - 2;
                     }
                 }
-                if (inc > 0 && exc > 0)
+                if (inc ==0 && exc == 0)
                 {
                     fit = fit - 7;
                 }
