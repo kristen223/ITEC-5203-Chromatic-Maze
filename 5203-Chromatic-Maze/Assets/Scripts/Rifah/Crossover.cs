@@ -1,16 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-//public class NewRules
-//{
-//    public int index;
-//    public int distance;
-//    public Type type;
-//    public Direction direction;
-//    public Colour src; //set this later
-//    public Colour target;
-//    public bool inclusion;
-//}
+public struct NewRules
+{
+    public int index;
+    public int distance;
+    public Type type;
+    public Direction direction;
+    public Colour src; //set this later
+    public Colour target;
+    public bool inclusion;
+}
+public struct Chromosome
+{
+
+    public NewRules r1;
+    public NewRules r2;
+    public NewRules r3;
+    public NewRules r4;
+    public NewRules r5;
+    public NewRules r6;
+    public NewRules r7;
+    public NewRules r8;
+    public int fit;
+
+    public List<NewRules> NewRules;
+}
 
 
 public class Crossover : MonoBehaviour
