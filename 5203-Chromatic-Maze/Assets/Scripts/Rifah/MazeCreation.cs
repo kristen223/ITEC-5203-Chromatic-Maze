@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class MazeCreation : MonoBehaviour
 {
@@ -12,9 +11,11 @@ public class MazeCreation : MonoBehaviour
     private static Dictionary<GameObject, ColourAssigner.ColouredMaze> cmazes;
     public static Colour[] allcolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
     private static List<Tile[]> unassignedTiles;
-
+    private static GameObject gameover;
     void Awake()
     {
+        gameover = GameObject.Find("GameOver2");
+        gameover.SetActive(false);
         mazePrefab = (GameObject)Resources.Load("ColourAssigner"); //put this in Start method
         //prefabs = new List<GameObject>();
         cmazes = new Dictionary<GameObject, ColourAssigner.ColouredMaze>();
@@ -312,8 +313,7 @@ public class MazeCreation : MonoBehaviour
 
         if (finalMazePrefab == null)
         {
-            GameObject.Find("GameOver").SetActive(true);
-            GameObject.Find("AlertMessage").GetComponent<Text>().text = "Could Not Create Valid Maze";
+            gameover.SetActive(true);
             return; //no valid mazes created (debug statement somewhere else)
         }
 
@@ -331,7 +331,7 @@ public class MazeCreation : MonoBehaviour
         if (finalMaze.spaths.allPaths != null) //if maze was chosen
         {
             //TEMP DEBUG STUFF
-            string ss = "xxfinal rules: ";
+            string ss = "final rules: ";
             foreach (MovementRule g in finalMaze.mr)
             {
                 ss += g.type + "-" + g.src + ", ";
@@ -341,23 +341,23 @@ public class MazeCreation : MonoBehaviour
                 ss += h.type + "-" + h.src + ", ";
             }
             Debug.Log(ss);
-            Debug.Log("xxnumber of paths: " + finalMaze.spaths.allPaths.Count);
+            Debug.Log("number of paths: " + finalMaze.spaths.allPaths.Count);
 
-            string debugs = "xxShortest path: ";
+            string debugs = "Shortest path: ";
             foreach (Tile t in finalMaze.spaths.shortestPath)
             {
                 debugs += t.name + ", ";
             }
             Debug.Log(debugs);
 
-            string debugsss = "xxMedium path: ";
+            string debugsss = "Medium path: ";
             foreach (Tile t in finalMaze.spaths.mediumPath)
             {
                 debugsss += t.name + ", ";
             }
             Debug.Log(debugsss);
 
-            string debug = "xxLongest path: ";
+            string debug = "Longest path: ";
             foreach (Tile t in finalMaze.spaths.longestPath)
             {
                 debug += t.name + ", ";

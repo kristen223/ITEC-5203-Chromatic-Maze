@@ -307,11 +307,11 @@ public class ColourAssigner : MonoBehaviour
     {
         if (t.failedToAssign == false && t.assigned == false)
         {
-            Debug.Log(t.name + " " + t.assigned);
-            Debug.Log("m assignments " + mRuleAssignments.Count);
-            Debug.Log(t.name);
+            //Debug.Log(t.name + " " + t.assigned);
+            //Debug.Log("m assignments " + mRuleAssignments.Count);
+            //Debug.Log(t.name);
             mRuleAssignments.Add(t, rule);
-            Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
+            //Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
             t.assigned = true;
             t.mRule = rule;
             t.ruleType = rule.type;
@@ -320,7 +320,7 @@ public class ColourAssigner : MonoBehaviour
             t.index = rule.index;
             used[rule.index]++;
 
-            Debug.Log(t.name + " " + t.assigned);
+            //Debug.Log(t.name + " " + t.assigned);
 
             //SpriteRenderer sr = t.GetComponent<SpriteRenderer>();
 
@@ -413,7 +413,7 @@ public class ColourAssigner : MonoBehaviour
         if (t.failedToAssign == false && t.assigned == false)
         {
             cRuleAssignments.Add(t, rule);
-            Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
+            //Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
 
             t.assigned = true;
             t.cRule = rule;
