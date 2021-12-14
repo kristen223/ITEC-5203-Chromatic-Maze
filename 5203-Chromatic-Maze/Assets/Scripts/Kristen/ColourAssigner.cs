@@ -66,7 +66,7 @@ public class ColourAssigner : MonoBehaviour
         //Other script needs to call SetRules first
         RoundOne(); //Tmove and blank rules will be removed from mRules after this point
         RoundTwo();
-        //RoundThree();
+        RoundThree();
 
         ColouredMaze cmaze = new ColouredMaze()
         {
@@ -175,11 +175,6 @@ public class ColourAssigner : MonoBehaviour
             t.canBe[Colour.Blue] = true;
             t.canBe[Colour.Purple] = true;
             t.canBe[Colour.Teal] = true;
-            //t.mRule = new MovementRule();
-            //t.cRule = new ColourRule();
-            //t.index = new int();
-            //t.colour = Colour.All; //??
-            //t.ruleType = new Type();
         }
     }
 
@@ -451,7 +446,6 @@ public class ColourAssigner : MonoBehaviour
                 }
 
                 //Set the parent and children as the rule of the target colour
-                Debug.Log(rule.type + " " + rule.target);
                 if (t.parent.canBe[rule.target] == true && t.parent.assigned == false)
                 {
                     AssignByColour(t.parent, rule.target);
@@ -1287,7 +1281,7 @@ public class ColourAssigner : MonoBehaviour
             Tile east = maze.tiles[tileNum + 1];
             if ((tileNum + 1) % maze.w != 0) //east tile exists
             {
-                if (east != tile.parent) //if eastward tile is assigned and not child/parent, add to list
+                if (east != tile.parent) //if eastward tile is not child/parent, add to list
                 {
                     foreach (Tile c in tile.children)
                     {

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MazeCreation : MonoBehaviour
 {
@@ -284,7 +285,7 @@ public class MazeCreation : MonoBehaviour
                             //i++;
                             //Debug.Log("new color is------------------------- " + z.src);
                             cr.Add(z);
-                            Debug.Log("src color is-----" + z.src);
+                            //Debug.Log("src color is-----" + z.src);
                         }
                         else
                         {
@@ -294,7 +295,7 @@ public class MazeCreation : MonoBehaviour
                            // i++;
                            // Debug.Log("new color is------------------------- " + y.src);
                             mr.Add(y);
-                            Debug.Log("src color is-----" + y.src);
+                            //Debug.Log("src color is-----" + y.src);
                         }
                         // ChosenRulesIdx.Add(kvp.Key);
 
@@ -311,6 +312,8 @@ public class MazeCreation : MonoBehaviour
 
         if (finalMazePrefab == null)
         {
+            GameObject.Find("GameOver").SetActive(true);
+            GameObject.Find("AlertMessage").GetComponent<Text>().text = "Could Not Create Valid Maze";
             return; //no valid mazes created (debug statement somewhere else)
         }
 
@@ -383,11 +386,15 @@ public class MazeCreation : MonoBehaviour
             //}
 
 
-            Debug.Log("Start Here " + finalMaze.mRuleAssignments.Count);
-            foreach (KeyValuePair<Tile, MovementRule> mrAssignment in finalMaze.mRuleAssignments)
-            {
-                Debug.Log(mrAssignment.Key.name + "x  " + mrAssignment.Value);
-            }
+            //Debug.Log("Start Here " + finalMaze.mRuleAssignments.Count);
+            //foreach (KeyValuePair<Tile, MovementRule> mrAssignment in finalMaze.mRuleAssignments)
+            //{
+            //    Debug.Log(mrAssignment.Key.name + "x  " + mrAssignment.Value);
+            //}
+            //foreach (KeyValuePair<Tile, ColourRule> mrAssignment in finalMaze.cRuleAssignments)
+            //{
+            //    Debug.Log(mrAssignment.Key.name + "x  " + mrAssignment.Value);
+            //}
 
 
             //REASSIGN AND COLOUR TILES

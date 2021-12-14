@@ -6,14 +6,15 @@ using UnityEngine;
 public class PickMaze : MonoBehaviour
 {
     /* 1.Remove invlaid mazes from running
-     *      - 0 solution paths
-     *      - teleport target colour does not exist in grid
+     *      - 0 solution paths 
      * 2.Compare leftover mazes
      *      1. number of solution paths
+     *      1.5 Length of shortest paths
      *      2. number of walls in grid
      *      3. check if exit/children of exit are teleport target colours
      *      4. even distribution of used list (rules assigned)
-     *      5. percentage of grid with teleport target colour
+     *      5 teleport target colour does not exist in grid
+     *      6. percentage of grid with teleport target colour
     */
 
     public static GameObject GetFinalMaze(Dictionary<GameObject, ColourAssigner.ColouredMaze> cmazes)
@@ -39,26 +40,6 @@ public class PickMaze : MonoBehaviour
                         }
                     }
                 }
-
-                if (telTargets.Count > 0)
-                {
-                    foreach (Tile t in cmazes[prefab].maze.tiles)
-                    {
-                        if (telTargets.Contains(t.colour))
-                        {
-                            telTargets.Remove(t.colour);
-                        }
-                        if (telTargets.Count == 0)
-                        {
-                            break;
-                        }
-                    }
-                    if (telTargets.Count > 0)
-                    {
-                        toRemove.Add(prefab);
-                        //teleport target colour does not exist in maze, so remove maze from list
-                    }
-                }
             }            
         }
         
@@ -80,14 +61,17 @@ public class PickMaze : MonoBehaviour
         */
         Dictionary<GameObject, int> fitnessValues = new Dictionary<GameObject, int>();
         Dictionary<GameObject, int> sPathLengths = new Dictionary<GameObject, int>();
+        Dictionary<GameObject, int> shortestPathsCount = new Dictionary<GameObject, int>();
         Dictionary<GameObject, int> NumOfWalls = new Dictionary<GameObject, int>();
 
         foreach (KeyValuePair<GameObject, ColourAssigner.ColouredMaze> pair in cmazes)
         {
             fitnessValues.Add(pair.Key, 0); //all mazes start at 0
             sPathLengths.Add(pair.Key, pair.Value.spaths.allPaths.Count);
+            shortestPathsCount.Add(pair.Key, pair.Value.spaths.shortestPath.Count);
             NumOfWalls.Add(pair.Key, pair.Value.PathViolations);
         }
+
 
         //1. COMPARE NUMBER OF SOLUTION PATHS (more = better)
         var pathOrder = sPathLengths.OrderBy(pair => pair.Value); //IEnumerable<KeyValuePair<coloured maze, int>> of mazes by number of solution paths (highest first)
@@ -103,6 +87,22 @@ public class PickMaze : MonoBehaviour
             fitnessValues[mazeSP.Key] += increment;
             lastLength = mazeSP.Value;
         }
+
+        //1.5 COMPARE LENGTH OF SHORTEST PATHS
+        var shortPathOrder = shortestPathsCount.OrderBy(pair => pair.Value); //List of mazes by shortest path length (longest first)
+        increment = -1; //amount fitness is incremented by
+        lastLength = -1;
+        foreach (KeyValuePair<GameObject, int> mazeSP in shortPathOrder)
+        {
+            if (mazeSP.Value != lastLength) //if this solution path is longer than the last (so paths of equal value are incremented the same)
+            {
+                increment++;
+            }
+
+            fitnessValues[mazeSP.Key] += increment;
+            lastLength = mazeSP.Value;
+        }
+
 
         //2. COMPARE NUMBER OF WALLS IN GRID
         var wallOrder = NumOfWalls.OrderByDescending(pair => pair.Value); //list of mazes ordered by number of walls (fewer walls first)
@@ -176,9 +176,31 @@ public class PickMaze : MonoBehaviour
                     fitnessValues[cmRatio.Key] += 1;
                 }
             }
+
+            //5. CHECK IF ALL TELEPORT TARGET COLOURS EXIST
+            if (telTargets.Count > 0)
+            {
+                foreach (Tile t in pair.Value.maze.tiles)
+                {
+                    if (telTargets.Contains(t.colour))
+                    {
+                        telTargets.Remove(t.colour);
+                    }
+                    if (telTargets.Count == 0)
+                    {
+                        break;
+                    }
+                }
+                if (telTargets.Count > 0)
+                {
+                    fitnessValues[pair.Key] += 100;
+                    //if teleport target colour does not exist in maze, add a lot to the fitness
+                    //so these mazes are only chosen if all other mazes don't have a solution path
+                }
+            }
         }
 
-        /*5. CHECK RATIO OF RULES IN GRID
+        /*6. CHECK RATIO OF RULES IN GRID
              Compare all values in 'used' dictionary for each maze
              Get highest and lowest values to find difference
              Make a new KVP list and sort cmazes by differences
@@ -201,8 +223,16 @@ public class PickMaze : MonoBehaviour
                     highest = used.Value;
                 }
             }
-
             int difference = highest - lowest;
+
+            //int average = 0;
+            //foreach (KeyValuePair<int, int> used in pair.Value.used)
+            //{
+            //    average += used.Value;
+            //}
+            //average /= pair.Value.used.Count;
+
+            
             RuleDistribution.Add(pair.Key, difference);
         }
 
@@ -222,8 +252,7 @@ public class PickMaze : MonoBehaviour
 
 
         //6. RETURN BEST MAZE
-        //Dictionary<ColourAssigner.ColouredMaze, int> fitnessValues
-        int bestFit = 1000;
+        int bestFit = 5000;
         foreach(KeyValuePair<GameObject, int> kvp in fitnessValues)
         {
             if(kvp.Value < bestFit)

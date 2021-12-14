@@ -61,7 +61,8 @@ public class PlayerController : MonoBehaviour
         sText.text = sCount.ToString();
 
         //Can't accurately set this until the colour assigner is properly set up
-        bCount = bCount = (int)Math.Ceiling(sCount * .25f);
+        //bCount = bCount = (int)Math.Ceiling(sCount * .25f);
+        bCount = 25;
         bText.text = bCount.ToString();
 
         checkerCount = cmaze.checkers;
@@ -478,8 +479,13 @@ public class PlayerController : MonoBehaviour
             //Start here
             if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && tapped.failedToAssign == false) //check that player can move and is not backtracking
             {
+
                 MovementRule mr = player.mRule;
                 ColourRule cr = player.cRule;
+
+                List<Tile> wallTiles = getAllWallTiles(player);
+                
+
                 if (player.moveRule == true) //player is on a movement rule
                 {
                     int pindex = Array.IndexOf(tiles, player); //index of player
@@ -494,7 +500,7 @@ public class PlayerController : MonoBehaviour
                             break;
 
                         case Type.blank:
-                            if (tapped == player.parent || player.children.Contains(tapped)) //can move to any parent/child
+                            if (tapped == player.parent || player.children.Contains(tapped) || wallTiles.Contains(tapped)) //can move to any parent/child
                             {
                                 Move(tapped);
                             }
@@ -578,14 +584,14 @@ public class PlayerController : MonoBehaviour
                             break;
 
                         case Type.warm:
-                            if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == Colour.Red || tapped.colour == Colour.Orange || tapped.colour == Colour.Yellow || tapped.colour == Colour.Pink)) //adjacent warm colour
+                            if ((tapped == player.parent || player.children.Contains(tapped) || wallTiles.Contains(tapped)) && (tapped.colour == Colour.Red || tapped.colour == Colour.Orange || tapped.colour == Colour.Yellow || tapped.colour == Colour.Pink)) //adjacent warm colour
                             {
                                 Move(tapped);
                             }
                             break;
 
                         case Type.cool:
-                            if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == Colour.Blue || tapped.colour == Colour.Green || tapped.colour == Colour.Purple || tapped.colour == Colour.Teal)) //adjacent cool colour
+                            if ((tapped == player.parent || player.children.Contains(tapped) || wallTiles.Contains(tapped)) && (tapped.colour == Colour.Blue || tapped.colour == Colour.Green || tapped.colour == Colour.Purple || tapped.colour == Colour.Teal)) //adjacent cool colour
                             {
                                 Move(tapped);
                             }
@@ -597,14 +603,14 @@ public class PlayerController : MonoBehaviour
                     switch (cr.type)
                     {
                         case Type.include:
-                            if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour == player.cRule.target)) //can only move to adjacent tile that's target colour
+                            if ((tapped == player.parent || player.children.Contains(tapped) || wallTiles.Contains(tapped)) && (tapped.colour == player.cRule.target)) //can only move to adjacent tile that's target colour
                             {
                                 Move(tapped);
                             }
                             break;
 
                         case Type.exclude:
-                            if ((tapped == player.parent || player.children.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjacent tile except tile with target colour
+                            if ((tapped == player.parent || player.children.Contains(tapped) || wallTiles.Contains(tapped)) && (tapped.colour != player.cRule.target)) //move to any adjacent tile except tile with target colour
                             {
                                 Move(tapped);
                             }
@@ -704,5 +710,94 @@ public class PlayerController : MonoBehaviour
         //update step count
         sCount--;
         sText.text = sCount.ToString();
+    }
+
+
+    private List<Tile> getAllWallTiles(Tile tile) //returns assigned and unassigned adjacent tiles on other side of wall
+    {
+
+        List<Tile> wallNeighbours = new List<Tile>();
+        int tileNum = Array.IndexOf(tiles, tile); //tile index
+
+        if (tileNum + 1 != maze.w * maze.h) //not top right tile
+        {
+            Tile east = tiles[tileNum + 1];
+            if ((tileNum + 1) % maze.w != 0) //east tile exists
+            {
+                if (east.ruleType != Type.wall)
+                {
+                    wallNeighbours.Add(east);
+                }
+            }
+        }
+
+        if (tileNum != 0) //not bottom left tile
+        {
+            //bool child = false;
+            Tile west = tiles[tileNum - 1];
+            if (tileNum % maze.w != 0) //west tile exists
+            {
+                //if (west != tile.parent) //if westward tile is assigned and not child/parent, add to list
+                //{
+                //    foreach (Tile c in tile.children)
+                //    {
+                //        if (c == west)
+                //        {
+                //            child = true;
+                //            break;
+                //        }
+                //    }
+                    if (west.ruleType != Type.wall)
+                    {
+                        wallNeighbours.Add(west);
+                    }
+               // }
+            }
+        }
+
+        if (tileNum + maze.w < maze.w * maze.h) //north tile exists
+        {
+            //bool child = false;
+            Tile north = tiles[tileNum + maze.w];
+
+            //if (north != tile.parent) //if northward tile is assigned and not child/parent, add to list
+            //{
+            //    foreach (Tile c in tile.children)
+            //    {
+            //        if (c == north)
+            //        {
+            //            child = true;
+            //            break;
+            //        }
+            //    }
+                if (north.ruleType != Type.wall)
+                {
+                    wallNeighbours.Add(north);
+                }
+            //}
+        }
+        if (tileNum - maze.w >= 0) //south tile exists
+        {
+            //bool child = false;
+            Tile south = tiles[tileNum - maze.w];
+
+            //if (south != tile.parent) //if southward tile is assigned and not child/parent, add to list
+            //{
+            //    foreach (Tile c in tile.children)
+            //    {
+            //        if (c == south)
+            //        {
+            //            child = true;
+            //            break;
+            //        }
+            //    }
+                if (south.ruleType != Type.wall)
+                {
+                    wallNeighbours.Add(south);
+                }
+            //}
+        }
+
+        return wallNeighbours;
     }
 }
