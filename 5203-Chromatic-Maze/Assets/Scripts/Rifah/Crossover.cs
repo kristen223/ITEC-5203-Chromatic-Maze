@@ -88,6 +88,7 @@ public class Crossover : MonoBehaviour
             //mc[i].r1.src = scolors[idx];
             //zz.r1.target = setTarget(zz.r1, idx);
 
+            Debug.Log(mc[i].r1.type + " " + mc[i].r1.src);
             Chromosome c = mc[i];
             NewRules rule1 = mc[i].r1;
             rule1.src = scolors[idx];
@@ -99,7 +100,8 @@ public class Crossover : MonoBehaviour
                 idx = 0;
             }
             c.r1 = rule1;
-            mc[i] = c;
+
+            Debug.Log(mc[i].r1.type + " " + mc[i].r1.src);
 
             NewRules rule2 = mc[i].r2;
             rule2.src = scolors[idx];
@@ -109,6 +111,8 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r2 = rule2;
+            
 
             NewRules rule3 = mc[i].r3;
             rule3.src = scolors[idx];
@@ -118,6 +122,7 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r3 = rule3;
 
             NewRules rule4 = mc[i].r4;
             rule4.src = scolors[idx];
@@ -127,6 +132,7 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r4 = rule4;
 
             NewRules rule5 = mc[i].r5;
             rule5.src = scolors[idx];
@@ -136,6 +142,7 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r5 = rule5;
 
             NewRules rule6 = mc[i].r6;
             rule6.src = scolors[idx];
@@ -145,6 +152,7 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r6 = rule6;
 
             NewRules rule7 = mc[i].r7;
             rule7.src = scolors[idx];
@@ -154,6 +162,7 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r7 = rule7;
 
             NewRules rule8 = mc[i].r8;
             rule8.src = scolors[idx];
@@ -163,8 +172,9 @@ public class Crossover : MonoBehaviour
             {
                 idx = 0;
             }
+            c.r8 = rule8;
 
-
+            mc[i] = c;
         }
         return mc;
     }
