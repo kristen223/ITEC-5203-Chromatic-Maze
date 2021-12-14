@@ -169,13 +169,23 @@ public class Crossover : MonoBehaviour
         foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times = 4
         {
 
-            //List<Type>
+            //NewRules 
+            Chromosome xx = new Chromosome();
+            xx.r1 = new NewRules();
+            xx.r2 = new NewRules();
+            xx.r3 = new NewRules();
+            xx.r4 = new NewRules();
+            xx.r5 = new NewRules();
+            xx.r6 = new NewRules();
+            xx.r7 = new NewRules();
+            xx.r8 = new NewRules();
+            xx.fit = -100;
 
             //chromosome<NewRules> xx = new chromosome<NewRules>();
             GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
 
-            g.AddComponent<Chromosome>(); //CHANGED THESE TWO LINES
-            Chromosome xx = g.GetComponent<Chromosome>(); //rest of your script still uses your old chromosome class.
+           // g.AddComponent<Chromosome>(); //CHANGED THESE TWO LINES
+            //Chromosome xx = g.GetComponent<Chromosome>(); //rest of your script still uses your old chromosome class.
 
             foreach (KeyValuePair<int, Dictionary<int, Type>> x in clist)
             {
@@ -199,13 +209,21 @@ public class Crossover : MonoBehaviour
                         mm = Fitness1.GetMRule(i, m);
                         Debug.Log("made a movement rule and src is " + mm.src);
                         Debug.Log("type is"+mm.type);
+                        
                         foreach (NewRules rx in r)
+                        
                         {
                             Debug.Log("reached forloop");
                             rx.type = mm.type;
                             rx.distance = mm.distance;
                             rx.direction = mm.direction;
                            
+                        }
+                        for (int j = 0; j < r.Count; j++)
+                        {
+                            xx[j].r.type = mm.type;
+                            xx
+                            r[0].type = Type.blank;
                         }
                     }
                     else
