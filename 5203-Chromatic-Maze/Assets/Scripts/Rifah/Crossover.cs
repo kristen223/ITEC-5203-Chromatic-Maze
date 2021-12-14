@@ -76,7 +76,7 @@ public class Crossover : MonoBehaviour
             Chromosome c = mc[i];
             NewRules rule1 = mc[i].r1;
             rule1.src = scolors[idx];
-            
+
             rule1.target = setTarget(rule1, idx);
             idx++; //going serially which could be bad
             if (idx >= 8)
