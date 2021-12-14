@@ -27,7 +27,7 @@ public class Shinro : MonoBehaviour
             {//must add checkers to rest of path
                 if(current.tag != "checker") //may already be placed here
                 {
-                    current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                    //current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                     current.tag = "checker";
                 }
                 checkerCount--; //want to subtract count regardless
@@ -39,7 +39,7 @@ public class Shinro : MonoBehaviour
                 {
                     if (current.tag != "checker")
                     {
-                        current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
+                        //current.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = true;
                         current.tag = "checker";
                     }
                     checkerCount--;

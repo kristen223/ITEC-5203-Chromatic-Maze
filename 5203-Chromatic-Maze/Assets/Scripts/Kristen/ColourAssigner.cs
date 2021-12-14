@@ -310,7 +310,7 @@ public class ColourAssigner : MonoBehaviour
 
     private void AssignByMRule(Tile t, MovementRule rule)
     {
-        if (t.failedToAssign == false)
+        if (t.failedToAssign == false && t.assigned == false)
         {
             Debug.Log(t.name + " " + t.assigned);
             Debug.Log("m assignments " + mRuleAssignments.Count);
@@ -415,7 +415,7 @@ public class ColourAssigner : MonoBehaviour
     private void AssignByCRule(Tile t, ColourRule rule)
     {
        
-        if (t.failedToAssign == false) //maybe?? abcd
+        if (t.failedToAssign == false && t.assigned == false)
         {
             cRuleAssignments.Add(t, rule);
             Debug.Log("assigned " + t.name + " to " + rule.type + " " + rule.src);
@@ -450,7 +450,8 @@ public class ColourAssigner : MonoBehaviour
                     wallNeighbours[i].canBe[rule.target] = false;
                 }
 
-                //Set the parent and children as the ruel of the target colour
+                //Set the parent and children as the rule of the target colour
+                Debug.Log(rule.type + " " + rule.target);
                 if (t.parent.canBe[rule.target] == true && t.parent.assigned == false)
                 {
                     AssignByColour(t.parent, rule.target);
