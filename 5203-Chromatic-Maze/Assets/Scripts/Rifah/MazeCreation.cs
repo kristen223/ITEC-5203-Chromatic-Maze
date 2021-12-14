@@ -325,6 +325,7 @@ public class MazeCreation : MonoBehaviour
             if (kvp.Key != finalMazePrefab)
             {
                 kvp.Key.SetActive(false); //better to destroy
+                Destroy(kvp.Key);
             }
         }
 

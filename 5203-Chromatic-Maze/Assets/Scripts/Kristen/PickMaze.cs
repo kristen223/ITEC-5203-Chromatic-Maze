@@ -46,6 +46,7 @@ public class PickMaze : MonoBehaviour
         foreach (GameObject g in toRemove) //remove invalid mazes
         {
             cmazes.Remove(g); //when you destory them, the indexes change
+            Destroy(g);
         }
 
         GameObject finalMaze = new GameObject();
