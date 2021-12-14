@@ -29,6 +29,25 @@ public class Fitness2 : MonoBehaviour
     {
         //PART 3 : CHECKING BADNESS WITH COLORS : "target color of teleport should not be src color of include/exclude"
         //ICollection ruleIdxs = d.Keys;
+
+        foreach(Chromosome ch in mc)
+        {
+            Debug.Log("!!!!!!!!!!!!!!!!!mc just passed in fitness2a!!!!!!!!!!!!!!!!!!!!!");
+            Debug.Log("all the rule types are:" + ch.r1.type);
+            Debug.Log("all the rule types are:" + ch.r2.type);
+            Debug.Log("all the rule types are:" + ch.r3.type);
+            Debug.Log("all the rule types are:" + ch.r4.type);
+            Debug.Log("all the rule types are:" + ch.r5.type);
+            Debug.Log("all the rule types are:" + ch.r6.type);
+            Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+
+
+        }
+
+
+
+
         int fit = 0;
         List<Chromosome> chosenChr2 = new List<Chromosome>();
 

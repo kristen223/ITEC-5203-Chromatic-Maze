@@ -176,15 +176,22 @@ public class Crossover : MonoBehaviour
     }
 
 
-    public static void makeCopies(Chromosome xx,int pop)
+    public static void makeCopies(Chromosome xx,int pop) //single chr getting in
     {
+        
+        //xx has ALL TMOVES
+
+        List<Chromosome> copyChr = new List<Chromosome>();
         int count = (int)System.Math.Ceiling(0.2 * pop);
         for (int i = 0; i < count; i++)
         {
             Chromosome yy = xx;
-            Debug.Log("adding to mc" + yy.ToString());
+            Debug.Log("adding to copychr" + yy.ToString());
             mc.Add(yy);
+            //copyChr.Add(yy);
         }
+        Debug.Log("LENGTH OF COPIEDchr " + copyChr.Count);
+        //return copyChr;
     }
     
     public Crossover()
@@ -197,7 +204,7 @@ public class Crossover : MonoBehaviour
         Debug.Log("at crossover and length of chosenChr is "+chosenChr.Count );
 
         
-        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times = 4
+        foreach (KeyValuePair<int, int> k in chosenChr) //suppose to run (20% of popsize) times => 4 IF POP=10
         {
 
             //NewRules 
@@ -210,10 +217,10 @@ public class Crossover : MonoBehaviour
             xx.r6 = new NewRules();
             xx.r7 = new NewRules();
             xx.r8 = new NewRules();
-            xx.fit = -100;
+            xx.fit = 0;
 
             //chromosome<NewRules> xx = new chromosome<NewRules>();
-            GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
+           //GameObject g = Instantiate(new GameObject(), new Vector3(0,0,0), Quaternion.Euler(0, 0, 0));
 
            // g.AddComponent<Chromosome>(); //CHANGED THESE TWO LINES
             //Chromosome xx = g.GetComponent<Chromosome>(); //rest of your script still uses your old chromosome class.
@@ -229,55 +236,55 @@ public class Crossover : MonoBehaviour
                 //chromosome mc = new chromosome();
 
                 //int count = 1;
-
+                //CONVERTING INTO LIST OF CHROMOSOME STRUCT:
                 foreach (int i in ruleIndexs)
                 {
                     List<NewRules> r = new List<NewRules> { xx.r1, xx.r2, xx.r3, xx.r4, xx.r5, xx.r6, xx.r7, xx.r8 };
                     Debug.Log("ruleindex originals: " + i);
+                    int j = 0;
                     if (i < m.Count) //its a movement rule
                     {
+
+
+
+                        // for (int j = 0; j < r.Count; j++)
+                        //{
+
                         MovementRule mm = new MovementRule();
                         mm = Fitness1.GetMRule(i, m);
                         Debug.Log("made a movement rule and src is " + mm.src);
-                        Debug.Log("type is"+mm.type);
+                        Debug.Log("type is" + mm.type);
+                        NewRules rule = r[j];
+                        rule.type = mm.type;
+                        rule.direction = mm.direction;
+                        rule.distance = mm.distance;
+
+                        r[j] = rule;
+                        j++;
 
 
-                        //CANNOT modify rx if youre traversing through r
-                        //foreach (NewRules rx in r)
-                        //{
-                        //    Debug.Log("reached forloop");
-                        //    rx.type = mm.type;
-                        //    rx.distance = mm.distance;
-                        //    rx.direction = mm.direction;
+
                         //}
-
-
-                        for (int j = 0; j < r.Count; j++)
-                        {
-                            //xx[j].r.type = mm.type;
-                            //xx
-                            //r[0].type = Type.blank;
-
-                            //not sure if this is what you want or not
-                            NewRules rule = r[j];
-                            //rule.type = Type.blank;
-                            r[j] = rule;
-                        }
                     }
                     else
                     {
+
+
+                        // for (int j = 0; j < r.Count; j++)
+                        //{
                         ColourRule cc = new ColourRule();
                         cc = Fitness1.GetCRule(i, c);
                         Debug.Log("made a color rule and src is " + cc.src);
                         Debug.Log("type is" + cc.type);
-
-                        for (int j = 0; j < r.Count; j++)
-                        {
-                            NewRules rule = r[j];
-                            rule.type = cc.type;
-                            rule.inclusion = cc.inclusion;
-                            r[j] = rule;
-                        }
+                        NewRules rule = r[j];
+                        rule.type = cc.type;
+                        rule.inclusion = cc.inclusion;
+                        r[j] = rule;
+                        j++;
+                        Debug.Log("NEW TYPE: " + rule.type + "OLD TYPE: " + cc.type);
+                    //}
+                
+                        
 
                         //    foreach (NewRules rx in r)
                         //{
@@ -286,6 +293,14 @@ public class Crossover : MonoBehaviour
 
                         //}
                     }
+
+                    foreach(NewRules g in r)
+                    {
+                        Debug.Log("TYPE IS -------------------"+g.type);
+
+                    }
+
+
                 }
                     
 
@@ -301,15 +316,35 @@ public class Crossover : MonoBehaviour
             makeCopies(xx,pop);
 
         }
+       
+
+
+
         List<Chromosome> chrList = assignUniqueColors(mc);
+        
         Debug.Log("length of mc is "+chrList.Count);
         List< Chromosome> chrList2a = new List<Chromosome>();
         Debug.Log("hi");
+        
         chrList2a = Fitness2.fitness2a(chrList);
+        foreach (Chromosome ch in chrList2a)
+        {
+            Debug.Log("==================================");
+            Debug.Log("all the rule types are:" + ch.r1.type);
+            Debug.Log("all the rule types are:" + ch.r2.type);
+            Debug.Log("all the rule types are:" + ch.r3.type);
+            Debug.Log("all the rule types are:" + ch.r4.type);
+            Debug.Log("all the rule types are:" + ch.r5.type);
+            Debug.Log("all the rule types are:" + ch.r6.type);
+            Debug.Log("==================================");
+
+
+
+        }
         Debug.Log("bye");
         Debug.Log("seperate rules now");
         MazeCreation.seperateRules(chrList2a);
-        //MazeCreation.
+       
 
     }
 }
@@ -317,129 +352,6 @@ public class Crossover : MonoBehaviour
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-            //if (k.Key == x.Key)
-            //{
-            //    List<MovementRule> mr = new List<MovementRule>();
-            //    List<ColourRule> cr = new List<ColourRule>();
-            //    //foreach (Dictionary<int, Type> d in clist.Values) //suppose to
-            //    //{
-            //    int i = 0;
-            //    List<Colour> uniqueColors = new List<Colour>();
-
-            //    foreach (KeyValuePair<int, Type> kvp in x.Value) //supposed to run 8 times
-            //    {
-
-            //        kvp.k
-
-
-            //            if (kvp.Value == Type.exclude || kvp.Value == Type.include)
-            //        {
-
-            //            ColourRule z = Fitness1.GetCRule(kvp.Key, c);
-            //            Debug.Log("original color was---------------------------------" + z.src);
-
-            //            z.src = allcolors[i];
-            //            i++;
-            //            Debug.Log("new color is------------------------- " + z.src);
-            //            cr.Add(z);
-            //        }
-            //        else
-            //        {
-            //            MovementRule y = Fitness1.GetMRule(kvp.Key, m);
-            //            Debug.Log("original color was---------------------------------" + y.src);
-
-            //            y.src = allcolors[i];
-
-
-            //            i++;
-            //            Debug.Log("new color is------------------------- " + y.src);
-            //            mr.Add(y);
-            //        }
-
-
-            //    }
-              //  MazeCreation.getFinalRules(chosenChr, clist, m, c);
-
-
-                //get the rule of each index in chosenChr (get rules method)
-                //each index has 8 rules.
-                //make 5 more chromosomes with the same 8 rules. so just copy.
-                //change the colors.
-            
-
-            // return newChrs;
-   
-
-
-    /*public static void createMCopies(MovementRule mm, int idx)
-    {
-        int copyCount = (int)System.Math.Ceiling(0.2 * pop); //avoiding zero with ceiling
-        for (int i = 0; i < copyCount; i++)
-        {
-            NewRules newM = new NewRules();
-            newM.index = newIdx++;
-            newM.type = mm.type;
-            newM.src = scolors[idx];//find whats idx here???
-            if (newM.type == Type.warm)
-            {
-                newM.target = Colour.Warm;
-            }
-            if(newM.type == Type.cool)
-            {
-                newM.target = Colour.Cool;
-            }
-            if(newM.type == Type.blank || newM.type == Type.Tmove || newM.type == Type.jump1 || newM.type == Type.jump2)
-            {
-                newM.target = Colour.All;
-                newM.direction = mm.direction;//null exception? if happens, just set a value in their direction in rules.cs
-                newM.distance = mm.distance;  //null exception?
-            }
-            if (newM.type == Type.teleport)
-            {
-                newM.target = tcolors[(idx+1)%tcolors.Length]; //circular array concept
-            }
-
-            NewRuleslist.Add(newM);
-
-        }
-
-    }
-    public static void createCCopies(ColourRule cc, int idx)
-    {
-        int copyCount = (int)System.Math.Ceiling(0.2 * pop); //avoiding zero with ceiling
-        for (int i = 0; i < copyCount; i++)
-        {
-            NewRules newC = new NewRules();
-            newC.index = newIdx++;
-            newC.type = cc.type;
-            newC.src = scolors[idx];//find whats idx here???firgurw out later
-            if (newC.type == Type.include)
-            {
-                newC.target = scolors[(idx + 1) % tcolors.Length];//scolors bec cant be warm,cool,all
-            }
-            if (newC.type == Type.exclude)
-            {
-                newC.target = scolors[(idx + 1) % tcolors.Length]; ;
-            }
-            
-            
-
-            NewRuleslist.Add(newC);
-
-        }
-}*/
 
 
     
