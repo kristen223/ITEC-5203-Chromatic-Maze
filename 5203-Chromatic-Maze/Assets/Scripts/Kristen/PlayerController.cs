@@ -156,19 +156,40 @@ public class PlayerController : MonoBehaviour
                         break;
 
                     case Type.warm:
-                        bool okayW = false;
-                        if (player.parent != previous.Peek() && (player.parent.colour == Colour.Red || player.parent.colour == Colour.Orange || player.parent.colour == Colour.Yellow || player.parent.colour == Colour.Pink))
+                        bool okayW = false; //cant peek
+                        if (player.parent.colour == Colour.Red || player.parent.colour == Colour.Orange || player.parent.colour == Colour.Yellow || player.parent.colour == Colour.Pink)
                         {
-                            break;
+                            if(previous.Peek() != null)
+                            {
+                                if(player.parent != previous.Peek())
+                                {
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                            
                         }
                         foreach (Tile c in player.children)
                         {
-                            if (c != previous.Peek() && (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || c.colour == Colour.Pink))
+                            if(previous.Peek() != null)
                             {
-                                okayW = true;
-                                Debug.Log("child is fine");
-                                break;
+                                if (c != previous.Peek() && (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || c.colour == Colour.Pink))
+                                {
+                                    okayW = true;
+                                    break;
+                                }
                             }
+                            else
+                            {
+                                if (c.colour == Colour.Red || c.colour == Colour.Orange || c.colour == Colour.Yellow || c.colour == Colour.Pink)
+                                {
+                                    okayW = true;
+                                    break;
+                                }
+                            } 
                         }
                         if (okayW == false)
                         {

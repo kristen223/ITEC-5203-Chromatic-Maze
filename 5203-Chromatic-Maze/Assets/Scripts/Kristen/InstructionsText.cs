@@ -9,57 +9,121 @@ public class InstructionsText : MonoBehaviour
     private static Text ruleText;
     private static string instructions;
 
+    private static string red;
+    private static string orange;
+    private static string yellow;
+    private static string green;
+    private static string blue;
+    private static string purple;
+    private static string teal;
+    private static string pink;
+
     void Awake()
     {
-        instructions = "Rules: " + "\n";
+        instructions = "All rules imply orthogonal movement by one, unless otherwise specified." + "\n" + "\n";
         ruleText = GameObject.Find("ruleText").GetComponent<Text>();
     }
 
     public static void SetInstructions(List<MovementRule> mRules, List<ColourRule> cRules)
     {
-        int count = 1;
         foreach(MovementRule mr in mRules) //Tmove, blank, teleport, jump1, jump2, warm, cool,include, exclude
         {
+            string s = "";
             switch(mr.type)
             {
                 case Type.Tmove:
-                    instructions += count.ToString() + ". " + mr.src + ": Can't move " + mr.direction.ToString().ToLower() + "\n";
+                    s += mr.src + ": Can't move " + mr.direction.ToString().ToLower() + "\n";
                     break;
                 case Type.blank:
-                    instructions += count.ToString() + ". " + mr.src + ": Can move in any direction by one" + "\n";
+                    s += mr.src + ": Can move in any direction by one" + "\n";
                     break;
                 case Type.teleport:
-                    instructions += count.ToString() + ". " + mr.src + ": Can teleport to any " + mr.target.ToString().ToLower() + " tile" + "\n";
+                    s += mr.src + ": Can teleport to any " + mr.target.ToString().ToLower() + " tile on grid" + "\n";
                     break;
                 case Type.warm:
-                    instructions += count.ToString() + ". " + mr.src + ": Can move to any warm-coloured tile" + "\n";
+                    s += mr.src + ": Can move to any warm colour" + "\n";
                     break;
                 case Type.cool:
-                    instructions += count.ToString() + ". " + mr.src + ": Can move to any cool-coloured tile" + "\n";
+                    s += mr.src + ": Can move to any cool colour" + "\n";
                     break;
                 case Type.jump1:
-                    instructions += count.ToString() + ". " + mr.src + ": Can jump over one tile in any direction" + "\n";
+                    s += mr.src + ": Can jump over one tile in any direction" + "\n";
                     break;
                 case Type.jump2:
-                    instructions += count.ToString() + ". " + mr.src + ": Can jump over two tiles in any direction" + "\n";
+                    s += mr.src + ": Can jump over two tiles in any direction" + "\n";
                     break;
             }
-            count++;
+            switch(mr.src)
+            {
+                case Colour.Red:
+                    red = s;
+                    break;
+                case Colour.Orange:
+                    orange = s;
+                    break;
+                case Colour.Yellow:
+                    yellow = s;
+                    break;
+                case Colour.Green:
+                    green = s;
+                    break;
+                case Colour.Blue:
+                    blue = s;
+                    break;
+                case Colour.Purple:
+                    purple = s;
+                    break;
+                case Colour.Pink:
+                    pink = s;
+                    break;
+                case Colour.Teal:
+                    teal = s;
+                    break;
+            }
+            
         }
 
         foreach (ColourRule cr in cRules)
         {
+            string s = "";
             switch (cr.type)
             {
                 case Type.include:
-                    instructions += count.ToString() + ". " + cr.src + ": Can only move onto adjacent " + cr.target.ToString().ToLower() + " tiles" + "\n";
+                    s += cr.src + ": Can only move onto " + cr.target.ToString().ToLower() + "\n";
                     break;
                 case Type.exclude:
-                    instructions += count.ToString() + ". " + cr.src + ": Can move onto any adjacent tile except " + cr.target.ToString().ToLower() + "\n";
+                    s += cr.src + ": Can move to any colour except " + cr.target.ToString().ToLower() + "\n";
                     break;
             }
-            count++;
+            switch (cr.src)
+            {
+                case Colour.Red:
+                    red = s;
+                    break;
+                case Colour.Orange:
+                    orange = s;
+                    break;
+                case Colour.Yellow:
+                    yellow = s;
+                    break;
+                case Colour.Green:
+                    green = s;
+                    break;
+                case Colour.Blue:
+                    blue = s;
+                    break;
+                case Colour.Purple:
+                    purple = s;
+                    break;
+                case Colour.Pink:
+                    pink = s;
+                    break;
+                case Colour.Teal:
+                    teal = s;
+                    break;
+            }
+
         }
-        ruleText.text = instructions;
+        ruleText.text = instructions + pink + red + orange + yellow + green + teal + blue + purple;
     }
 }
