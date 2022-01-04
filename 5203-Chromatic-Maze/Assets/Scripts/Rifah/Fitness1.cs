@@ -123,18 +123,20 @@ public class Fitness1 : MonoBehaviour
                         fit--;
                     }
                 }
-                if (inc > 1)
+
+                if (inc > 0 && exc > 0)
+                {
+                    fit = fit - 7;
+                }
+                else if (inc > 1)
                 {
                     for (int k = 0; k < inc; k++)
                     {
                         fit = fit - 2;
                     }
                 }
-                if (inc > 0 && exc > 0)
-                {
-                    fit = fit - 7;
-                }
-                if (exc > 1)
+                
+                else if (exc > 1)
                 {
                     for (int e = 0; e < exc; e++)
                     {

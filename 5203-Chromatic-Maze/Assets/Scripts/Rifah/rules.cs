@@ -58,14 +58,15 @@ public class Rules : MonoBehaviour
     public static List<MovementRule> movementRuleSets = new List<MovementRule>();
     public static List<ColourRule> colourRuleSets = new List<ColourRule>();
 
-    
-
 
     void Start()
     {
        
         defineRules();
-        selectChromosomes(movementRuleSets,colourRuleSets,popSize); 
+        selectChromosomes(movementRuleSets,colourRuleSets,popSize);
+
+        movementRuleSets.Clear();
+        colourRuleSets.Clear();
 
     }
 
@@ -303,11 +304,10 @@ public class Rules : MonoBehaviour
         {
             allList.Add(item.type);
         }
-        Debug.Log("all rules : "+allList.Count);
+        Debug.Log("all rules : " + allList.Count);
         Dictionary<int, Dictionary<int,Type>> ChrsDict = new Dictionary<int, Dictionary<int,Type>>(pop); //dictionary of chr-idx and chr
         //Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
         //Hashtable chr = new Hashtable();
-
 
         for (int i = 0; i < pop; i++)
         {
@@ -319,16 +319,17 @@ public class Rules : MonoBehaviour
             Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
             //for (int j = 0; j < 8; j++)   //filling up each chromosome with rule types
             int count = 0;
-            while(count<8)
+            while(count < 8)
             {
                 int idx = randNum.Next(0, allList.Count);
                 //avoiding duplicate rules in a chromosome
-                
+
                 //if (!usedIdx.Contains(idx))
-                if(!chr.ContainsKey(idx))
+                if (!chr.ContainsKey(idx))
                 {
                     
                     chr.Add(idx, allList[idx]); //adding the rule index and rule type to the chromosome
+                    Debug.Log("ayo " + idx);
                     //Debug.Log("idx is " + idx + "type is " + allList[idx]);                            // chr[j]=allList[idx];
                     count++;
                 }
@@ -343,7 +344,7 @@ public class Rules : MonoBehaviour
         //{
         //    Debug.Log("chrs dictionary is " + item.Values);
         //}
-       
+
         Fitness1.fitnessOne(ChrsDict, movementRuleSets, colourRuleSets,popSize);
 
     }

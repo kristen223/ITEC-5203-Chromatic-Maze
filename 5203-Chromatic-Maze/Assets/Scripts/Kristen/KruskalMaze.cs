@@ -112,6 +112,7 @@ public class KruskalMaze : MonoBehaviour
             if (Tile.GetRootParent(O) != Tile.GetRootParent(D))
                 {
                     mst.Add(nextEdge);
+                    nextEdge.gameObject.GetComponent<SpriteRenderer>().enabled = false;
                     e++;
                     allEdges.Remove(nextEdge);
                     Union(subset, O, D);
@@ -483,6 +484,8 @@ public class KruskalMaze : MonoBehaviour
                                             e.destination.children.Add(e.origin);
 
                                             e.disableEdge(); //remove wall
+                                            e.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                            Debug.Log("removed edge " + e.name);
                                             e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
@@ -533,6 +536,8 @@ public class KruskalMaze : MonoBehaviour
                                             e.destination.children.Add(e.origin);
 
                                             e.disableEdge(); //remove wall
+                                            e.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                                            Debug.Log("removed edge " + e.name);
                                             e.tag = "cycle";
                                             EdgesWithWalls.Remove(e);
                                             newTree.Add(e); //add edge to the tree (no longer a mst)
@@ -597,6 +602,8 @@ public class KruskalMaze : MonoBehaviour
                         orderedAdjacent[0].destination.children.Add(orderedAdjacent[0].origin);
 
                         orderedAdjacent[0].disableEdge(); //remove wall
+                        orderedAdjacent[0].gameObject.GetComponent<SpriteRenderer>().enabled = false;
+                        Debug.Log("removed edge " + orderedAdjacent[0].name);
                         orderedAdjacent[0].tag = "cycle";
                         EdgesWithWalls.Remove(orderedAdjacent[0]);
                         newTree.Add(orderedAdjacent[0]); //add edge to the tree (no longer a mst)
@@ -632,6 +639,8 @@ public class KruskalMaze : MonoBehaviour
             randEdge.origin.children.Add(randEdge.destination);
             randEdge.destination.children.Add(randEdge.origin);
             randEdge.disableEdge(); //remove a random wall
+            randEdge.gameObject.GetComponent<SpriteRenderer>().enabled = false;
+            Debug.Log("removed edge " + randEdge.name);
             randEdge.tag = "cycle";
             tree.Add(randEdge); //add the random edge to the tree (no longer a mst)
             EdgesWithWalls.Remove(randEdge);

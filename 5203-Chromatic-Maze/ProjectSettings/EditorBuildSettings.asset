@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainMenu.unity
+    guid: 2773670e4a85545d28dbed923528ad6d
+  - enabled: 1
+    path: Assets/Scenes/instructions.unity
+    guid: dcee2fb6b888d41fca2bc4d1712cac7b
+  - enabled: 1
     path: Assets/Scenes/KruskalMaze.unity
     guid: fe9aa54c1f23c4b2a8a4c46d891c61e4
+  - enabled: 1
+    path: Assets/Scenes/setup.unity
+    guid: a40b4c1669dda4c2b9e1defef592609a
   m_configObjects: {}

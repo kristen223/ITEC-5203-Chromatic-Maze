@@ -33,8 +33,10 @@ public class GenerateGrid : MonoBehaviour
 
     public void Awake()
     {
-        hght = height;
-        wdth = width;
+        width = setUpScene.width;
+        height = setUpScene.height;
+        hght = setUpScene.height;
+        wdth = setUpScene.width;
         //To organize the Unity scene
         BorderFolder = GameObject.Find("Border");
         EdgeFolder = GameObject.Find("Edges");
@@ -205,7 +207,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + 1].GetComponent<Tile>();
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
-                wall.GetComponent<SpriteRenderer>().enabled = false;
+                //wall.GetComponent<SpriteRenderer>().enabled = true;
 
                 edges.Add(wall.GetComponent<Wall>());
 
@@ -233,7 +235,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + width].GetComponent<Tile>(); //changed
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
-                wall.GetComponent<SpriteRenderer>().enabled = false;
+                //wall.GetComponent<SpriteRenderer>().enabled = true;
 
                 edges.Add(wall.GetComponent<Wall>());
 

@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class PlayerController : MonoBehaviour
 {
+    static GameObject button;
+    static AudioSource tapSound;
+    static AudioSource error;
 
     public KruskalMaze.Maze maze;
     private static Tile[] tiles;
@@ -27,12 +31,17 @@ public class PlayerController : MonoBehaviour
     private static Text bText;
     private Text message;
 
-    private Text endMessage;
+    private TextMeshProUGUI endMessage;
     //private GameObject rButton;
     private GameObject gameOver;
 
     void Awake()
     {
+        button = GameObject.Find("button");
+        button.SetActive(false);
+        tapSound = GameObject.Find("tap").GetComponent<AudioSource>();
+        error = GameObject.Find("errorSound").GetComponent<AudioSource>();
+
         maze = GenerateGrid.maze;
         isRunning = false;
         checkerCount = 0;
@@ -46,7 +55,7 @@ public class PlayerController : MonoBehaviour
         bText = GameObject.Find("BCount").GetComponent<Text>();
 
         gameOver = GameObject.Find("GameOver");
-        endMessage = GameObject.Find("AlertMessage").GetComponent<Text>();
+        endMessage = GameObject.Find("AlertMessage").GetComponent<TextMeshProUGUI>();
         message = GameObject.Find("Alert").GetComponent<Text>();
         //rButton = GameObject.Find("Button");
         gameOver.SetActive(false);
@@ -72,8 +81,16 @@ public class PlayerController : MonoBehaviour
 
     private void GameOver()
     {
+        button.SetActive(true);
         gameOver.SetActive(true);
         endMessage.text = "Out of Moves - Game Over";
+        
+    }
+
+    IEnumerator resetAlert()
+    {
+        yield return new WaitForSeconds(1.5f);
+        message.text = "";
     }
 
     void Update()
@@ -364,6 +381,7 @@ public class PlayerController : MonoBehaviour
             {
                 if (bCount > 0)
                 {
+                    tapSound.Play();
                     bCount--;
                     bText.text = bCount.ToString();
 
@@ -374,6 +392,9 @@ public class PlayerController : MonoBehaviour
                         {
                             player.transform.Find("Checker").gameObject.GetComponent<SpriteRenderer>().enabled = false;
                             cCount--;
+                            message.text = "Checker dropped";
+                            StartCoroutine(resetAlert());
+                        
                         }
 
                         cText.text = cCount.ToString() + "/" + checkerCount.ToString();
@@ -493,13 +514,19 @@ public class PlayerController : MonoBehaviour
                     sCount++;
                     sText.text = sCount.ToString();
                 }
+                else
+                {
+                    error.Play();
+                    message.text = "Out of undos!";
+                    StartCoroutine(resetAlert());
+                }
             }
 
 
             //Start here
             if (sCount > 0 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && tapped.failedToAssign == false) //check that player can move and is not backtracking
             {
-
+                
                 MovementRule mr = player.mRule;
                 ColourRule cr = player.cRule;
 
@@ -638,6 +665,12 @@ public class PlayerController : MonoBehaviour
                     }
                 }
             }
+            else if(sCount < 1 && tapped != player && (previous.Count == 0 || previous.Peek() != tapped) && tapped.failedToAssign == false)
+            {
+                error.Play();
+                message.text = "Out of steps!";
+                StartCoroutine(resetAlert());
+            }
 
 
             //Old Player Controller
@@ -708,11 +741,18 @@ public class PlayerController : MonoBehaviour
         //    }
         //}
 
+        tapSound.Play();
+
         //check if checker is on tile
         if (tapped.tag == "checker")
         {
             cCount++;
+            tapped.passedChecker++;
             cText.text = cCount + "/" + checkerCount;
+            tapped.transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = true;
+
+            message.text = "Checker collected";
+            StartCoroutine(resetAlert());
         }
 
         previous.Push(player);

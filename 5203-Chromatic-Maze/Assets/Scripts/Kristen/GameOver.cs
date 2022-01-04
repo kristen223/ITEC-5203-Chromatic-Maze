@@ -5,10 +5,35 @@ using UnityEngine.SceneManagement;
 
 public class GameOver : MonoBehaviour
 {
+    static GameObject tap;
 
-    public void Restart()
+    void Start()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        tap = GameObject.Find("tap");
+    }
+
+    public void GoToMenu()
+    {
+        tap.GetComponent<AudioSource>().Play();
+        SceneManager.LoadScene(0);
+    }
+
+    public void GoToInstructions()
+    {
+        tap.GetComponent<AudioSource>().Play();
+        SceneManager.LoadScene(1);
+    }
+
+    public void LoadLevel()
+    {
+        tap.GetComponent<AudioSource>().Play();
+        SceneManager.LoadScene(2);
+    }
+
+    public void setUp()
+    {
+        tap.GetComponent<AudioSource>().Play();
+        SceneManager.LoadScene(3);
     }
 
 }

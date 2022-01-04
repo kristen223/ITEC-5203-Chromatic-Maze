@@ -12,8 +12,12 @@ public class MazeCreation : MonoBehaviour
     public static Colour[] allcolors = new Colour[8] { Colour.Red, Colour.Orange, Colour.Yellow, Colour.Pink, Colour.Teal, Colour.Blue, Colour.Purple, Colour.Green };
     private static List<Tile[]> unassignedTiles;
     private static GameObject gameover;
+    private static GameObject button;
+
+
     void Awake()
     {
+        button = GameObject.Find("button");
         gameover = GameObject.Find("GameOver2");
         gameover.SetActive(false);
         mazePrefab = (GameObject)Resources.Load("ColourAssigner"); //put this in Start method
@@ -155,12 +159,14 @@ public class MazeCreation : MonoBehaviour
 
     private static void LastStep()
     {
+        
         //FITNESS 2
         GameObject finalMazePrefab = PickMaze.GetFinalMaze(cmazes); //prefab Key
 
         if (finalMazePrefab == null)
         {
             gameover.SetActive(true);
+            button.SetActive(true);
             return; //no valid mazes created (debug statement somewhere else)
         }
 
@@ -212,8 +218,7 @@ public class MazeCreation : MonoBehaviour
             }
             Debug.Log(debug);
 
-            //SET INSTRUCTIONS TEXT
-            InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
+            
 
             //SET TILE GRID TO CORRECT MAZE'S TILES AND RESET CHECKERS
             //for (int i = 0; i < GenerateGrid.tiles.Length; i++)
@@ -266,6 +271,8 @@ public class MazeCreation : MonoBehaviour
                 sr.material.color = black.color;
             }
 
+            //SET INSTRUCTIONS TEXT
+            InstructionsText.SetInstructions(finalMaze.mr, finalMaze.cr);
 
             //ADD CHECKERS AND NUMBER CLUES
             Shinro.PlaceCheckers(finalMaze.spaths.mediumPath, finalMaze, .3f);
