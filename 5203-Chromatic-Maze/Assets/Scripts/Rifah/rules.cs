@@ -94,14 +94,12 @@ public class Rules : MonoBehaviour
 
         if (type == Type.Tmove)
         {
-            Debug.Log("start of TMOVE :" + index);
             foreach(Colour c in clrs)
             {
                 foreach(Direction d in dir)
                 {
                     MovementRule r = new MovementRule();
-                    r.index = index;
-                    index++;
+                    r.index = index++;
                     r.src = c;
                     r.target = Colour.All;
                     r.direction = d;
@@ -110,17 +108,14 @@ public class Rules : MonoBehaviour
                     movementRuleSets.Add(r);
                 }
             }
-            Debug.Log("end of TMOVE :" + index);
         }
-        Debug.Log("end of TMOVE outside bracket :" + index);
 
         if (type == Type.warm)
         {
             foreach (Colour i in clrs)
             {
                 MovementRule r = new MovementRule();
-                r.index = index;
-                index++;
+                r.index = index++;
                 r.src = i;
                 r.target = Colour.Warm;
                 r.type = type;
@@ -132,8 +127,7 @@ public class Rules : MonoBehaviour
             foreach (Colour i in clrs)
             {
                 MovementRule r = new MovementRule();
-                r.index = index;
-                index++;
+                r.index = index++;
                 r.src = i;
                 r.target = Colour.Cool;
                 r.type = type;
@@ -145,8 +139,7 @@ public class Rules : MonoBehaviour
             foreach (Colour i in clrs)
             {
                 MovementRule r = new MovementRule();
-                r.index = index;
-                index++;
+                r.index = index++;
                 r.src = i;
                 r.target = Colour.All;
                 
@@ -160,8 +153,7 @@ public class Rules : MonoBehaviour
             foreach(Colour c in clrs)
             {
                 MovementRule r = new MovementRule();
-                r.index = index;
-                index++;
+                r.index = index++;
                 r.src = c;
                 r.target = Colour.All;
                 if (type == Type.jump1)
@@ -176,7 +168,7 @@ public class Rules : MonoBehaviour
                 movementRuleSets.Add(r);
             }
         }
-        if(type==Type.teleport)
+        else
         {
             foreach (Colour s in clrs)
             {
@@ -185,8 +177,7 @@ public class Rules : MonoBehaviour
                     if (s != t)
                     {
                         MovementRule n = new MovementRule();
-                        n.index = index;
-                        index++;
+                        n.index = index++;
                         
                         n.target = t;
                         n.src = s;
@@ -224,12 +215,11 @@ public class Rules : MonoBehaviour
                 if (j != i)
                 {
                     ColourRule r = new ColourRule();
-                    r.index = index;
-                    index++;
-                    r.src = i;
-                    r.target = j;
-                    r.type = type;
-                    colourRuleSets.Add(r);
+                        r.index = index++;
+                        r.src = i;
+                        r.target = j;
+                        r.type = type;
+                        colourRuleSets.Add(r);
 
 
                     }
@@ -247,28 +237,19 @@ public class Rules : MonoBehaviour
 
     public void defineRules()
     {
-        Debug.Log("start index is" + index);
-        createMRule(  Type.Tmove);
-        Debug.Log("total tmoves : " + index);
-        createMRule(Type.blank);
-        Debug.Log("total blank minus prev :" + index);
 
-        createMRule( Type.jump1);
-        Debug.Log("total jump1 minus prev :" + index);
-        createMRule(Type.jump2);
-        Debug.Log("total jump2 minus prev :" + index);
-        createMRule( Type.warm);
-        Debug.Log("total warm minus prev :" + index);
-        createMRule(Type.cool);
-        Debug.Log("total cool minus prev  :" + index);
-        createMRule(Type.teleport);
-        Debug.Log("total teleport minus prev  :" + index);
-        createCRule(Type.include);
-        Debug.Log("total include minus prev  :" + index);
-        createCRule(Type.exclude);
-        Debug.Log("total exclude minus prev :" + index);
-        Debug.Log("Total index is" + index);
+       createMRule(  Type.Tmove);
+       
+       createMRule(Type.blank);
+       createMRule( Type.jump1);
+       createMRule(Type.jump2);
+       createMRule( Type.warm); 
+       createMRule(Type.cool);
+       createMRule(Type.teleport); 
       
+       createCRule(Type.include);
+       createCRule(Type.exclude);
+        
 
 
 
