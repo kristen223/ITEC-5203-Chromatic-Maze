@@ -100,8 +100,10 @@ public class PlayerController : MonoBehaviour
             //Won
             if (player == maze.LP.exit)
             {
+
                 gameOver.SetActive(true);
                 endMessage.text = "Winner!";
+                button.SetActive(true);
             }
 
             if (bCount == 0) //assuming teleport target colour exists

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 public class GenerateGrid : MonoBehaviour
 {
-
+    GameObject map;
     public GameObject wallPrefab;
     public GameObject leftWallPrefab;
     public GameObject topWallPrefab;
@@ -41,6 +41,7 @@ public class GenerateGrid : MonoBehaviour
         BorderFolder = GameObject.Find("Border");
         EdgeFolder = GameObject.Find("Edges");
         TileFolder = GameObject.Find("Tiles");
+        map = GameObject.Find("map");
 
         //Create grid of tiles (vertices)
         tiles = new GameObject[width * height];
@@ -124,6 +125,7 @@ public class GenerateGrid : MonoBehaviour
         }
 
         maze = GetComponent<KruskalMaze>().CreateMaze(KruskalMaze.CreateGraph(edges.ToArray(), vertices.Length), vertices, cycles);
+        ResizeGrid(wdth, hght);
     }
 
     //OUTER BORDER (not part of tree)
@@ -207,7 +209,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + 1].GetComponent<Tile>();
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
-                //wall.GetComponent<SpriteRenderer>().enabled = true;
+                wall.GetComponent<SpriteRenderer>().enabled = false;
 
                 edges.Add(wall.GetComponent<Wall>());
 
@@ -235,7 +237,7 @@ public class GenerateGrid : MonoBehaviour
                 wall.GetComponent<Wall>().destination = tiles[EdgeIndex + width].GetComponent<Tile>(); //changed
                 wall.GetComponent<Wall>().weight = Random.Range(0, 100);
                 wall.transform.SetParent(EdgeFolder.transform);
-                //wall.GetComponent<SpriteRenderer>().enabled = true;
+                wall.GetComponent<SpriteRenderer>().enabled = false;
 
                 edges.Add(wall.GetComponent<Wall>());
 
@@ -244,5 +246,57 @@ public class GenerateGrid : MonoBehaviour
             }
 
         }
+    }
+
+    void ResizeGrid(int w, int h)
+    {
+        if(w == 10 || h == 10)
+        {
+            return;
+
+        }
+        else if(w == 9 || h == 9)
+        {
+            map.transform.position = new Vector3(-4.5f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.0752f, 1.0752f, 1.0752f);
+        }
+        else if (w == 8 || h == 8)
+        {
+            map.transform.position = new Vector3(-1.3f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.143f, 1.143f, 1.143f);
+        }
+        else if (w == 7 || h == 7)
+        {
+            map.transform.position = new Vector3(3.2f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.346797f, 1.346797f, 1.346797f);
+        }
+        else if (w == 6 || h == 6)
+        {
+            map.transform.position = new Vector3(7.5f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+        }
+        else if (w == 5 || h == 5)
+        {
+            map.transform.position = new Vector3(17f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.78f, 1.78f, 1.78f);
+
+        }
+        else if (w == 4 || h == 4)
+        {
+            map.transform.position = new Vector3(16.8f, map.transform.position.y, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.8f, 1.8f, 1.8f);
+        }
+        else if (w == 3 || h == 3)
+        {
+            map.transform.position = new Vector3(22.1f, 31.5f, map.transform.position.z);
+            map.transform.localScale = new Vector3(2f, 2f, 2f);
+        }
+        else //2 X 2
+        {
+            map.transform.position = new Vector3(53.6f, 53.6f, map.transform.position.z);
+            map.transform.localScale = new Vector3(1.9683f, 1.9683f, 1.9683f);
+        }
+
+
     }
 }

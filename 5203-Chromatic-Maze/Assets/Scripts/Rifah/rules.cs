@@ -61,12 +61,13 @@ public class Rules : MonoBehaviour
 
     void Start()
     {
-       
+        movementRuleSets.Clear();
+        colourRuleSets.Clear();
+
         defineRules();
         selectChromosomes(movementRuleSets,colourRuleSets,popSize);
 
-        movementRuleSets.Clear();
-        colourRuleSets.Clear();
+        
 
     }
 
@@ -305,9 +306,8 @@ public class Rules : MonoBehaviour
             allList.Add(item.type);
         }
         Debug.Log("all rules : " + allList.Count);
+
         Dictionary<int, Dictionary<int,Type>> ChrsDict = new Dictionary<int, Dictionary<int,Type>>(pop); //dictionary of chr-idx and chr
-        //Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
-        //Hashtable chr = new Hashtable();
 
         for (int i = 0; i < pop; i++)
         {
@@ -317,6 +317,7 @@ public class Rules : MonoBehaviour
 
             //List<int> usedIdx = new List<int>();
             Dictionary<int, Type> chr = new Dictionary<int, Type>(); //dictionary of rule-idx and type
+ 
             //for (int j = 0; j < 8; j++)   //filling up each chromosome with rule types
             int count = 0;
             while(count < 8)
